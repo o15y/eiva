@@ -1,25 +1,37 @@
 import "@babel/polyfill";
-import { Server } from "@staart/server";
 import { success } from "@staart/errors";
-
-// `asyncHandler` and `join` are required
-
-import { setupMiddleware, Request, Response, asyncHandler } from "@staart/server";
-import { join } from "path";
+import { Controller, Get, Server } from "@staart/server";
+import { setupMiddleware } from "@staart/server";
 
 import {
   errorHandler,
-  trackingHandler,
   rateLimitHandler,
-  speedLimitHandler
+  speedLimitHandler,
+  trackingHandler
 } from "./helpers/middleware";
+
+@Controller("v1")
+class RootController {
+  @Get()
+  async info() {
+    return {
+      repository: "https://github.com/staart/api",
+      docs: "https://staart.js.org",
+      madeBy: ["https://o15y.com", "https://anandchowdhary.com"]
+    };
+  }
+}
 
 export class Staart extends Server {
   constructor() {
     super();
     this.setupHandlers();
-    this.setupControllers();
+    this.addControllers([new RootController()]);
     this.app.use(errorHandler);
+  }
+
+  public start(port: number): void {
+    this.app.listen(port, () => success(`Listening on ${port}`));
   }
 
   private setupHandlers() {
@@ -27,19 +39,5 @@ export class Staart extends Server {
     this.app.use(trackingHandler);
     this.app.use(rateLimitHandler);
     this.app.use(speedLimitHandler);
-  }
-
-  private setupControllers() {
-    this.app.get("/", (req: Request, res: Response) =>
-      res.json({
-        repository: "https://github.com/staart/api",
-        docs: "https://staart.js.org"
-      })
-    );
-    // staart:setup/controllers
-  }
-
-  public start(port: number): void {
-    this.app.listen(port, () => success(`Listening on ${port}`));
   }
 }

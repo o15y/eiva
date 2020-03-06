@@ -1,11 +1,11 @@
 import { Request, Response } from "@staart/server";
-import { verifyToken } from "./jwt";
 import { Tokens } from "../interfaces/enum";
-import { Event } from "../interfaces/tables/events";
 import { Locals } from "../interfaces/general";
+import { Event } from "../interfaces/tables/events";
+import { verifyToken } from "./jwt";
 
-let trackingData: any[] = [];
-let securityEventsData: any[] = [];
+let trackingData: Array<any> = [];
+let securityEventsData: Array<any> = [];
 
 export const getTrackingData = () => trackingData;
 export const getSecurityEvents = () => securityEventsData;
@@ -43,10 +43,10 @@ export const trackUrl = async (req: Request, res: Response) => {
   };
   if (trackingObject.apiKey) {
     try {
-      const token = (await verifyToken(
+      const token = await verifyToken<any>(
         trackingObject.apiKey,
         Tokens.API_KEY
-      )) as any;
+      );
       trackingObject.apiKeyId = token.id;
       trackingObject.apiKeyOrganizationId = token.organizationId;
       trackingObject.apiKeyJti = token.jti;

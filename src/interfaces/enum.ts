@@ -52,7 +52,9 @@ export enum Templates {
   PASSWORD_RESET = "password-reset",
   NEW_PASSWORD = "new-password",
   INVITED_TO_TEAM = "invited",
-  UNAPPROVED_LOCATION = "unapproved-location"
+  UNAPPROVED_LOCATION = "unapproved-location",
+  CREDITS_NEW_USER = "credits-new-user",
+  CREDITS_INVITED_BY = "credits-invited-by"
 }
 
 export enum Tokens {
@@ -63,7 +65,8 @@ export enum Tokens {
   REFRESH = "refresh",
   PASSWORD_RESET = "password-reset",
   EMAIL_VERIFY = "email-verify",
-  APPROVE_LOCATION = "approve-location"
+  APPROVE_LOCATION = "approve-location",
+  COUPON = "coupon"
 }
 
 export enum CacheCategories {
@@ -129,7 +132,11 @@ export enum OrgScopes {
   READ_ORG_MEMBERSHIPS = "org:membership:read",
   UPDATE_ORG_MEMBERSHIPS = "org:membership:update",
   DELETE_ORG_MEMBERSHIPS = "org:membership:delete",
-  CREATE_ORG_MEMBERSHIPS = "org:membership:create"
+  CREATE_ORG_MEMBERSHIPS = "org:membership:create",
+  READ_ORG_TRANSACTIONS = "org:transactions:read",
+  UPDATE_ORG_TRANSACTIONS = "org:transactions:update",
+  DELETE_ORG_TRANSACTIONS = "org:transactions:delete",
+  CREATE_ORG_TRANSACTIONS = "org:transactions:create"
 }
 
 export enum UserScopes {

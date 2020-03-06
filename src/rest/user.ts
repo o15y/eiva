@@ -1,50 +1,59 @@
-import { EventType, UserScopes } from "../interfaces/enum";
 import {
-  getUser,
-  updateUser,
-  getUserApprovedLocations,
-  deleteUser,
-  deleteAllUserApprovedLocations,
-  createBackupCodes,
-  deleteUserBackupCodes,
-  getUserBackupCodes,
-  getUserAccessTokens,
-  getAccessToken,
-  updateAccessToken,
-  createAccessToken,
-  deleteAccessToken,
-  getUserSessions,
-  getSession,
-  deleteSession,
-  getUserIdentities,
-  getIdentity,
-  deleteIdentity,
-  createIdentityGetOAuthLink,
-  createIdentityConnect
-} from "../crud/user";
-import {
-  deleteAllUserMemberships,
-  getUserMembershipsDetailed,
-  addOrganizationToMemberships
-} from "../crud/membership";
-import {
-  INSUFFICIENT_PERMISSION,
-  MISSING_PASSWORD,
   INCORRECT_PASSWORD,
-  NOT_ENABLED_2FA,
-  INVALID_2FA_TOKEN
+  INSUFFICIENT_PERMISSION,
+  INVALID_2FA_TOKEN,
+  MISSING_PASSWORD,
+  NOT_ENABLED_2FA
 } from "@staart/errors";
-import { User } from "../interfaces/tables/user";
-import { Locals, KeyValue } from "../interfaces/general";
-import { getUserEmails, deleteAllUserEmails } from "../crud/email";
-import { can } from "../helpers/authorization";
+import { compare } from "@staart/text";
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { SERVICE_2FA } from "../config";
-import { compare } from "@staart/text";
 import { getPaginatedData } from "../crud/data";
-import { addLocationToEvents } from "../helpers/location";
+import {
+  deleteAllUserEmails,
+  getUserEmails,
+  getUserPrimaryEmail,
+  getUserBestEmail
+} from "../crud/email";
+import {
+  addOrganizationToMemberships,
+  deleteAllUserMemberships,
+  getUserMembershipsDetailed
+} from "../crud/membership";
+import {
+  createAccessToken,
+  createBackupCodes,
+  createIdentityConnect,
+  createIdentityGetOAuthLink,
+  deleteAccessToken,
+  deleteAllUserApprovedLocations,
+  deleteIdentity,
+  deleteSession,
+  deleteUser,
+  deleteUserBackupCodes,
+  getAccessToken,
+  getIdentity,
+  getSession,
+  getUser,
+  getUserAccessTokens,
+  getUserApprovedLocations,
+  getUserBackupCodes,
+  getUserIdentities,
+  getUserSessions,
+  updateAccessToken,
+  updateUser,
+  getUserIdFromUsername
+} from "../crud/user";
+import { can } from "../helpers/authorization";
 import { trackEvent } from "../helpers/tracking";
+import { EventType, UserScopes, Templates } from "../interfaces/enum";
+import { KeyValue, Locals } from "../interfaces/general";
+import { Event } from "../interfaces/tables/events";
+import { Membership } from "../interfaces/tables/memberships";
+import { User } from "../interfaces/tables/user";
+import { mail } from "../helpers/mail";
+import { couponCodeJwt } from "../helpers/jwt";
 
 export const getUserFromId = async (userId: string, tokenUserId: string) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId))
@@ -130,15 +139,12 @@ export const getRecentEventsForUser = async (
   dataUserId: string,
   query: KeyValue
 ) => {
-  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId)) {
-    const events = await getPaginatedData({
+  if (await can(tokenUserId, UserScopes.READ_USER, "user", dataUserId))
+    return await getPaginatedData<Event>({
       table: "events",
       conditions: { userId: dataUserId },
       ...query
     });
-    events.data = await addLocationToEvents(events.data);
-    return events;
-  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -150,7 +156,7 @@ export const getMembershipsForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_MEMBERSHIPS, "user", dataUserId)
   ) {
-    const memberships = await getPaginatedData({
+    const memberships = await getPaginatedData<Membership>({
       table: "memberships",
       conditions: { userId: dataUserId },
       ...query
@@ -218,7 +224,7 @@ export const getBackupCodesForUser = async (
     !(await can(tokenUserId, UserScopes.READ_USER_BACKUP_CODES, "user", userId))
   )
     throw new Error(INSUFFICIENT_PERMISSION);
-  return await getUserBackupCodes(userId);
+  return getUserBackupCodes(userId);
 };
 
 export const regenerateBackupCodesForUser = async (
@@ -236,7 +242,7 @@ export const regenerateBackupCodesForUser = async (
     throw new Error(INSUFFICIENT_PERMISSION);
   await deleteUserBackupCodes(userId);
   await createBackupCodes(userId, 10);
-  return await getUserBackupCodes(userId);
+  return getUserBackupCodes(userId);
 };
 
 export const getUserAccessTokensForUser = async (
@@ -247,7 +253,7 @@ export const getUserAccessTokensForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
-    return await getUserAccessTokens(userId, query);
+    return getUserAccessTokens(userId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -259,7 +265,7 @@ export const getUserAccessTokenForUser = async (
   if (
     await can(tokenUserId, UserScopes.READ_USER_ACCESS_TOKENS, "user", userId)
   )
-    return await getAccessToken(userId, accessTokenId);
+    return getAccessToken(userId, accessTokenId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -315,7 +321,7 @@ export const getUserSessionsForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
-    return await getUserSessions(userId, query);
+    return getUserSessions(userId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -325,7 +331,7 @@ export const getUserSessionForUser = async (
   sessionId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_SESSION, "user", userId))
-    return await getSession(userId, sessionId);
+    return getSession(userId, sessionId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -348,7 +354,7 @@ export const getUserIdentitiesForUser = async (
   query: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
-    return await getUserIdentities(userId, query);
+    return getUserIdentities(userId, query);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -358,7 +364,7 @@ export const createUserIdentityForUser = async (
   body: KeyValue
 ) => {
   if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
-    return await createIdentityGetOAuthLink(userId, body);
+    return createIdentityGetOAuthLink(userId, body);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 export const connectUserIdentityForUser = async (
@@ -368,7 +374,7 @@ export const connectUserIdentityForUser = async (
   url: string
 ) => {
   if (await can(tokenUserId, UserScopes.CREATE_USER_IDENTITY, "user", userId))
-    return await createIdentityConnect(userId, service, url);
+    return createIdentityConnect(userId, service, url);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -378,7 +384,7 @@ export const getUserIdentityForUser = async (
   identityId: string
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER_IDENTITY, "user", userId))
-    return await getIdentity(userId, identityId);
+    return getIdentity(userId, identityId);
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
@@ -393,4 +399,35 @@ export const deleteIdentityForUser = async (
     return;
   }
   throw new Error(INSUFFICIENT_PERMISSION);
+};
+
+export const addInvitationCredits = async (
+  invitedBy: string,
+  newUserId: string
+) => {
+  let invitedByUserId = "";
+  try {
+    invitedByUserId = await getUserIdFromUsername(invitedBy);
+  } catch (error) {}
+  if (!invitedByUserId) return;
+  const invitedByDetails = await getUser(invitedByUserId);
+  const invitedByEmail = await getUserPrimaryEmail(invitedByUserId);
+  const newUserEmail = await getUserBestEmail(newUserId);
+  const newUserDetails = await getUser(newUserId);
+  const emailData = {
+    invitedByName: invitedByDetails.name,
+    invitedByCode: await couponCodeJwt(
+      500,
+      "usd",
+      `Invite credits from ${newUserDetails.name}`
+    ),
+    newUserName: newUserDetails.name,
+    newUserCode: await couponCodeJwt(
+      500,
+      "usd",
+      `Invite credits from ${invitedByDetails.name}`
+    )
+  };
+  await mail(invitedByEmail, Templates.CREDITS_INVITED_BY, emailData);
+  await mail(newUserEmail, Templates.CREDITS_NEW_USER, emailData);
 };

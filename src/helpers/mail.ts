@@ -1,11 +1,10 @@
-import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../config";
-import { readFile } from "fs-extra";
-import { join } from "path";
-import i18n from "../i18n";
+import { logError } from "@staart/errors";
 import { sendMail } from "@staart/mail";
 import { render } from "@staart/mustache-markdown";
 import { redisQueue } from "@staart/redis";
-import { logError } from "@staart/errors";
+import { readFile } from "fs-extra";
+import { join } from "path";
+import { FRONTEND_URL, REDIS_QUEUE_PREFIX } from "../config";
 
 const MAIL_QUEUE = `${REDIS_QUEUE_PREFIX}outbound-emails`;
 
@@ -37,7 +36,7 @@ export const receiveEmailMessage = async () => {
     } = JSON.parse(result.message);
     if (tryNumber && tryNumber > 3) {
       logError("Email", `Unable to send email: ${to}`);
-      return await redisQueue.deleteMessageAsync({
+      return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
         id: result.id
       });
@@ -85,9 +84,9 @@ const safeSendEmail = async (to: string, template: string, data: any = {}) => {
   );
   const altText = result[0];
   const message = result[1];
-  return await sendMail({
+  return sendMail({
     to: to.toString(),
-    subject: i18n.en.emails[template] || "",
+    subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
     message,
     altText
   });

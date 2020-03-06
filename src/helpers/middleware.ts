@@ -1,47 +1,47 @@
 import {
-  Request,
-  Response,
+  INVALID_SIGNATURE,
+  MISSING_SIGNATURE,
+  MISSING_TOKEN
+} from "@staart/errors";
+import { constructWebhookEvent } from "@staart/payments";
+import {
   NextFunction,
   RateLimit,
+  Request,
+  Response,
   slowDown
 } from "@staart/server";
-import { SchemaMap } from "@staart/validate";
-import pkg from "../../package.json";
+import { RawRequest } from "@staart/server";
 import { ms } from "@staart/text";
-import { safeError } from "./errors";
+import { SchemaMap } from "@staart/validate";
+import { joiValidate } from "@staart/validate";
+import pkg from "../../package.json";
 import {
-  verifyToken,
-  TokenResponse,
-  checkInvalidatedToken,
-  ApiKeyResponse,
-  checkIpRestrictions,
-  checkReferrerRestrictions
-} from "./jwt";
-import { Tokens } from "../interfaces/enum";
-import {
-  MISSING_TOKEN,
-  INVALID_SIGNATURE,
-  MISSING_SIGNATURE
-} from "@staart/errors";
-import {
-  BRUTE_FORCE_TIME,
   BRUTE_FORCE_COUNT,
   BRUTE_FORCE_DELAY,
+  BRUTE_FORCE_TIME,
+  PUBLIC_RATE_LIMIT_MAX,
+  PUBLIC_RATE_LIMIT_TIME,
   RATE_LIMIT_MAX,
   RATE_LIMIT_TIME,
-  SPEED_LIMIT_DELAY,
   SPEED_LIMIT_COUNT,
-  SPEED_LIMIT_TIME,
-  PUBLIC_RATE_LIMIT_TIME,
-  PUBLIC_RATE_LIMIT_MAX
+  SPEED_LIMIT_DELAY,
+  SPEED_LIMIT_TIME
 } from "../config";
-import { ApiKey } from "../interfaces/tables/organization";
-import { includesDomainInCommaList } from "./utils";
-import { trackUrl } from "./tracking";
-import { joiValidate } from "@staart/validate";
-import { constructWebhookEvent } from "@staart/payments";
+import { Tokens } from "../interfaces/enum";
 import { StripeLocals } from "../interfaces/general.js";
-import { RawRequest } from "@staart/server";
+import { ApiKey } from "../interfaces/tables/organization";
+import { safeError } from "./errors";
+import {
+  ApiKeyResponse,
+  checkInvalidatedToken,
+  checkIpRestrictions,
+  checkReferrerRestrictions,
+  TokenResponse,
+  verifyToken
+} from "./jwt";
+import { trackUrl } from "./tracking";
+import { includesDomainInCommaList } from "./utils";
 
 const bruteForce = slowDown({
   windowMs: BRUTE_FORCE_TIME,
@@ -123,10 +123,7 @@ export const authHandler = async (
     if (userJwt) {
       if (userJwt.startsWith("Bearer "))
         userJwt = userJwt.replace("Bearer ", "");
-      const userToken = (await verifyToken(
-        userJwt,
-        Tokens.LOGIN
-      )) as TokenResponse;
+      const userToken = await verifyToken<TokenResponse>(userJwt, Tokens.LOGIN);
       await checkInvalidatedToken(userJwt);
       if (userToken) res.locals.token = userToken;
     }
@@ -135,10 +132,10 @@ export const authHandler = async (
     if (apiKeyJwt) {
       if (apiKeyJwt.startsWith("Bearer "))
         apiKeyJwt = apiKeyJwt.replace("Bearer ", "");
-      const apiKeyToken = (await verifyToken(
+      const apiKeyToken = await verifyToken<ApiKeyResponse>(
         apiKeyJwt,
         Tokens.API_KEY
-      )) as ApiKeyResponse;
+      );
       await checkInvalidatedToken(apiKeyJwt);
       checkIpRestrictions(apiKeyToken, res.locals);
       const origin = req.get("Origin");
@@ -188,10 +185,7 @@ export const rateLimitHandler = async (
   const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
-      const details = (await verifyToken(
-        apiKey,
-        Tokens.API_KEY
-      )) as ApiKeyResponse;
+      const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.organizationId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return rateLimiter(req, res, next);
@@ -213,10 +207,7 @@ export const speedLimitHandler = async (
   const apiKey = req.get("X-Api-Key") || req.query.key;
   if (apiKey) {
     try {
-      const details = (await verifyToken(
-        apiKey,
-        Tokens.API_KEY
-      )) as ApiKeyResponse;
+      const details = await verifyToken<ApiKeyResponse>(apiKey, Tokens.API_KEY);
       if (details.organizationId) {
         res.setHeader("X-Rate-Limit-Type", "api-key");
         return next();
@@ -255,7 +246,6 @@ export const validator = (
         break;
       default:
         data = req.body;
-        break;
     }
     joiValidate(schemaMap, data);
     next();

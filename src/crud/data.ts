@@ -1,7 +1,7 @@
 import {
   query,
-  setValues,
   removeReadOnlyValues,
+  setValues,
   tableName
 } from "../helpers/mysql";
 import { KeyValue } from "../interfaces/general";
@@ -9,7 +9,7 @@ import { KeyValue } from "../interfaces/general";
 /*
  * Get pagination data
  */
-export const getPaginatedData = async ({
+export const getPaginatedData = async <T>({
   table,
   conditions,
   start = 0,
@@ -45,11 +45,14 @@ export const getPaginatedData = async ({
       ...(conditions ? Object.values(conditions) : []),
       q
     ]
-  )) as any[];
+  )) as Array<T>;
   return {
     data,
     hasMore: data.length == itemsPerPage,
-    next: data.length == itemsPerPage && data[data.length - 1][primaryKey]
+    next:
+      data.length == itemsPerPage
+        ? ((data as any)[data.length - 1][primaryKey] as string)
+        : undefined
   };
 };
 
@@ -63,7 +66,7 @@ export const updateData = async (
 ) => {
   data.updatedAt = new Date();
   data = removeReadOnlyValues(data);
-  return await query(
+  return query(
     `UPDATE ${tableName(table)} SET ${setValues(data)} WHERE ${Object.keys(
       conditions
     )
@@ -77,7 +80,7 @@ export const updateData = async (
  * Update general data
  */
 export const deleteData = async (table: string, conditions: KeyValue) => {
-  return await query(
+  return query(
     `DELETE FROM ${tableName(table)} WHERE ${Object.keys(conditions)
       .map(condition => `${condition} = ?`)
       .join(" AND ")}`,
