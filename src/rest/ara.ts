@@ -2,6 +2,7 @@ import { INVALID_API_KEY_SECRET } from "@staart/errors";
 import { simpleParser } from "mailparser";
 import { elasticSearchIndex } from "../helpers/elasticsearch";
 import { getS3Item } from "../helpers/services/s3";
+import { smartTokensFromText } from "../helpers/services/ara";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -43,4 +44,5 @@ const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
   const parsedBody = await simpleParser(objectBody);
+  const tokens = await smartTokensFromText(parsedBody.text);
 };
