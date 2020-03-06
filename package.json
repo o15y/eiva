@@ -1,6 +1,6 @@
 {
   "name": "@o15y/ara",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -69,6 +69,7 @@
     "@staart/server": "^2.5.1",
     "@staart/text": "^2.2.1",
     "@staart/validate": "^3.0.1",
+    "aws-sdk": "^2.635.0",
     "axios": "^0.19.2",
     "client-oauth2": "^4.2.5",
     "cron": "^1.8.2",
