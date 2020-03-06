@@ -1,8 +1,17 @@
-import { Controller, Get, Middleware, Request, Response } from "@staart/server";
+import {
+  Controller,
+  Get,
+  Middleware,
+  Request,
+  Response,
+  ChildControllers
+} from "@staart/server";
 import { stripeWebhookAuthHandler } from "../../helpers/middleware";
 import { StripeLocals } from "../../interfaces/general";
+import { WebhooksInboundController } from "./inbound";
 
 @Controller("webhooks")
+@ChildControllers([new WebhooksInboundController()])
 export class WebhooksController {
   @Get("stripe")
   @Middleware(stripeWebhookAuthHandler)

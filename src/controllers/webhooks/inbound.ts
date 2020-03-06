@@ -1,9 +1,9 @@
-import { Controller, Get, Request, Response } from "@staart/server";
+import { Controller, Get, Request } from "@staart/server";
 import { joiValidate, Joi } from "@staart/validate";
 import { respond, RESOURCE_SUCCESS } from "@staart/messages";
 
 @Controller("inbound")
-export class WebhooksController {
+export class WebhooksInboundController {
   @Get("email/:id")
   async inboundEmail(req: Request) {
     const id = req.params.id;
