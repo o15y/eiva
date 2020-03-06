@@ -1,0 +1,46 @@
+import natural from "natural";
+const tokenizer = new (natural as any).SentenceTokenizer() as natural.WordTokenizer;
+import parseReply from "node-email-reply-parser";
+import { getSignature } from "email-signature-detector";
+import { AddressObject } from "mailparser";
+import { commonWords } from "./common-words";
+
+export const smartTokensFromText = async (
+  text: string,
+  from: AddressObject
+) => {
+  // Remove signature
+  const { bodyNoSig } = getSignature(
+    text,
+    {
+      email: from.value[0].address,
+      displayName: from.value[0].name
+    },
+    true
+  );
+
+  // Divide paragraph into lines and remove empty lines
+  const paragraphs = parseReply(bodyNoSig || text)
+    .getVisibleText()
+    .split("\n")
+    .filter(i => i.trim())
+    .map(i => i.toLowerCase());
+
+  // Tokenize each line to a sentence
+  const tokens: string[][] = [];
+  paragraphs.forEach(paragraph =>
+    tokens.push(
+      tokenizer
+        .tokenize(paragraph)
+        .filter(i => (i.match(/ /g) || []).length > 2)
+        .map(i => {
+          commonWords.forEach(word => (i = i.replace(word, "")));
+          return i.replace(/[.,!?:;]/g, "");
+        })
+        .filter(i => i.trim())
+    )
+  );
+
+  console.log("Tokens", tokens);
+  return tokens;
+};

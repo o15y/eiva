@@ -45,5 +45,4 @@ const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
   ).toString();
   const parsedBody = await simpleParser(objectBody);
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
-  console.log(tokens);
 };
