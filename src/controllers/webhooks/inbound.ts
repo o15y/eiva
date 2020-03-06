@@ -1,21 +1,25 @@
 import { Controller, Get, Request } from "@staart/server";
 import { joiValidate, Joi } from "@staart/validate";
 import { respond, RESOURCE_SUCCESS } from "@staart/messages";
+import { processIncomingEmail } from "../../rest/ara";
 
 @Controller("inbound")
 export class WebhooksInboundController {
-  @Get("email/:id")
+  @Get("email/:objectId")
   async inboundEmail(req: Request) {
-    const id = req.params.id;
-    const secret = (req.get("Authorization") || "").replace("Bearer ", "");
+    const objectId = req.params.objectId;
+    const secret = (req.get("Authorization") || req.query.secret || "").replace(
+      "Bearer ",
+      ""
+    );
     joiValidate(
       {
-        id: Joi.string().required(),
+        objectId: Joi.string().required(),
         secret: Joi.string().required()
       },
-      { id, secret }
+      { objectId, secret }
     );
-    console.log("Incoming email", id);
+    await processIncomingEmail(secret, objectId);
     return respond(RESOURCE_SUCCESS);
   }
 }
