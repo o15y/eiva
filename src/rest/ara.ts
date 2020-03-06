@@ -18,6 +18,7 @@ export const processIncomingEmail = async (
     throw new Error(INVALID_API_KEY_SECRET);
   const logs: string[] = [];
   const log: Logger = (...args: any[]) => {
+    args = args.map(i => (typeof i === "object" ? JSON.stringify(i) : i));
     if (process.env.NODE_ENV === "development") console.log(args.join(" "));
     logs.push(`${new Date().toLocaleString()} ${args.join(" ")}`);
   };

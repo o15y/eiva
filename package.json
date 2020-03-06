@@ -1,6 +1,6 @@
 {
   "name": "@o15y/ara",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
