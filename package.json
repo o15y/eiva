@@ -1,6 +1,6 @@
 {
   "name": "@o15y/ara",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -83,6 +83,7 @@
     "mysql": "^2.18.1",
     "natural": "^0.6.3",
     "node-cache": "^5.1.0",
+    "node-email-reply-parser": "^0.1.1",
     "node-emoji": "^1.10.0",
     "otplib": "^12.0.1",
     "qrcode": "^1.4.4",
