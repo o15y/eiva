@@ -1,5 +1,6 @@
 import { INVALID_API_KEY_SECRET } from "@staart/errors";
 import { elasticSearchIndex } from "../helpers/elasticsearch";
+import { getS3Item } from "../helpers/services/s3";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -27,6 +28,7 @@ export const processIncomingEmail = async (
       elasticSearchIndex({
         index: "ara-incoming-emails",
         body: {
+          date: new Date(),
           ...returnedInfo,
           logs
         }
@@ -36,6 +38,5 @@ export const processIncomingEmail = async (
 
 const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
   log("Received request", objectId);
-  const userId = 1;
-  return { userId };
+  const objectBody = await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId);
 };
