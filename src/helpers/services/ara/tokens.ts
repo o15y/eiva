@@ -44,6 +44,5 @@ export const smartTokensFromText = async (
     }
   });
 
-  console.log("Tokens", tokens);
   return tokens;
 };

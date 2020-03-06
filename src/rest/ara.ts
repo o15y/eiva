@@ -2,7 +2,9 @@ import { INVALID_API_KEY_SECRET } from "@staart/errors";
 import { simpleParser } from "mailparser";
 import { elasticSearchIndex } from "../helpers/elasticsearch";
 import { getS3Item } from "../helpers/services/s3";
-import { smartTokensFromText } from "../helpers/services/ara";
+import { smartTokensFromText } from "../helpers/services/ara/tokens";
+import { Logger } from "../interfaces/ara";
+import { classifyTokens } from "../helpers/services/ara/classify";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -15,7 +17,7 @@ export const processIncomingEmail = async (
   if (secret !== INCOMING_EMAIL_WEBHOOK_SECRET)
     throw new Error(INVALID_API_KEY_SECRET);
   const logs: string[] = [];
-  const log = (...args: any[]) => {
+  const log: Logger = (...args: any[]) => {
     if (process.env.NODE_ENV === "development") console.log(args.join(" "));
     logs.push(`${new Date().toLocaleString()} ${args.join(" ")}`);
   };
@@ -38,11 +40,14 @@ export const processIncomingEmail = async (
     );
 };
 
-const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
+const emailSteps = async (objectId: string, log: Logger) => {
   log("Received request", objectId);
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
   const parsedBody = await simpleParser(objectBody);
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
+  log("Smart tokenized sentences", tokens);
+  const label = classifyTokens(tokens, log);
+  log("Classified email", label);
 };
