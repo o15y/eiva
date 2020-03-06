@@ -1,4 +1,5 @@
 import { INVALID_API_KEY_SECRET } from "@staart/errors";
+import { simpleParser } from "mailparser";
 import { elasticSearchIndex } from "../helpers/elasticsearch";
 import { getS3Item } from "../helpers/services/s3";
 
@@ -38,5 +39,8 @@ export const processIncomingEmail = async (
 
 const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
   log("Received request", objectId);
-  const objectBody = await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId);
+  const objectBody = (
+    await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
+  ).toString();
+  const parsedBody = await simpleParser(objectBody);
 };
