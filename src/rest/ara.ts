@@ -44,5 +44,6 @@ const emailSteps = async (objectId: string, log: (...args: any[]) => void) => {
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
   const parsedBody = await simpleParser(objectBody);
-  const tokens = await smartTokensFromText(parsedBody.text);
+  const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
+  console.log(tokens);
 };

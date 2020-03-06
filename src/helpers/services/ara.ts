@@ -1,11 +1,18 @@
 import natural from "natural";
 const tokenizer = new (natural as any).SentenceTokenizer() as natural.WordTokenizer;
 import parseReply from "node-email-reply-parser";
+import { removeSignature } from "email-signature-detector";
+import { AddressObject } from "mailparser";
 
-export const smartTokensFromText = async (text: string) => {
+export const smartTokensFromText = async (
+  text: string,
+  from: AddressObject
+) => {
   // Divide paragraph into lines and remove empty lines
-  const paragraphs = parseReply(text)
-    .getVisibleText()
+  const paragraphs = removeSignature(parseReply(text).getVisibleText(), {
+    email: from.value[0].address,
+    displayName: from.value[0].name
+  })
     .split("\n")
     .filter(i => i.trim());
 
