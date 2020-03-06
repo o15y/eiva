@@ -1,6 +1,6 @@
 {
   "name": "@o15y/ara",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "main": "index.js",
   "repository": "git@github.com:staart/api.git",
   "author": "Anand Chowdhary <mail@anandchowdhary.com>",
@@ -75,6 +75,7 @@
     "axios": "^0.19.2",
     "client-oauth2": "^4.2.5",
     "cron": "^1.8.2",
+    "email-signature-detector": "0.0.6",
     "fs-extra": "^8.1.0",
     "geolite2-redist": "^1.0.4",
     "jsonwebtoken": "^8.5.1",
