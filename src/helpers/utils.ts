@@ -84,7 +84,7 @@ export const dateValues = [
 /**
  * MySQL columns which are JSON values
  */
-export const jsonValues = ["data"];
+export const jsonValues = ["data", "schedulingDays", "calendars"];
 
 /**
  * MySQL columns which are read-only

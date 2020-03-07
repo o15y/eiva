@@ -89,6 +89,17 @@ export const createOrganization = async (organization: Organization) => {
   organization.profilePicture = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     (organization.name || "XX").substring(0, 2).toUpperCase()
   )}&background=${backgroundColor}&color=fff`;
+
+  // Ara-specific
+  organization.assistantName = "Ara Isaacson";
+  organization.assistantSignature = `Best,\n\nAra Isaacson (AI)\n\nAssistant to ${organization.name}`;
+  organization.schedulingDays = ["mon", "tue", "wed", "thu", "fri"];
+  organization.schedulingTimeStart = "09:00:00";
+  organization.schedulingTimeEnd = "17:00:00";
+  organization.schedulingPadding = "30";
+  organization.calendars = [""];
+  organization.customEmailEnabled = false;
+
   deleteItemFromCache(
     CacheCategories.ORGANIZATION_USERNAME,
     organization.username

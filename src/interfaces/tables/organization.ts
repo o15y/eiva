@@ -12,10 +12,17 @@ export interface Organization extends IdRow {
   profilePicture?: string;
 
   // Ara-specific
+  assistantName?: string;
+  assistantSignature?: string;
+  schedulingDays?: string[];
+  schedulingTimeStart?: string;
+  schedulingTimeEnd?: string;
+  schedulingPadding?: string;
   calendars?: string[];
+  customEmailEnabled?: boolean;
   customEmailAddress?: string;
   customEmailHost?: string;
-  customEmailPort?: number;
+  customEmailPort?: string;
   customEmailSecure?: boolean;
   customEmailUsername?: string;
   customEmailPassword?: string;
