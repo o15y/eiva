@@ -10,7 +10,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 29/08/2019 12:26:46
+ Date: 07/03/2020 12:12:49
 */
 
 SET NAMES utf8mb4;
@@ -95,6 +95,19 @@ CREATE TABLE `ara-domains` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
+-- Table structure for ara-email-aliases
+-- ----------------------------
+DROP TABLE IF EXISTS `ara-email-aliases`;
+CREATE TABLE `ara-email-aliases` (
+  `id` int(11) NOT NULL,
+  `organizationId` int(11) NOT NULL,
+  `alias` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
 -- Table structure for ara-emails
 -- ----------------------------
 DROP TABLE IF EXISTS `ara-emails`;
@@ -108,6 +121,20 @@ CREATE TABLE `ara-emails` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- ----------------------------
+-- Table structure for ara-incoming-emails
+-- ----------------------------
+DROP TABLE IF EXISTS `ara-incoming-emails`;
+CREATE TABLE `ara-incoming-emails` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `objectId` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `organizationId` int(11) NOT NULL,
+  `elasticId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`,`objectId`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for ara-memberships
