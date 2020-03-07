@@ -1,11 +1,15 @@
-import { INVALID_API_KEY_SECRET } from "@staart/errors";
+import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
+import { elasticSearch } from "@staart/elasticsearch";
 import { simpleParser } from "mailparser";
-import { elasticSearchIndex } from "../helpers/elasticsearch";
 import { getS3Item } from "../helpers/services/s3";
 import { smartTokensFromText } from "../helpers/services/ara/tokens";
 import { Logger } from "../interfaces/ara";
 import { classifyTokens } from "../helpers/services/ara/classify";
 import { performAction } from "../helpers/services/ara/actions";
+import {
+  createIncomingEmail,
+  updateIncomingEmail
+} from "../helpers/services/ara/crud";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -24,14 +28,20 @@ export const processIncomingEmail = async (
     logs.push(`${new Date().toLocaleString()} ${args.join(" ")}`);
   };
   let returnedInfo: any = {};
-  emailSteps(objectId, log)
+  let insertId = "";
+  let organizationId = "";
+  const insertIdUpdater = (iInsertId: string, iOrganizationId: string) => {
+    insertId = iInsertId;
+    organizationId = iOrganizationId;
+  };
+  emailSteps(objectId, log, insertIdUpdater)
     .then(details => {
       if (details) returnedInfo = details;
       log(`Completed`);
     })
     .catch((error: Error) => log(`${String(error)}`))
     .then(() =>
-      elasticSearchIndex({
+      elasticSearch.index({
         index: "ara-incoming-emails",
         body: {
           date: new Date(),
@@ -42,11 +52,26 @@ export const processIncomingEmail = async (
             : "success"
         }
       })
-    );
+    )
+    .then(response => {
+      const elasticId = response.body._id;
+      if (organizationId && insertId && elasticId) {
+        return updateIncomingEmail(organizationId, insertId, { elasticId });
+      }
+    })
+    .then(() => {})
+    .catch(error => logError("Incoming email", error));
 };
 
-const emailSteps = async (objectId: string, log: Logger) => {
+const emailSteps = async (
+  objectId: string,
+  log: Logger,
+  insertIdUpdater: (insertIt: string, organizationId: string) => void
+) => {
   log("Received request", objectId);
+  const organizationId = "0";
+  const { insertId } = await createIncomingEmail({ objectId, organizationId });
+  insertIdUpdater(insertId, organizationId);
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
@@ -55,11 +80,13 @@ const emailSteps = async (objectId: string, log: Logger) => {
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
   log(`Classified text as "${label}"`);
-  return await performAction({
+  const result = await performAction({
+    organizationId,
     objectBody,
     parsedBody,
     tokens,
     label,
     log
   });
+  return result;
 };
