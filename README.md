@@ -11,6 +11,7 @@ Apart from [Staart API](https://staart.js.org/api) endpoints that let you create
 - `POST /v1/api/classify` classifies text into actions
 - `POST /v1/api/parse-email` parses a raw email into structured data
 - `POST /v1/api/smart-tokenize` tokenizes text to actionable sentences
+- `POST /v1/api/perform-action` takes an email and processes it
 
 All API endpoints require an API key or access token; both can be generated using APIs or the [webapp](https://araassistant.com). Parameters are available in [`api/index.ts`](/src/controllers/api/index.ts).
 
