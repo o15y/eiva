@@ -74,7 +74,9 @@ const emailSteps = async (
   log(`Got raw email of ${objectBody.length} length`);
   const parsedBody = await parseEmail(objectBody);
   log("Parsed email attributes");
-  const organization = await getOrganizationFromEmail("");
+  const organization = await getOrganizationFromEmail(
+    parsedBody.from.value[0].address
+  );
   if (!organization || !organization.id)
     throw new Error("Couldn't find a team for this email");
   log(`Found "${organization.username}" team for this email`);

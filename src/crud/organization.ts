@@ -103,7 +103,7 @@ export const createOrganization = async (organization: Organization) => {
   organization.schedulingTimeStart = "09:00:00";
   organization.schedulingTimeEnd = "17:00:00";
   organization.schedulingPadding = "30";
-  (organization as any).calendars = JSON.stringify([""]);
+  (organization as any).calendars = JSON.stringify([]);
   organization.customEmailEnabled = false;
 
   deleteItemFromCache(
