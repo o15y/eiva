@@ -29,14 +29,17 @@ export const processIncomingEmail = async (
       if (details) returnedInfo = details;
       log(`Completed`);
     })
-    .catch((error: Error) => log(`ERROR ${String(error)}`))
+    .catch((error: Error) => log(`${String(error)}`))
     .then(() =>
       elasticSearchIndex({
         index: "ara-incoming-emails",
         body: {
           date: new Date(),
           ...returnedInfo,
-          logs
+          logs,
+          state: logs[logs.length - 1].toLowerCase().includes("error")
+            ? "error"
+            : "success"
         }
       })
     );
