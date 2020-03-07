@@ -10,6 +10,15 @@ export interface Organization extends IdRow {
   ipRestrictions?: string;
   stripeCustomerId?: string;
   profilePicture?: string;
+
+  // Ara-specific
+  calendars?: string[];
+  customEmailAddress?: string;
+  customEmailHost?: string;
+  customEmailPort?: number;
+  customEmailSecure?: boolean;
+  customEmailUsername?: string;
+  customEmailPassword?: string;
 }
 
 export interface ApiKey extends IdRow {

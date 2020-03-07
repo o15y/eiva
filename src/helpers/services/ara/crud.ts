@@ -1,6 +1,6 @@
 import { KeyValue } from "../../../interfaces/general";
 import { getPaginatedData } from "../../../crud/data";
-import { IncomingEmail } from "../../../interfaces/ara";
+import { IncomingEmail, Alias } from "../../../interfaces/ara";
 import {
   query,
   tableName,
@@ -9,6 +9,34 @@ import {
   setValues
 } from "../../mysql";
 import { InsertResult } from "../../../interfaces/mysql";
+import { isMatch } from "@staart/text";
+import { Organization } from "../../../interfaces/tables/organization";
+import { getOrganization } from "../../../crud/organization";
+
+export const getOrganizationFromEmail = async (email: string) => {
+  if (isMatch(email, "*@mail.araassistant.com")) {
+    const emails = (await query(
+      `SELECT * FROM ${tableName("organizations")} WHERE username = ? LIMIT 1`,
+      [email.split("@")[0]]
+    )) as Array<Organization>;
+    if (emails.length) return emails[0];
+
+    const aliases = (await query(
+      `SELECT * FROM ${tableName("aliases")} WHERE alias = ? LIMIT 1`,
+      [email.split("@")[0]]
+    )) as Array<Alias>;
+    if (aliases.length) return await getOrganization(aliases[0].organizationId);
+  } else {
+    const result = ((await query(
+      `SELECT * FROM ${tableName(
+        "organizations"
+      )} WHERE customEmailAddress = ? LIMIT 1`,
+      [email]
+    )) as Array<Organization>)[0];
+    if (result) return result;
+  }
+  throw new Error("This is not a valid email");
+};
 
 export const getOrganizationIncomingEmails = async (
   organizationId: string,

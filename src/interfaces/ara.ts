@@ -16,3 +16,8 @@ export interface IncomingEmail extends IdRow {
   organizationId: string;
   elasticId?: string;
 }
+
+export interface Alias extends IdRow {
+  alias: string;
+  organizationId: string;
+}
