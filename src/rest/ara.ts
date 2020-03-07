@@ -9,6 +9,7 @@ import {
 } from "../helpers/services/ara/crud";
 import { performAction } from "../helpers/services/ara/actions";
 import { parseEmail } from "../helpers/services/ara/parse";
+import { Organization } from "../interfaces/tables/organization";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -71,12 +72,18 @@ const emailSteps = async (
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
-  log(`Got raw email of ${objectBody.length} length`);
+  log(`Got raw email of length ${objectBody.length}`);
   const parsedBody = await parseEmail(objectBody);
   log("Parsed email attributes");
-  const organization = await getOrganizationFromEmail(
-    parsedBody.from.value[0].address
-  );
+  let organization: Organization | undefined = undefined;
+  for await (const email of parsedBody.to.value) {
+    try {
+      if (!organization) {
+        log(`Looking for team for email "${email.address}"`);
+        organization = await getOrganizationFromEmail(email.address);
+      }
+    } catch (error) {}
+  }
   if (!organization || !organization.id)
     throw new Error("Couldn't find a team for this email");
   log(`Found "${organization.username}" team for this email`);
