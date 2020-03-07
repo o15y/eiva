@@ -1,11 +1,11 @@
 import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
 import { elasticSearch } from "@staart/elasticsearch";
-import { simpleParser } from "mailparser";
 import { getS3Item } from "../helpers/services/s3";
 import { smartTokensFromText } from "../helpers/services/ara/tokenize";
 import { Logger } from "../interfaces/ara";
 import { classifyTokens } from "../helpers/services/ara/classify";
 import { performAction } from "../helpers/services/ara/actions";
+import { parseEmail } from "../helpers/services/ara/parse";
 import {
   createIncomingEmail,
   updateIncomingEmail
@@ -75,7 +75,7 @@ const emailSteps = async (
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
-  const parsedBody = await simpleParser(objectBody);
+  const parsedBody = await parseEmail(objectBody);
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
