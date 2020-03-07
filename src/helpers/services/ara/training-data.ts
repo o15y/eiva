@@ -1,4 +1,4 @@
-export const setupNewAppointment = [
+const setupNewAppointment = [
   "set up appointment",
   "schedule call",
   "set up video call",
@@ -8,7 +8,7 @@ export const setupNewAppointment = [
   "schedule coffee"
 ];
 
-export const rescheduleAppointment = [
+const rescheduleAppointment = [
   "reschedule appointment",
   "reschedule call",
   "reschedule meeting with",
@@ -16,7 +16,7 @@ export const rescheduleAppointment = [
   "find another time"
 ];
 
-export const cancelAppointment = [
+const cancelAppointment = [
   "cancel appointment",
   "cancel call",
   "cancel meeting",
@@ -25,9 +25,16 @@ export const cancelAppointment = [
   "cancel coffee"
 ];
 
-export const scheduleSummary = [
+const scheduleSummary = [
   "send meeting summary",
   "send me my schedule",
   "schedule for tomorrow",
   "email schedule"
 ];
+
+export const LABELS = {
+  setupNewAppointment,
+  rescheduleAppointment,
+  cancelAppointment,
+  scheduleSummary
+};

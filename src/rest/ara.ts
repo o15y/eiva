@@ -50,5 +50,5 @@ const emailSteps = async (objectId: string, log: Logger) => {
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
-  log("Classified email", label);
+  log(`Classified text as "${label}"`);
 };

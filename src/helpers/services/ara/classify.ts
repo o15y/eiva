@@ -1,19 +1,9 @@
 import { BayesClassifier } from "natural";
-import {
-  setupNewAppointment,
-  rescheduleAppointment,
-  cancelAppointment,
-  scheduleSummary
-} from "./training-data";
+import { LABELS } from "./training-data";
 import { Logger } from "../../../interfaces/ara";
 
 const classifier = new BayesClassifier();
-Object.entries({
-  setupNewAppointment,
-  rescheduleAppointment,
-  cancelAppointment,
-  scheduleSummary
-}).forEach(values => {
+Object.entries(LABELS).forEach(values => {
   const label = values[0];
   const data = values[1];
   data.forEach(i => classifier.addDocument(i, label));
@@ -23,28 +13,16 @@ classifier.train();
 const classifyLine = (line: string) => classifier.getClassifications(line);
 
 export const classifyTokens = (lines: string[], log: Logger) => {
-  let maxScore = 0;
-  let maxScoreClassification = "";
+  const scores: { [index: string]: number } = {};
+  Object.keys(LABELS).forEach(key => {
+    scores[key] = 0;
+  });
   lines.forEach(line => {
     const results = classifyLine(line);
-    let localMaxScore = 0;
-    let localMaxScoreClassification: string | null = null;
     results.forEach(result => {
-      if (result.value > localMaxScore) {
-        localMaxScore = result.value;
-        localMaxScoreClassification = result.label;
-      }
+      scores[result.label] += result.value;
     });
-    if (localMaxScore > maxScore && localMaxScoreClassification) {
-      maxScore = localMaxScore;
-      maxScoreClassification = localMaxScoreClassification;
-    }
-    if (maxScoreClassification) {
-      log(
-        `Classification for "${line}" is "${maxScoreClassification}" (${maxScore})`
-      );
-    }
   });
-  if (!maxScoreClassification) throw new Error("Unable to classify email");
-  return maxScoreClassification;
+  log("Classifications", scores);
+  return Object.entries(scores).reduce((a, b) => (a[1] > b[1] ? a : b))[0];
 };
