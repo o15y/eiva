@@ -4,9 +4,11 @@ import { getS3Item } from "../helpers/services/s3";
 import { Logger } from "../interfaces/ara";
 import {
   createIncomingEmail,
-  updateIncomingEmail
+  updateIncomingEmail,
+  getOrganizationFromEmail
 } from "../helpers/services/ara/crud";
 import { performAction } from "../helpers/services/ara/actions";
+import { parseEmail } from "../helpers/services/ara/parse";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -34,9 +36,9 @@ export const processIncomingEmail = async (
   emailSteps(objectId, log, insertIdUpdater)
     .then(details => {
       if (details) returnedInfo = details;
-      log(`Completed`);
+      log("Completed");
     })
-    .catch((error: Error) => log(`${String(error)}`))
+    .catch((error: Error) => log(String(error)))
     .then(() =>
       elasticSearch.index({
         index: "ara-incoming-emails",
@@ -66,11 +68,21 @@ const emailSteps = async (
   insertIdUpdater: (insertIt: string, organizationId: string) => void
 ) => {
   log("Received request", objectId);
-  const organizationId = "0";
-  const { insertId } = await createIncomingEmail({ objectId, organizationId });
-  insertIdUpdater(insertId, organizationId);
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
-  return await performAction(organizationId, objectBody, log);
+  log(`Got raw email of ${objectBody.length} length`);
+  const parsedBody = await parseEmail(objectBody);
+  log("Parsed email attributes");
+  const organization = await getOrganizationFromEmail("");
+  if (!organization || !organization.id)
+    throw new Error("Couldn't find a team for this email");
+  log(`Found "${organization.username}" team for this email`);
+  const { insertId } = await createIncomingEmail({
+    objectId,
+    organizationId: organization.id
+  });
+  log(`Created initial entry with ID "${insertId}"`);
+  insertIdUpdater(insertId, organization.id);
+  return await performAction(organization, objectBody, parsedBody, log);
 };

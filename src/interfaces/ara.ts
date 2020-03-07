@@ -1,9 +1,10 @@
 export type Logger = (...args: any[]) => void;
 import { ParsedMail } from "mailparser";
 import { IdRow } from "./general";
+import { Organization } from "./tables/organization";
 
 export interface ActionParams {
-  organizationId: string;
+  organization: Organization;
   label: string;
   tokens: string[];
   log: Logger;

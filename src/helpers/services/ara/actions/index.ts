@@ -5,20 +5,21 @@ import { cancelAppointment } from "./cancelAppointment";
 import { scheduleSummary } from "./scheduleSummary";
 import { smartTokensFromText } from "../tokenize";
 import { classifyTokens } from "../classify";
-import { parseEmail } from "../parse";
+import { ParsedMail } from "mailparser";
+import { Organization } from "../../../../interfaces/tables/organization";
 
 export const performAction = async (
-  organizationId: string,
+  organization: Organization,
   objectBody: string,
+  parsedBody: ParsedMail,
   log: Logger
 ) => {
-  const parsedBody = await parseEmail(objectBody);
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
   log(`Classified text as "${label}"`);
   return await act({
-    organizationId,
+    organization,
     objectBody,
     parsedBody,
     tokens,

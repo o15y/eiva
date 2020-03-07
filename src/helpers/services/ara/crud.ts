@@ -35,7 +35,6 @@ export const getOrganizationFromEmail = async (email: string) => {
     )) as Array<Organization>)[0];
     if (result) return result;
   }
-  throw new Error("This is not a valid email");
 };
 
 export const getOrganizationIncomingEmails = async (
