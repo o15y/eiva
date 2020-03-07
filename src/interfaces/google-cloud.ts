@@ -39,7 +39,7 @@ interface MetadataPrice extends MetadataBase {
   value: string;
   currency: string;
 }
-interface MetadataDate extends MetadataBase {
+export interface MetadataDate extends MetadataBase {
   year?: string;
   month?: string;
   day?: string;

@@ -68,6 +68,7 @@
     "@staart/validate": "^3.0.1",
     "aws-sdk": "^2.635.0",
     "axios": "^0.19.2",
+    "chrono-node": "^1.4.3",
     "client-oauth2": "^4.2.5",
     "cron": "^1.8.2",
     "email-signature-detector": "0.0.6",
