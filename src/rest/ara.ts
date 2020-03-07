@@ -5,6 +5,7 @@ import { getS3Item } from "../helpers/services/s3";
 import { smartTokensFromText } from "../helpers/services/ara/tokens";
 import { Logger } from "../interfaces/ara";
 import { classifyTokens } from "../helpers/services/ara/classify";
+import { performAction } from "../helpers/services/ara/actions";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -25,7 +26,7 @@ export const processIncomingEmail = async (
   let returnedInfo: any = {};
   emailSteps(objectId, log)
     .then(details => {
-      returnedInfo = details;
+      if (details) returnedInfo = details;
       log(`Completed`);
     })
     .catch((error: Error) => log(`ERROR ${String(error)}`))
@@ -51,4 +52,11 @@ const emailSteps = async (objectId: string, log: Logger) => {
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
   log(`Classified text as "${label}"`);
+  return await performAction({
+    objectBody,
+    parsedBody,
+    tokens,
+    label,
+    log
+  });
 };
