@@ -2,7 +2,7 @@ import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
 import { elasticSearch } from "@staart/elasticsearch";
 import { simpleParser } from "mailparser";
 import { getS3Item } from "../helpers/services/s3";
-import { smartTokensFromText } from "../helpers/services/ara/tokens";
+import { smartTokensFromText } from "../helpers/services/ara/tokenize";
 import { Logger } from "../interfaces/ara";
 import { classifyTokens } from "../helpers/services/ara/classify";
 import { performAction } from "../helpers/services/ara/actions";
