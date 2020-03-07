@@ -5,8 +5,8 @@ export type Entity =
   | EntityLocation
   | EntityOrganization
   | EntityEvent
-  | EntityWork_of_art
-  | EntityConsumer_good
+  | EntityWorkOfArt
+  | EntityConsumerGood
   | EntityOther
   | EntityPhoneNumber
   | EntityAddress
@@ -61,62 +61,62 @@ interface MetadataPhoneNumber extends MetadataBase {
   extension?: string;
 }
 
-interface EntityNumber extends EntityBase {
+export interface EntityNumber extends EntityBase {
   type: "NUMBER";
 }
 
-interface EntityUnknown extends EntityBase {
+export interface EntityUnknown extends EntityBase {
   type: "UNKNOWN";
 }
 
-interface EntityPerson extends EntityBase {
+export interface EntityPerson extends EntityBase {
   type: "PERSON";
 }
 
-interface EntityLocation extends EntityBase {
+export interface EntityLocation extends EntityBase {
   type: "LOCATION";
 }
 
-interface EntityOrganization extends EntityBase {
+export interface EntityOrganization extends EntityBase {
   type: "ORGANIZATION";
 }
 
-interface EntityEvent extends EntityBase {
+export interface EntityEvent extends EntityBase {
   type: "EVENT";
 }
 
-interface EntityWork_of_art extends EntityBase {
+export interface EntityWorkOfArt extends EntityBase {
   type: "WORK_OF_ART";
 }
 
-interface EntityConsumer_good extends EntityBase {
+export interface EntityConsumerGood extends EntityBase {
   type: "CONSUMER_GOOD";
 }
 
-interface EntityOther extends EntityBase {
+export interface EntityOther extends EntityBase {
   type: "OTHER";
 }
 
-interface EntityPhoneNumber extends EntityBase {
+export interface EntityPhoneNumber extends EntityBase {
   type: "PHONE_NUMBER";
   metadata: MetadataPhoneNumber;
 }
 
-interface EntityAddress extends EntityBase {
+export interface EntityAddress extends EntityBase {
   type: "ADDRESS";
   metadata: MetadataAddress;
 }
 
-interface EntityDate extends EntityBase {
+export interface EntityDate extends EntityBase {
   type: "DATE";
   metadata: MetadataDate;
 }
 
-interface EntityNumber extends EntityBase {
+export interface EntityNumber extends EntityBase {
   type: "NUMBER";
 }
 
-interface EntityPrice extends EntityBase {
+export interface EntityPrice extends EntityBase {
   type: "PRICE";
   metadata: MetadataPrice;
 }

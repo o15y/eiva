@@ -1,5 +1,20 @@
 import axios from "axios";
-import { Entity } from "../../interfaces/google-cloud";
+import {
+  Entity,
+  EntityNumber,
+  EntityUnknown,
+  EntityPerson,
+  EntityLocation,
+  EntityOrganization,
+  EntityEvent,
+  EntityWorkOfArt,
+  EntityConsumerGood,
+  EntityOther,
+  EntityPhoneNumber,
+  EntityAddress,
+  EntityDate,
+  EntityPrice
+} from "../../interfaces/google-cloud";
 import { readJson, writeJson } from "fs-extra";
 import { join } from "path";
 import { createHash } from "crypto";
@@ -9,19 +24,19 @@ export const detectEntities = async (
 ): Promise<{
   language: string;
   entities: Entity[];
-  numbers: Entity[];
-  unknowns: Entity[];
-  persons: Entity[];
-  locations: Entity[];
-  organizations: Entity[];
-  events: Entity[];
-  workOfArts: Entity[];
-  consumerGoods: Entity[];
-  others: Entity[];
-  phoneNumbers: Entity[];
-  addresses: Entity[];
-  dates: Entity[];
-  prices: Entity[];
+  numbers: EntityNumber[];
+  unknowns: EntityUnknown[];
+  persons: EntityPerson[];
+  locations: EntityLocation[];
+  organizations: EntityOrganization[];
+  events: EntityEvent[];
+  workOfArts: EntityWorkOfArt[];
+  consumerGoods: EntityConsumerGood[];
+  others: EntityOther[];
+  phoneNumbers: EntityPhoneNumber[];
+  addresses: EntityAddress[];
+  dates: EntityDate[];
+  prices: EntityPrice[];
 }> => {
   const KEY = `googlecloud${createHash("md5")
     .update(text)
