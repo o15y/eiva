@@ -93,11 +93,17 @@ export const createOrganization = async (organization: Organization) => {
   // Ara-specific
   organization.assistantName = "Ara Isaacson";
   organization.assistantSignature = `Best,\n\nAra Isaacson (AI)\n\nAssistant to ${organization.name}`;
-  organization.schedulingDays = ["mon", "tue", "wed", "thu", "fri"];
+  (organization as any).schedulingDays = JSON.stringify([
+    "mon",
+    "tue",
+    "wed",
+    "thu",
+    "fri"
+  ]);
   organization.schedulingTimeStart = "09:00:00";
   organization.schedulingTimeEnd = "17:00:00";
   organization.schedulingPadding = "30";
-  organization.calendars = [""];
+  (organization as any).calendars = JSON.stringify([""]);
   organization.customEmailEnabled = false;
 
   deleteItemFromCache(
