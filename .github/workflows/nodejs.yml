@@ -12,11 +12,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install, build, test
+      - name: npm install and build
         run: |
           npm install
           npm run build
-          npm run test
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
           CI: true
