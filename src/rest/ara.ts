@@ -93,5 +93,20 @@ const emailSteps = async (
   });
   log(`Created initial entry with ID "${insertId}"`);
   insertIdUpdater(insertId, organization.id);
-  return await performAction(organization, objectBody, parsedBody, log);
+  return {
+    organizationId: organization.id,
+    from: parsedBody.from.value,
+    to: parsedBody.to.value,
+    cc: parsedBody.cc?.value,
+    bcc: parsedBody.bcc?.value,
+    replyTo: parsedBody.replyTo?.value,
+    headers: parsedBody.headers,
+    subject: parsedBody.subject,
+    references: parsedBody.references,
+    emailDate: parsedBody.date,
+    messageId: parsedBody.messageId,
+    inReplyTo: parsedBody.inReplyTo,
+    priority: parsedBody.priority,
+    ...((await performAction(organization, objectBody, parsedBody, log)) || {})
+  };
 };
