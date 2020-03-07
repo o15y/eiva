@@ -1,4 +1,4 @@
-import { ClassMiddleware, Controller, Get, Request } from "@staart/server";
+import { ClassMiddleware, Controller, Request, Post } from "@staart/server";
 import { authHandler } from "../../helpers/middleware";
 import { smartTokensFromText } from "../../helpers/services/ara/tokenize";
 import { joiValidate, Joi } from "@staart/validate";
@@ -9,21 +9,21 @@ import { parseEmail } from "../../helpers/services/ara/parse";
 @Controller("api")
 @ClassMiddleware(authHandler)
 export class AdminController {
-  @Get("classify")
+  @Post("classify")
   async classify(req: Request) {
     const text: string[] = req.body.text;
     joiValidate({ text: Joi.array().required() }, { text });
     return classifyTokens(text, () => {});
   }
 
-  @Get("parse-email")
+  @Post("parse-email")
   async parseEmail(req: Request) {
     const text: string = req.body.text;
     joiValidate({ text: Joi.array().required() }, { text });
     return parseEmail(text);
   }
 
-  @Get("smart-tokenize")
+  @Post("smart-tokenize")
   async smartTokenize(req: Request) {
     const text: string = req.body.text;
     const from: AddressObject = req.body.from;
