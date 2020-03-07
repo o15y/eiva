@@ -13,7 +13,8 @@ const rescheduleAppointment = [
   "reschedule call",
   "reschedule meeting with",
   "can't make it anymore",
-  "find another time"
+  "find another time",
+  "cannot make it to"
 ];
 
 const cancelAppointment = [
