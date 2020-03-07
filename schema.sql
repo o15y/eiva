@@ -10,7 +10,7 @@
  Target Server Version : 100221
  File Encoding         : 65001
 
- Date: 07/03/2020 12:12:49
+ Date: 07/03/2020 18:28:54
 */
 
 SET NAMES utf8mb4;
@@ -134,7 +134,7 @@ CREATE TABLE `ara-incoming-emails` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`,`objectId`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for ara-memberships
@@ -168,6 +168,20 @@ CREATE TABLE `ara-organizations` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
   `profilePicture` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT 'https://unavatar.now.sh/fallback.png',
+  `assistantName` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+  `assistantSignature` text COLLATE utf8mb4_bin NOT NULL,
+  `schedulingDays` longtext COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`schedulingDays`)),
+  `schedulingTimeStart` time NOT NULL DEFAULT '09:00:00',
+  `schedulingTimeEnd` time NOT NULL DEFAULT '17:00:00',
+  `schedulingPadding` int(11) NOT NULL DEFAULT 30,
+  `calendars` longtext COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`calendars`)),
+  `customEmailEnabled` int(1) NOT NULL DEFAULT 0,
+  `customEmailAddress` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `customEmailHost` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `customEmailPort` int(11) DEFAULT NULL,
+  `customEmailSecure` int(1) DEFAULT NULL,
+  `customEmailUsername` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
+  `customEmailPassword` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
