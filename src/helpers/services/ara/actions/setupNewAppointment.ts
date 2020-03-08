@@ -1,8 +1,9 @@
 import { ActionParams } from "../../../../interfaces/ara";
 import { detectEntities } from "../../google-cloud";
-import { findDateTimeinText, getDateInfoFromString } from "../dates";
+import { findDateTimeinText, convertDigitDates } from "../dates";
 
 export const setupNewAppointment = async (params: ActionParams) => {
+  params.tokens = params.tokens.map(convertDigitDates);
   const paragraph = params.tokens.join(". ");
   const {
     persons,
@@ -25,11 +26,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
   if (addresses.length) params.log("Detected addresses", addresses);
   if (dates.length) params.log("Detected dates", dates);
 
-  let possibleDates = dates.map(i => getDateInfoFromString(i.name));
-  if (!dates.length) possibleDates = findDateTimeinText(paragraph);
+  const possibleDateTimes = findDateTimeinText(paragraph);
+  params.log(
+    "Possible intial date times",
+    possibleDateTimes.map(i => i.text)
+  );
 
   // TODO Find other dates in the coming weeks
-  if (!possibleDates.length)
+  if (!possibleDateTimes.length)
     throw new Error("Couldn't find a date for the appointment");
 
   // TODO guests are people in "to" who aren't Ara or the owner

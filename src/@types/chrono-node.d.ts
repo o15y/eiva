@@ -1,5 +1,5 @@
 declare module chrono {
-  export class ParsedResult {
+  export interface ParsedResult {
     start: ParsedComponents;
     end: ParsedComponents;
     index: number;
@@ -7,7 +7,20 @@ declare module chrono {
     ref: Date;
   }
 
-  export class ParsedComponents {
+  export interface Values {
+    day?: string;
+    month?: string;
+    weekday?: string;
+    year?: string;
+    hour?: string;
+    minute?: string;
+    second?: string;
+    millisecond?: string;
+  }
+
+  export interface ParsedComponents {
+    knownValues: Values;
+    impliedValues: Values;
     assign(component: string, value: number): void;
     imply(component: string, value: number): void;
     get(component: string): number;
