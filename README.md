@@ -15,6 +15,18 @@ Apart from [Staart API](https://staart.js.org/api) endpoints that let you create
 
 All API endpoints require an API key or access token; both can be generated using APIs or the [webapp](https://araassistant.com). Parameters are available in [`api/index.ts`](/src/controllers/api/index.ts).
 
+## 👩‍💻 Development
+
+### Resources
+
+#### AWS S3 bucket
+
+The `ara-assistant-incoming-emails` bucket is used to store incoming emails to Ara as plain text files that can be fetched and parsed by this API. It's hosted in the eu-central-1 region and has limited, non-public access. An example of such an email is available in [`content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01`](./content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01) and is called using /v1/api/webhooks/inbound/email/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01.
+
+#### AWS Lambda function
+
+This serverless function `EmailForwarder` in invoked from AWS S3, when a new object is added to the emails bucket. The source code is available in [`content/mail-forwarder.js`](./content/mail-forwarder.js) and is hosted in the eu-central-1 region with the Node.js 12.x runtime, 128 MB memory limit, and 1 minute execution timeout.
+
 ## 📄 License
 
 - Code: [Server Side Public License](./LICENSE)
