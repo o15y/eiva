@@ -64,6 +64,8 @@ model users {
   twoFactorSecret      String?
   updatedAt            DateTime             @updatedAt
   username             String               @unique
+  googleAccessToken    String?
+  googleRefreshToken   String?
   emails               emails[]             @relation("userEmails")
   access_tokens        access_tokens[]      @relation("userAccessTokens")
   approved_locations   approved_locations[] @relation("userApprovedLocations")
