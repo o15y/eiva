@@ -91,18 +91,18 @@ model organizations {
   domains             domains[]     @relation("organizationDomains")
   memberships         memberships[] @relation("organizationMemberships")
   webhooks            webhooks[]    @relation("organizationWebhooks")
-  assistantName       String        @Default("Ara Isaacson (AI)")
-  assistantSignature  String        @Default("Best,\n\n{{assistant_name}}")
-  schedulingDays      String        @Default("1,2,3,4,5")
-  schedulingTimeStart String        @Default("09:00:00")
-  schedulingTimeEnd   String        @Default("05:00:00")
-  schedulingPadding   Int           @Default(30)
+  assistantName       String        @default("Ara Isaacson (AI)")
+  assistantSignature  String        @default("Best,\n\n{{assistant_name}}")
+  schedulingDays      String        @default("1,2,3,4,5")
+  schedulingTimeStart String        @default("09:00:00")
+  schedulingTimeEnd   String        @default("05:00:00")
+  schedulingPadding   Int           @default(30)
   calendars           String?
-  customEmailEnabled  Boolean       @Default(false)
+  customEmailEnabled  Boolean       @default(false)
   customEmailAddress  String?
   customEmailHost     String?
   customEmailPort     Int?
-  customEmailSecure   Boolean       @Default(false)
+  customEmailSecure   Boolean       @default(false)
   customEmailUsername String?
   customEmailPassword String?
 }
