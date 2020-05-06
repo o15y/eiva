@@ -1,23 +1,13 @@
-import {
-  Controller,
-  Get,
-  Middleware,
-  Request,
-  Response,
-  ChildControllers
-} from "@staart/server";
-import { stripeWebhookAuthHandler } from "../../helpers/middleware";
-import { StripeLocals } from "../../interfaces/general";
-import { WebhooksInboundController } from "./inbound";
+import { Controller, Get, Middleware, Request, Response } from "@staart/server";
+import { stripeWebhookAuthHandler } from "../../_staart/helpers/middleware";
+import { StripeLocals } from "../../_staart/interfaces/general";
 
-@Controller("webhooks")
-@ChildControllers([new WebhooksInboundController()])
 export class WebhooksController {
-  @Get("stripe")
-  @Middleware(stripeWebhookAuthHandler)
-  async stripeWebhook(req: Request, res: Response) {
-    const locals = res.locals as StripeLocals;
-    console.log("Received Stripe event", locals.stripeEvent);
-    return { hello: "world" };
-  }
+	@Get("stripe")
+	@Middleware(stripeWebhookAuthHandler)
+	async stripeWebhook(req: Request, res: Response) {
+		const locals = res.locals as StripeLocals;
+		console.log("Received Stripe event", locals.stripeEvent);
+		return { hello: "world" };
+	}
 }

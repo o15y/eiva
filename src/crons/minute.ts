@@ -1,23 +1,30 @@
 import { error } from "@staart/errors";
 import { CronJob } from "cron";
-import { ELASTIC_EVENTS_PREFIX, ELASTIC_LOGS_PREFIX } from "../config";
+import { getConfig } from "@staart/config";
+import { ELASTIC_EVENTS_INDEX, ELASTIC_LOGS_INDEX } from "../config";
 import {
   elasticSearchIndex,
-  receiveElasticSearchMessage
-} from "../helpers/elasticsearch";
-import { receiveEmailMessage } from "../helpers/mail";
+  receiveElasticSearchMessage,
+} from "../_staart/helpers/elasticsearch";
+import { receiveEmailMessage } from "../_staart/helpers/mail";
 import {
   clearSecurityEventsData,
   clearTrackingData,
   getSecurityEvents,
-  getTrackingData
-} from "../helpers/tracking";
-import { IdValues } from "../helpers/utils";
-import { receiveWebhookMessage } from "../helpers/webhooks";
+  getTrackingData,
+} from "../_staart/helpers/tracking";
+import { IdValues } from "../_staart/helpers/utils";
+import { receiveWebhookMessage } from "../_staart/helpers/webhooks";
 
+/**
+ * We run this cron job every minute in production
+ * but every 10 seconds in development
+ */
 export default () => {
   new CronJob(
-    "* * * * *",
+    getConfig("NODE_ENV") === "production"
+      ? "* * * * *"
+      : getConfig("DEV_CRON_MINUTE") ?? "*/10 * * * * *",
     async () => {
       await receiveEmailMessage();
       await receiveElasticSearchMessage();
@@ -41,22 +48,22 @@ const storeSecurityEvents = async () => {
   day = parseInt(day) < 10 ? `0${day}` : day;
   for await (const body of data) {
     if (typeof body === "object") {
-      Object.keys(body).forEach(key => {
+      Object.keys(body).forEach((key) => {
         if (IdValues.includes(key)) body[key] = body[key];
       });
       if (body.data && typeof body.data === "object") {
-        Object.keys(body.data).forEach(key => {
+        Object.keys(body.data).forEach((key) => {
           if (IdValues.includes(key)) body.data[key] = body.data[key];
         });
       }
     }
     try {
       await elasticSearchIndex({
-        index: `${ELASTIC_EVENTS_PREFIX}${year}-${month}-${day}`,
-        body
+        index: ELASTIC_EVENTS_INDEX,
+        body,
       });
     } catch (err) {
-      error("Got error in saving to ElasticSearch", err);
+      error("Got error in saving to ElasticSearch", JSON.stringify(err));
     }
   }
   clearSecurityEventsData();
@@ -74,21 +81,21 @@ const storeTrackingLogs = async () => {
   for await (const body of data) {
     try {
       if (typeof body === "object") {
-        Object.keys(body).forEach(key => {
+        Object.keys(body).forEach((key) => {
           if (IdValues.includes(key)) body[key] = body[key];
         });
         if (body.data && typeof body.data === "object") {
-          Object.keys(body.data).forEach(key => {
+          Object.keys(body.data).forEach((key) => {
             if (IdValues.includes(key)) body.data[key] = body.data[key];
           });
         }
       }
       await elasticSearchIndex({
-        index: `${ELASTIC_LOGS_PREFIX}${year}-${month}-${day}`,
-        body
+        index: ELASTIC_LOGS_INDEX,
+        body,
       });
     } catch (err) {
-      error("Got error in saving to ElasticSearch", err);
+      error("Got error in saving to ElasticSearch", JSON.stringify(err));
     }
   }
   clearTrackingData();

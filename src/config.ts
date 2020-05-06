@@ -1,6 +1,9 @@
 import { config } from "dotenv";
 config();
 
+export const bool = (val?: string | boolean) =>
+  String(val).toLowerCase() === "true";
+
 // Server
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 80;
 export const BASE_URL = process.env.BASE_URL || "";
@@ -62,7 +65,7 @@ export const CACHE_CHECK_PERIOD = process.env.CACHE_CHECK_PERIOD
 
 // Email
 export const FRONTEND_URL = process.env.FRONTEND_URL || "https://example.com";
-export const ALLOW_DISPOSABLE_EMAILS = !!process.env.DISPOSABLE_EMAIL;
+export const ALLOW_DISPOSABLE_EMAILS = bool(process.env.DISPOSABLE_EMAIL);
 export const TEST_EMAIL = process.env.TEST_EMAIL || "staart@mailinator.com";
 /// If you want to use AWS SES to send emails:
 export const SES_EMAIL = process.env.SES_EMAIL || "";
@@ -92,7 +95,7 @@ export const TOKEN_EXPIRY_REFRESH = process.env.TOKEN_EXPIRY_REFRESH || "30d";
 export const TOKEN_EXPIRY_API_KEY_MAX = process.env.TOKEN_EXPIRY_API_KEY_MAX
   ? parseInt(process.env.TOKEN_EXPIRY_API_KEY_MAX)
   : 10413685800000; // 2299-12-31 is the default maximum expiry (also what Microsoft uses)
-export const DISALLOW_OPEN_CORS = !!process.env.DISALLOW_OPEN_CORS;
+export const DISALLOW_OPEN_CORS = bool(process.env.DISALLOW_OPEN_CORS);
 
 // OAuth2 credentials
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
@@ -121,9 +124,9 @@ export const AWS_ELASTIC_REGION = process.env.AWS_ELASTIC_REGION || "";
 export const ELASTIC_HOST = process.env.ELASTIC_HOST || "";
 export const ELASTIC_LOG = process.env.ELASTIC_LOG || "";
 export const ELASTIC_API_VERSION = process.env.ELASTIC_API_VERSION || "7.2";
-export const ELASTIC_LOGS_PREFIX =
-  process.env.ELASTIC_LOGS_PREFIX || "staart-logs-";
-export const ELASTIC_EVENTS_PREFIX =
-  process.env.ELASTIC_EVENTS_PREFIX || "staart-events-";
+export const ELASTIC_LOGS_INDEX =
+  process.env.ELASTIC_LOGS_INDEX || "staart-logs";
+export const ELASTIC_EVENTS_INDEX =
+  process.env.ELASTIC_EVENTS_INDEX || "staart-events";
 export const ELASTIC_INSTANCES_INDEX =
   process.env.ELASTIC_INSTANCES_INDEX || "staart-instances";

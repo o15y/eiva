@@ -6,8 +6,8 @@ import {
   errorHandler,
   rateLimitHandler,
   speedLimitHandler,
-  trackingHandler
-} from "./helpers/middleware";
+  trackingHandler,
+} from "./_staart/helpers/middleware";
 
 @Controller("v1")
 class RootController {
@@ -16,7 +16,7 @@ class RootController {
     return {
       repository: "https://github.com/staart/api",
       docs: "https://staart.js.org",
-      madeBy: ["https://o15y.com", "https://anandchowdhary.com"]
+      madeBy: ["https://o15y.com", "https://anandchowdhary.com"],
     };
   }
 }

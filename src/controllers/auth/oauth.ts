@@ -5,20 +5,20 @@ import {
   Request,
   RequestHandler,
   Response,
-  Wrapper
+  Wrapper,
 } from "@staart/server";
 import { stringify } from "querystring";
 import { BASE_URL, FRONTEND_URL } from "../../config";
-import { LoginResponse } from "../../helpers/jwt";
-import { safeRedirect } from "../../helpers/utils";
-import { Tokens } from "../../interfaces/enum";
+import { LoginResponse } from "../../_staart/helpers/jwt";
+import { safeRedirect } from "../../_staart/helpers/utils";
+import { Tokens } from "../../_staart/interfaces/enum";
 import {
   facebook,
   github,
   google,
   microsoft,
-  salesforce
-} from "../../rest/oauth";
+  salesforce,
+} from "../../_staart/rest/oauth";
 
 const OAuthRedirector = (action: RequestHandler) => (
   ...args: [Request, Response, NextFunction]
@@ -30,7 +30,7 @@ const OAuthRedirector = (action: RequestHandler) => (
       `${FRONTEND_URL}/errors/oauth?${stringify({
         ...args[0].params,
         ...args[0].query,
-        error: error.toString().replace("Error: ", "")
+        error: error.toString().replace("Error: ", ""),
       })}`
     );
   });
@@ -45,7 +45,7 @@ const OAuthRedirect = (
     res,
     `${FRONTEND_URL}/auth/token?${stringify({
       ...response,
-      subject: Tokens.LOGIN
+      subject: Tokens.LOGIN,
     })}`
   );
 };
