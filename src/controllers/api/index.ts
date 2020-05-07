@@ -10,6 +10,7 @@ import { joiValidate, Joi } from "@staart/validate";
 import { AddressObject } from "mailparser";
 import { authHandler } from "../../_staart/helpers/middleware";
 import { classifyTokens } from "../../ara/services/classify";
+import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
 import { performAction } from "../../ara/services/actions";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
@@ -53,6 +54,6 @@ export class ApiController {
       },
       { text, organizationId }
     );
-    return performAction(organizationId, text, () => {});
+    return performAction(organizationId, req.body, text, () => {});
   }
 }
