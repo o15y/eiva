@@ -1,4 +1,4 @@
-import { ActionParams, Logger } from "../../../../interfaces/ara";
+import { ActionParams, Logger } from "../../interfaces";
 import { setupNewAppointment } from "./setupNewAppointment";
 import { rescheduleAppointment } from "./rescheduleAppointment";
 import { cancelAppointment } from "./cancelAppointment";
@@ -6,10 +6,10 @@ import { scheduleSummary } from "./scheduleSummary";
 import { smartTokensFromText } from "../tokenize";
 import { classifyTokens } from "../classify";
 import { ParsedMail } from "mailparser";
-import { Organization } from "../../../../interfaces/tables/organization";
+import { organizations } from "@prisma/client";
 
 export const performAction = async (
-  organization: Organization,
+  organization: organizations,
   objectBody: string,
   parsedBody: ParsedMail,
   log: Logger
@@ -24,7 +24,7 @@ export const performAction = async (
     parsedBody,
     tokens,
     label,
-    log
+    log,
   });
 };
 
