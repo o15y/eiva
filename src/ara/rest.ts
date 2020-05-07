@@ -3,11 +3,7 @@ import { elasticSearch } from "@staart/elasticsearch";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
 import { organizations } from "@prisma/client";
-import {
-  createIncomingEmail,
-  updateIncomingEmail,
-  getOrganizationFromEmail,
-} from "./services/crud";
+import { getOrganizationFromEmail } from "./services/crud";
 import { performAction } from "./services/actions";
 import { parseEmail } from "./services/parse";
 
@@ -56,7 +52,8 @@ export const processIncomingEmail = async (
     .then((response) => {
       const elasticId = response.body._id;
       if (organizationId && insertId && elasticId) {
-        return updateIncomingEmail(organizationId, insertId, { elasticId });
+        console.log("TODO update incoming email");
+        // return updateIncomingEmail(organizationId, insertId, { elasticId });
       }
     })
     .then(() => {})
@@ -76,7 +73,7 @@ const emailSteps = async (
   const parsedBody = await parseEmail(objectBody);
   log("Parsed email attributes");
   let organization: organizations | undefined = undefined;
-  for await (const email of parsedBody.to.value) {
+  for await (const email of parsedBody.to?.value || []) {
     try {
       if (!organization) {
         log(`Looking for team for email "${email.address}"`);
@@ -87,16 +84,16 @@ const emailSteps = async (
   if (!organization || !organization.id)
     throw new Error("Couldn't find a team for this email");
   log(`Found "${organization.username}" team for this email`);
-  const { insertId } = await createIncomingEmail({
-    objectId,
-    organizationId: organization.id,
-  });
-  log(`Created initial entry with ID "${insertId}"`);
-  insertIdUpdater(insertId, String(organization.id));
+  // const { insertId } = await createIncomingEmail({
+  //   objectId,
+  //   organizationId: organization.id,
+  // });
+  // log(`Created initial entry with ID "${insertId}"`);
+  // insertIdUpdater(insertId, String(organization.id));
   return {
     organizationId: organization.id,
-    from: parsedBody.from.value,
-    to: parsedBody.to.value,
+    from: parsedBody.from?.value,
+    to: parsedBody.to?.value,
     cc: parsedBody.cc?.value,
     bcc: parsedBody.bcc?.value,
     replyTo: parsedBody.replyTo?.value,
