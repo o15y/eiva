@@ -6,20 +6,24 @@ import { scheduleSummary } from "./scheduleSummary";
 import { smartTokensFromText } from "../tokenize";
 import { classifyTokens } from "../classify";
 import { ParsedMail } from "mailparser";
-import { organizations } from "@prisma/client";
+import { organizations, users } from "@prisma/client";
 
 export const performAction = async (
   organization: organizations,
+  user: users,
   objectBody: string,
   parsedBody: ParsedMail,
   log: Logger
 ) => {
+  if (!(parsedBody.text && parsedBody.from))
+    throw new Error("Couldn't find text or from");
   const tokens = await smartTokensFromText(parsedBody.text, parsedBody.from);
   log("Smart tokenized sentences", tokens);
   const label = classifyTokens(tokens, log);
   log(`Classified text as "${label}"`);
   return await act({
     organization,
+    user,
     objectBody,
     parsedBody,
     tokens,

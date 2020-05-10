@@ -2,7 +2,8 @@ import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
 import { elasticSearch } from "@staart/elasticsearch";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
-import { organizations } from "@prisma/client";
+import { organizations, users } from "@prisma/client";
+import { prisma } from "../_staart/helpers/prisma";
 import { getOrganizationFromEmail } from "./services/crud";
 import { performAction } from "./services/actions";
 import { parseEmail } from "./services/parse";
@@ -84,6 +85,25 @@ const emailSteps = async (
   if (!organization || !organization.id)
     throw new Error("Couldn't find a team for this email");
   log(`Found "${organization.username}" team for this email`);
+
+  if (!parsedBody.from?.value)
+    throw new Error("Unable to find from email address");
+  const user = (
+    await prisma.users.findMany({
+      first: 1,
+      where: {
+        emails: {
+          some: {
+            email: parsedBody.from.value[0].address,
+            isVerified: true,
+          },
+        },
+      },
+    })
+  )[0];
+
+  // TODO handle if other people email the assistant
+  if (!user) throw new Error("Couldn't find this user in this team");
   // const { insertId } = await createIncomingEmail({
   //   objectId,
   //   organizationId: organization.id,
@@ -104,6 +124,12 @@ const emailSteps = async (
     messageId: parsedBody.messageId,
     inReplyTo: parsedBody.inReplyTo,
     priority: parsedBody.priority,
-    ...((await performAction(organization, objectBody, parsedBody, log)) || {}),
+    ...((await performAction(
+      organization,
+      user,
+      objectBody,
+      parsedBody,
+      log
+    )) || {}),
   };
 };

@@ -1,11 +1,33 @@
 import { parse } from "chrono-node";
 import { WordTokenizer } from "natural";
-import { findSlots } from "calendar-slots";
+import { getSlots } from "calendar-slots";
+import { ActionParams } from "../interfaces";
+import moment from "moment-timezone";
 
 const wordTokenizer = new WordTokenizer();
 
-export const recommendDates = async () => {
-  //
+export const recommendDates = async (params: ActionParams) => {
+  if (!(params.user.googleAccessToken && params.user.googleRefreshToken))
+    throw new Error("Unable to find Google Calendar connection");
+  const today = moment();
+  const nextWeek = moment()
+    .add(7, "days")
+    .endOf("day");
+  return getSlots({
+    slotDuration: 30,
+    slots: 3,
+    from: today,
+    to: nextWeek,
+    days: params.organization.schedulingDays
+      ? JSON.parse(params.organization.schedulingDays)
+      : [1, 2, 3, 4, 5],
+    log: true,
+    logger: params.log,
+    user: {
+      accessToken: params.user.googleAccessToken,
+      refreshToken: params.user.googleRefreshToken,
+    },
+  });
 };
 
 export const findDateTimeinText = (text: string) => {
