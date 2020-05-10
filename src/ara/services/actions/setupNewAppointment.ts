@@ -32,12 +32,15 @@ export const setupNewAppointment = async (params: ActionParams) => {
     possibleDateTimes.map((i) => i.text)
   );
 
-  // TODO Find other dates in the coming weeks
-  if (!possibleDateTimes.length)
-    throw new Error("Couldn't find a date for the appointment");
+  let slots: any = [];
+  if (!possibleDateTimes.length) {
+    //
+  }
+
+  if (!slots) throw new Error("Couldn't find a date for the appointment");
 
   // TODO guests are people in "to" who aren't Ara or the owner
-  const guests = params.parsedBody.to.value.filter((i) =>
+  const guests = params.parsedBody.to?.value.filter((i) =>
     i.address.endsWith("@mail.araassistant.com")
   );
 

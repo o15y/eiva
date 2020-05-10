@@ -2,20 +2,24 @@ import { parse } from "chrono-node";
 import { WordTokenizer } from "natural";
 const wordTokenizer = new WordTokenizer();
 
+export const recommendDates = async () => {
+  //
+};
+
 export const findDateTimeinText = (text: string) => {
   let result = parse(text);
 
   // CASE "Tuesday or Wednesday, 4 pm"
   let numberOfTimes = 0;
   let numberOfDates = 0;
-  result.forEach(item => {
+  result.forEach((item) => {
     if (item.start.knownValues.day || item.start.knownValues.weekday)
       numberOfDates++;
     if (item.start.knownValues.hour) numberOfTimes++;
   });
   if (numberOfTimes === 1 && numberOfDates > 1)
-    result = result.map(i => {
-      const knownTime = result.find(i => i.start.knownValues.hour)?.start
+    result = result.map((i) => {
+      const knownTime = result.find((i) => i.start.knownValues.hour)?.start
         .knownValues;
       if (!knownTime) return i;
       i.start.knownValues.hour = knownTime.hour;
@@ -29,7 +33,7 @@ export const findDateTimeinText = (text: string) => {
 };
 
 export const convertDigitDates = (text: string) => {
-  const words = wordTokenizer.tokenize(text).map(word => {
+  const words = wordTokenizer.tokenize(text).map((word) => {
     // Four-letter digits e.g., Meet at 1600
     if (word.length === 4 && /^-{0,1}\d+$/.test(word)) {
       const hours = word.substr(0, 2);
