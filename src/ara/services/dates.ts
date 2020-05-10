@@ -1,5 +1,7 @@
 import { parse } from "chrono-node";
 import { WordTokenizer } from "natural";
+import { findSlots } from "calendar-slots";
+
 const wordTokenizer = new WordTokenizer();
 
 export const recommendDates = async () => {
