@@ -25,7 +25,7 @@ export const receiveEmailMessage = async () => {
   if ("id" in result) {
     const params = JSON.parse(result.message);
     if (params.tryNumber && params.tryNumber > 3) {
-      logError("Email", `Unable to send email: ${to}`);
+      logError("Email", `Unable to send email: ${params.to}`);
       return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
         id: result.id,
@@ -54,11 +54,15 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async (params: any) => {
+export const mail = async (params1: any, params2?: any, params3?: any) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
-    message: JSON.stringify(params),
+    message: JSON.stringify(
+      params2 && params3
+        ? { to: params1, template: params2, data: params3 }
+        : params1
+    ),
   });
 };
 

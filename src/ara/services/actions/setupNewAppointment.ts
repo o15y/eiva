@@ -65,19 +65,26 @@ export const setupNewAppointment = async (params: ActionParams) => {
   });
 
   const data = {
-    guestName: "John",
+    guestName:
+      guests
+        .map((guest) => guest.name)
+        .filter((name) => name)
+        .join(", ") ?? "guest",
     duration: String(duration),
+    assistantName: params.organization.assistantName,
+    assistantSignature: params.organization.assistantSignature,
     slotsMarkdown: slots
       .map(
         (slot) =>
-          `- ${moment
+          `- [${moment
             .tz(slot.start, params.user.timezone)
-            .format("dddd, MMMM D, h:mm a z")}`
+            .format("dddd, MMMM D, h:mm a z")}](https://example.com)`
       )
       .join("\n"),
   };
   await mail({
-    from: `"${params.organization.name}'s Assistant" <meet-${params.organization.username}@mail.araassistant.com>`,
+    template: "meeting-invitation",
+    from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
     subject: `${params.organization.name} - Appointment`,
     data,
