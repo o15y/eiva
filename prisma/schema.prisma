@@ -43,6 +43,12 @@ enum MembershipRole {
   MEMBER
 }
 
+enum MeetingType {
+  IN_PERSON
+  PHONE_CALL
+  VIDEO_CALL
+}
+
 model users {
   checkLocationOnLogin Boolean              @default(false)
   countryCode          String               @default("us")
@@ -67,6 +73,8 @@ model users {
   googleAccessToken    String?
   googleRefreshToken   String?
   emails               emails[]             @relation("userEmails")
+  incoming_emails      incoming_emails[]    @relation("userIncomingEmails")
+  meetings             meetings[]           @relation("userMeetings")
   access_tokens        access_tokens[]      @relation("userAccessTokens")
   approved_locations   approved_locations[] @relation("userApprovedLocations")
   backup_codes         backup_codes[]       @relation("userBackupCodes")
@@ -76,35 +84,89 @@ model users {
 }
 
 model organizations {
-  autoJoinDomain      Boolean       @default(false)
-  createdAt           DateTime      @default(now())
-  forceTwoFactor      Boolean       @default(false)
-  id                  Int           @default(autoincrement()) @id
+  autoJoinDomain      Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  forceTwoFactor      Boolean           @default(false)
+  id                  Int               @default(autoincrement()) @id
   ipRestrictions      String?
   name                String
-  onlyAllowDomain     Boolean       @default(false)
-  profilePicture      String        @default("https://unavatar.now.sh/fallback.png")
+  onlyAllowDomain     Boolean           @default(false)
+  profilePicture      String            @default("https://unavatar.now.sh/fallback.png")
   stripeCustomerId    String?
-  updatedAt           DateTime      @updatedAt
-  username            String        @unique
-  api_keys            api_keys[]    @relation("organizationApiKeys")
-  domains             domains[]     @relation("organizationDomains")
-  memberships         memberships[] @relation("organizationMemberships")
-  webhooks            webhooks[]    @relation("organizationWebhooks")
-  assistantName       String        @default("Ara Isaacson (AI)")
-  assistantSignature  String        @default("Best,\n\n{{assistant_name}}")
-  schedulingDays      String        @default("1,2,3,4,5")
-  schedulingTimeStart String        @default("09:00:00")
-  schedulingTimeEnd   String        @default("05:00:00")
-  schedulingPadding   Int           @default(30)
+  updatedAt           DateTime          @updatedAt
+  username            String            @unique
+  api_keys            api_keys[]        @relation("organizationApiKeys")
+  domains             domains[]         @relation("organizationDomains")
+  memberships         memberships[]     @relation("organizationMemberships")
+  incoming_emails     incoming_emails[] @relation("organizationIncomingEmails")
+  meetings            meetings[]        @relation("organizationMeetings")
+  locations           locations[]       @relation("organizationLocations")
+  webhooks            webhooks[]        @relation("organizationWebhooks")
+  assistantName       String            @default("Ara Isaacson (AI)")
+  assistantSignature  String            @default("Best,\n\n{{assistant_name}}")
+  schedulingDays      String            @default("1,2,3,4,5")
+  schedulingTimeStart String            @default("09:00:00")
+  schedulingTimeEnd   String            @default("05:00:00")
+  schedulingPadding   Int               @default(15)
+  schedulingDuration  Int               @default(30)
   calendars           String?
-  customEmailEnabled  Boolean       @default(false)
+  customEmailEnabled  Boolean           @default(false)
   customEmailAddress  String?
   customEmailHost     String?
   customEmailPort     Int?
-  customEmailSecure   Boolean       @default(false)
+  customEmailSecure   Boolean           @default(false)
   customEmailUsername String?
   customEmailPassword String?
+}
+
+modal locations {
+  id             Int               @default(autoincrement()) @id
+  type           MeetingType
+  data           Json?
+  value          String
+  meetings       mettings[]        @relation("meetingLocation")
+  organization   organizations     @relation("organizationLocations", fields: [organizationId], references: [id])
+  organizationId Int
+}
+
+model meetings {
+  id             Int               @default(autoincrement()) @id
+  proposedTimes  Json?
+  confirmedTime  Json?
+  meetingType    MeetingType
+  location       locations         @relation("meetingLocation", fields: [locationId], references: [id])
+  locationId     Int
+  user           users             @relation("userMeetings", fields: [userId], references: [id])
+  userId         Int
+  organization   organizations     @relation("organizationMeetings", fields: [organizationId], references: [id])
+  organizationId Int
+  emails         incoming_emails[] @relation("meetingIncomingEmails")
+}
+
+model incoming_emails {
+  id             Int           @default(autoincrement()) @id
+  objectId       String        @unique
+  logs           Json?
+  from           Json
+  to             Json
+  cc             Json
+  subject        String
+  emailDate      Date
+  messageId      String
+  inReplyTo      String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           users         @relation("userIncomingEmails", fields: [userId], references: [id])
+  userId         Int
+  organization   organizations @relation("organizationIncomingEmails", fields: [organizationId], references: [id])
+  organizationId Int
+  meeting        meetings      @relation("meetingIncomingEmails", fields: [meetingId], references: [id])
+  meetingId      Int
+
+  @@index([userId], name: "userId")
+  @@index([organizationId], name: "organizationId")
+  @@index([meetingId], name: "meetingId")
+  @@map("incoming-emails")
 }
 
 model emails {
