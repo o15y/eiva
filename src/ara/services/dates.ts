@@ -39,6 +39,7 @@ export const recommendDates = async (
   return getSlots({
     slots: 3,
     slotDuration: duration,
+    padding: params.organization.schedulingPadding,
     from: startTime ?? today,
     to: endTime ?? nextWeek,
     days: params.organization.schedulingDays
