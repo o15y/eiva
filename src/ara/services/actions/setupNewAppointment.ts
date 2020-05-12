@@ -1,6 +1,10 @@
 import { ActionParams } from "../../interfaces";
 import { detectEntities } from "../google-cloud";
-import { findDateTimeinText, convertDigitDates } from "../dates";
+import {
+  findDateTimeinText,
+  convertDigitDates,
+  recommendDates,
+} from "../dates";
 
 export const setupNewAppointment = async (params: ActionParams) => {
   params.tokens = params.tokens.map(convertDigitDates);
@@ -34,10 +38,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   let slots: any = [];
   if (!possibleDateTimes.length) {
-    //
+    slots = recommendDates(params);
   }
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
+  console.log(`Recommending ${slots.length} slots for scheduling`);
 
   // TODO guests are people in "to" who aren't Ara or the owner
   const guests = params.parsedBody.to?.value.filter((i) =>

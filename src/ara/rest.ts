@@ -88,6 +88,8 @@ const emailSteps = async (
 
   if (!parsedBody.from?.value)
     throw new Error("Unable to find from email address");
+
+  // TODO handle if other people email the assistant
   const user = (
     await prisma.users.findMany({
       first: 1,
@@ -101,9 +103,10 @@ const emailSteps = async (
       },
     })
   )[0];
+  if (!user)
+    throw new Error(`Couldn't a user from ${parsedBody.from.value[0].address}`);
+  log(`Found "${user.name}" user as sender`);
 
-  // TODO handle if other people email the assistant
-  if (!user) throw new Error("Couldn't find this user in this team");
   // const { insertId } = await createIncomingEmail({
   //   objectId,
   //   organizationId: organization.id,
