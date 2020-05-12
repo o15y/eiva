@@ -1,5 +1,9 @@
 import { ActionParams } from "../../interfaces";
 import { detectEntities } from "../google-cloud";
+import { prisma } from "../../../_staart/helpers/prisma";
+import { mail } from "../../../_staart/helpers/mail";
+import { Slot } from "calendar-slots";
+import moment from "moment-timezone";
 import {
   findDateTimeinText,
   convertDigitDates,
@@ -36,17 +40,44 @@ export const setupNewAppointment = async (params: ActionParams) => {
     possibleDateTimes.map((i) => i.text)
   );
 
-  let slots: any = [];
-  if (!possibleDateTimes.length) slots = await recommendDates(params);
+  const duration = params.organization.schedulingDuration;
+
+  let slots: Slot[] = [];
+  if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
 
   // TODO guests are people in "to" who aren't Ara or the owner
-  const guests = params.parsedBody.to?.value.filter(
-    (i) =>
-      i.address !== params.assistantEmail &&
-      i.address !== params.parsedBody.from?.value[0].address
-  );
+  const guests =
+    params.parsedBody.to?.value.filter(
+      (i) =>
+        i.address !== params.assistantEmail &&
+        i.address !== params.parsedBody.from?.value[0].address
+    ) ?? [];
+  if (!guests.length) throw new Error("Couldn't find guests");
+
+  await prisma.meetings.update({
+    where: { id: params.incomingEmail.meetingId },
+    data: {
+      guests: JSON.stringify(guests),
+      proposedTimes: JSON.stringify(slots),
+    },
+  });
+
+  const data = {
+    guestName: "John",
+    duration: String(duration),
+    slotsMarkdown: slots
+      .map(
+        (slot) =>
+          `- ${moment
+            .tz(slot.start, params.user.timezone)
+            .format("dddd, MMMM D, h:mm a z")}`
+      )
+      .join("\n"),
+  };
+  console.log(data);
+  await mail("anandchowdhary@gmail.com", "meeting-invitation", data);
 
   throw new Error("I don't know how to set up a new appointment");
 };

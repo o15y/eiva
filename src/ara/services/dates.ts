@@ -22,6 +22,7 @@ const wordTokenizer = new WordTokenizer();
 */
 export const recommendDates = async (
   params: ActionParams,
+  duration: number,
   startTime?: Moment,
   endTime?: Moment
 ) => {
@@ -36,8 +37,8 @@ export const recommendDates = async (
     .add(7, "days")
     .endOf("day");
   return getSlots({
-    slotDuration: 30,
     slots: 3,
+    slotDuration: duration,
     from: startTime ?? today,
     to: endTime ?? nextWeek,
     days: params.organization.schedulingDays
