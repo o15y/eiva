@@ -53,7 +53,7 @@ export const recommendDates = async (
 export const findDateTimeinText = (text: string) => {
   let result = parse(text);
 
-  // CASE "Tuesday or Wednesday, 4 pm"
+  // Handle case "I can do 4 pm on Tuesday or Wednesday"
   let numberOfTimes = 0;
   let numberOfDates = 0;
   result.forEach((item) => {
@@ -78,14 +78,14 @@ export const findDateTimeinText = (text: string) => {
 
 export const convertDigitDates = (text: string) => {
   const words = wordTokenizer.tokenize(text).map((word) => {
-    // Four-letter digits e.g., Meet at 1600
+    // Four-letter digits that are common in the military e.g., Meet at 1600
     if (word.length === 4 && /^-{0,1}\d+$/.test(word)) {
       const hours = word.substr(0, 2);
       const minutes = word.substr(2);
       if (parseInt(hours, 10) < 24 && parseInt(minutes, 10) < 60)
         word = `${hours}:${minutes}`;
     }
-    // Five-letter times with period e.g., Meet at 16.00
+    // Five-letter times with period that are common in the Netherlands e.g., Meet at 16.00
     if (word.length === 5 && word[2] === ".") {
       const hours = word.substr(0, 2);
       const minutes = word.substr(3);
