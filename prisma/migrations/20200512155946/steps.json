@@ -1,0 +1,46 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateEnum",
+      "enum": "EmailStatus",
+      "values": [
+        "PENDING",
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    {
+      "tag": "CreateField",
+      "model": "incoming_emails",
+      "field": "status",
+      "type": "EmailStatus",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "incoming_emails",
+          "field": "status"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "incoming_emails",
+          "field": "status"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "PENDING"
+    }
+  ]
+}

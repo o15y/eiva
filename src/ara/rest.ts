@@ -16,14 +16,19 @@ export const processIncomingEmail = async (
   secret: string,
   objectId: string
 ) => {
+  // Compare webhook secret
+  // TODO use more sophisticated secret (HMAC with SHA256, "secret" as key, "objectId" as message)
   if (secret !== INCOMING_EMAIL_WEBHOOK_SECRET)
     throw new Error(INVALID_API_KEY_SECRET);
+
+  // Logging computation steps
   const logs: string[] = [];
   const log: Logger = (...args: any[]) => {
     args = args.map((i) => (typeof i === "object" ? JSON.stringify(i) : i));
     if (process.env.NODE_ENV === "development") console.log(args.join(" "));
     logs.push(`${new Date().toISOString()} ${args.join(" ")}`);
   };
+
   let returnedInfo: any = {};
   let insertId = "";
   let organizationId = "";
@@ -58,7 +63,8 @@ export const processIncomingEmail = async (
       }
     })
     .then(() => {})
-    .catch((error) => logError("Incoming email", error));
+    .catch((error) => logError("Incoming email error", error));
+  return { queued: true };
 };
 
 const emailSteps = async (
@@ -66,13 +72,18 @@ const emailSteps = async (
   log: Logger,
   insertIdUpdater: (insertIt: string, organizationId: string) => void
 ) => {
+  // Get email raw data from AWS S3
   log("Received request", objectId);
   const objectBody = (
     await getS3Item(INCOMING_EMAILS_S3_BUCKET, objectId)
   ).toString();
+
+  // Parse plain text to email object
   log(`Got raw email of length ${objectBody.length}`);
   const parsedBody = await parseEmail(objectBody);
   log("Parsed email attributes");
+
+  // Find organization
   let organization: organizations | undefined = undefined;
   let assistantEmail = "";
   for await (const email of parsedBody.to?.value || []) {
@@ -91,6 +102,7 @@ const emailSteps = async (
   if (!parsedBody.from?.value)
     throw new Error("Unable to find from email address");
 
+  // Find user
   // TODO handle if other people email the assistant
   const user = (
     await prisma.users.findMany({
