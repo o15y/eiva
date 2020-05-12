@@ -122,6 +122,7 @@ const emailSteps = async (objectId: string, log: Logger) => {
       meeting: {
         // TODO support if reply to pre-existing email
         create: {
+          duration: organization.schedulingDuration,
           meetingType: "IN_PERSON",
           location: {},
           organization: {
@@ -132,9 +133,9 @@ const emailSteps = async (objectId: string, log: Logger) => {
           },
         },
       },
-      from: parsedBody.from.value,
-      to: parsedBody.to.value,
-      cc: parsedBody.cc?.value ?? [],
+      from: JSON.stringify(parsedBody.from.value),
+      to: JSON.stringify(parsedBody.to.value),
+      cc: JSON.stringify(parsedBody.cc?.value ?? []),
       subject: parsedBody.subject ?? "",
       emailDate: parsedBody.date ?? new Date(),
       messageId: parsedBody.messageId ?? "",
