@@ -33,19 +33,17 @@ export const processIncomingEmail = async (
   emailSteps(objectId, log)
     .then(() => log("Success"))
     .catch((error) => log(`ERROR: ${String(error)}`))
-    .then(() => {
-      try {
-        prisma.incoming_emails.update({
-          data: {
-            logs,
-            status: (logs[logs.length - 1] ?? "").startsWith("ERROR")
-              ? "ERROR"
-              : "SUCCESS",
-          },
-          where: { objectId },
-        });
-      } catch (error) {}
-    })
+    .then(() =>
+      prisma.incoming_emails.update({
+        data: {
+          logs: JSON.stringify(logs),
+          status: (logs[logs.length - 1] ?? "").startsWith("ERROR")
+            ? "ERROR"
+            : "SUCCESS",
+        },
+        where: { objectId },
+      })
+    )
     .then(() => {})
     .catch((error) => logError("Incoming email error", error));
   return { queued: true };
@@ -123,8 +121,10 @@ const emailSteps = async (objectId: string, log: Logger) => {
         // TODO support if reply to pre-existing email
         create: {
           duration: organization.schedulingDuration,
-          meetingType: "IN_PERSON",
-          location: {},
+          meetingType: organization.schedulingType,
+          location: {
+            connect: { id: organization.schedulingLocation },
+          },
           organization: {
             connect: { id: organization.id },
           },
