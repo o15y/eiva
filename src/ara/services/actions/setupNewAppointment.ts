@@ -76,8 +76,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
       )
       .join("\n"),
   };
-  console.log(data);
-  await mail("anandchowdhary@gmail.com", "meeting-invitation", data);
-
-  throw new Error("I don't know how to set up a new appointment");
+  await mail({
+    from: `"${params.organization.name}'s Assistant" <meet-${params.organization.username}@mail.araassistant.com>`,
+    to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
+    subject: `${params.organization.name} - Appointment`,
+    data,
+  });
+  params.log("Sent email to guests");
 };

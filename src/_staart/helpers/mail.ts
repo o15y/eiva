@@ -23,18 +23,8 @@ export const receiveEmailMessage = async () => {
     qname: MAIL_QUEUE,
   });
   if ("id" in result) {
-    const {
-      to,
-      template,
-      data,
-      tryNumber,
-    }: {
-      to: string;
-      template: string;
-      tryNumber: number;
-      data: any;
-    } = JSON.parse(result.message);
-    if (tryNumber && tryNumber > 3) {
+    const params = JSON.parse(result.message);
+    if (params.tryNumber && params.tryNumber > 3) {
       logError("Email", `Unable to send email: ${to}`);
       return redisQueue.deleteMessageAsync({
         qname: MAIL_QUEUE,
@@ -42,16 +32,14 @@ export const receiveEmailMessage = async () => {
       });
     }
     try {
-      await safeSendEmail(to, template, data);
+      await safeSendEmail(params);
     } catch (error) {
       console.log(error);
       await redisQueue.sendMessageAsync({
         qname: MAIL_QUEUE,
         message: JSON.stringify({
-          to,
-          template,
-          data,
-          tryNumber: tryNumber + 1,
+          ...params,
+          tryNumber: params.tryNumber + 1,
         }),
       });
     }
@@ -66,15 +54,15 @@ export const receiveEmailMessage = async () => {
 /**
  * Send a new email using AWS SES or SMTP
  */
-export const mail = async (to: string, template: string, data: any = {}) => {
+export const mail = async (params: any) => {
   await setupQueue();
   await redisQueue.sendMessageAsync({
     qname: MAIL_QUEUE,
-    message: JSON.stringify({ to, template, data, tryNumber: 1 }),
+    message: JSON.stringify(params),
   });
 };
 
-const safeSendEmail = async (to: string, template: string, data: any = {}) => {
+const safeSendEmail = async (params: any) => {
   const result = render(
     (
       await readFile(
@@ -86,18 +74,18 @@ const safeSendEmail = async (to: string, template: string, data: any = {}) => {
           "..",
           "src",
           "templates",
-          `${template}.md`
+          `${params.template}.md`
         )
       )
     ).toString(),
-    { ...data, frontendUrl: FRONTEND_URL }
+    { ...params.data, frontendUrl: FRONTEND_URL }
   );
   const altText = result[0];
   const message = result[1];
   return sendMail({
-    to: to.toString(),
     subject: result[1].split("\n", 1)[0].replace(/<\/?[^>]+(>|$)/g, ""),
     message,
     altText,
+    ...params,
   });
 };

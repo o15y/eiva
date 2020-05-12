@@ -17,6 +17,10 @@ All API endpoints require an API key or access token; both can be generated usin
 
 ## 👩‍💻 Development
 
+### Differences in `_staart`
+
+- `helpers/mail.ts` supports more parameters
+
 ### Resources
 
 #### AWS S3 bucket
