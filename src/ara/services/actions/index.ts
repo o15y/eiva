@@ -6,9 +6,10 @@ import { scheduleSummary } from "./scheduleSummary";
 import { smartTokensFromText } from "../tokenize";
 import { classifyTokens } from "../classify";
 import { ParsedMail } from "mailparser";
-import { organizations, users } from "@prisma/client";
+import { organizations, users, incoming_emails } from "@prisma/client";
 
 export const performAction = async (
+  incomingEmail: incoming_emails,
   organization: organizations,
   assistantEmail: string,
   user: users,
@@ -23,6 +24,7 @@ export const performAction = async (
   const label = classifyTokens(tokens, log);
   log(`Classified text as "${label}"`);
   return await act({
+    incomingEmail,
     organization,
     assistantEmail,
     user,

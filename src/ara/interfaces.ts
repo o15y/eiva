@@ -1,9 +1,10 @@
 export type Logger = (...args: any[]) => void;
 import { ParsedMail } from "mailparser";
-import { organizations, users } from "@prisma/client";
+import { organizations, users, incoming_emails } from "@prisma/client";
 import { IdRow } from "../_staart/interfaces/general";
 
 export interface ActionParams {
+  incomingEmail: incoming_emails;
   organization: organizations;
   assistantEmail: string;
   user: users;

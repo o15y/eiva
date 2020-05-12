@@ -29,49 +29,29 @@ export const processIncomingEmail = async (
     logs.push(`${new Date().toISOString()} ${args.join(" ")}`);
   };
 
-  let returnedInfo: any = {};
-  let insertId = "";
-  let organizationId = "";
-  const insertIdUpdater = (iInsertId: string, iOrganizationId: string) => {
-    insertId = iInsertId;
-    organizationId = iOrganizationId;
-  };
-  emailSteps(objectId, log, insertIdUpdater)
-    .then((details) => {
-      if (details) returnedInfo = details;
-      log("Completed");
-    })
-    .catch((error: Error) => log(String(error)))
-    .then(() =>
-      elasticSearch.index({
-        index: "ara-incoming-emails",
-        body: {
-          date: new Date(),
-          ...returnedInfo,
-          logs,
-          state: logs[logs.length - 1].toLowerCase().includes("error")
-            ? "error"
-            : "success",
-        },
-      })
-    )
-    .then((response) => {
-      const elasticId = response.body._id;
-      if (organizationId && insertId && elasticId) {
-        console.log("TODO update incoming email");
-        // return updateIncomingEmail(organizationId, insertId, { elasticId });
-      }
+  // Run process
+  emailSteps(objectId, log)
+    .then(() => log("Success"))
+    .catch((error) => log(`ERROR: ${String(error)}`))
+    .then(() => {
+      try {
+        prisma.incoming_emails.update({
+          data: {
+            logs,
+            status: (logs[logs.length - 1] ?? "").startsWith("ERROR")
+              ? "ERROR"
+              : "SUCCESS",
+          },
+          where: { objectId },
+        });
+      } catch (error) {}
     })
     .then(() => {})
     .catch((error) => logError("Incoming email error", error));
   return { queued: true };
 };
 
-const emailSteps = async (
-  objectId: string,
-  log: Logger,
-  insertIdUpdater: (insertIt: string, organizationId: string) => void
-) => {
+const emailSteps = async (objectId: string, log: Logger) => {
   // Get email raw data from AWS S3
   log("Received request", objectId);
   const objectBody = (
@@ -101,6 +81,7 @@ const emailSteps = async (
 
   if (!parsedBody.from?.value)
     throw new Error("Unable to find from email address");
+  if (!parsedBody.to?.value) throw new Error("Unable to find to email address");
 
   // Find user
   // TODO handle if other people email the assistant
@@ -121,16 +102,53 @@ const emailSteps = async (
     throw new Error(`Couldn't a user from ${parsedBody.from.value[0].address}`);
   log(`Found "${user.name}" user as sender`);
 
-  // const { insertId } = await createIncomingEmail({
-  //   objectId,
-  //   organizationId: organization.id,
-  // });
-  // log(`Created initial entry with ID "${insertId}"`);
-  // insertIdUpdater(insertId, String(organization.id));
-  return {
+  // Create email object
+  const incomingEmail = await prisma.incoming_emails.upsert({
+    where: {
+      objectId,
+    },
+    update: {
+      status: "PENDING",
+    },
+    create: {
+      objectId,
+      status: "PENDING",
+      organization: {
+        connect: { id: organization.id },
+      },
+      user: {
+        connect: { id: user.id },
+      },
+      meeting: {
+        // TODO support if reply to pre-existing email
+        create: {
+          meetingType: "IN_PERSON",
+          location: {},
+          organization: {
+            connect: { id: organization.id },
+          },
+          user: {
+            connect: { id: user.id },
+          },
+        },
+      },
+      from: parsedBody.from.value,
+      to: parsedBody.to.value,
+      cc: parsedBody.cc?.value ?? [],
+      subject: parsedBody.subject ?? "",
+      emailDate: parsedBody.date ?? new Date(),
+      messageId: parsedBody.messageId ?? "",
+    },
+  });
+  log(
+    `Upserted incoming email ${incomingEmail.id} for meeting ${incomingEmail.meetingId}`
+  );
+
+  const result = {
+    incomingEmail,
     organizationId: organization.id,
-    from: parsedBody.from?.value,
-    to: parsedBody.to?.value,
+    from: parsedBody.from.value,
+    to: parsedBody.to.value,
     cc: parsedBody.cc?.value,
     bcc: parsedBody.bcc?.value,
     replyTo: parsedBody.replyTo?.value,
@@ -142,6 +160,7 @@ const emailSteps = async (
     inReplyTo: parsedBody.inReplyTo,
     priority: parsedBody.priority,
     ...((await performAction(
+      incomingEmail,
       organization,
       assistantEmail,
       user,
@@ -150,4 +169,6 @@ const emailSteps = async (
       log
     )) || {}),
   };
+
+  return result;
 };
