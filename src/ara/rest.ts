@@ -141,7 +141,7 @@ const emailSteps = async (objectId: string, log: Logger) => {
     },
   });
   log(
-    `Upserted incoming email ${incomingEmail.id} for meeting ${incomingEmail.meetingId}`
+    `Upserted incoming email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
   );
 
   const result = {
