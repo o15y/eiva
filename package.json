@@ -86,6 +86,7 @@
     "email-signature-detector": "0.0.6",
     "fs-extra": "^9.0.0",
     "geolite2-redist": "^1.0.6",
+    "googleapis": "^50.0.0",
     "jsonwebtoken": "^8.5.1",
     "mailparser": "^2.7.7",
     "maxmind": "^4.1.1",

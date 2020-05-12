@@ -38,7 +38,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   let slots: any = [];
   if (!possibleDateTimes.length) {
-    slots = recommendDates(params);
+    try {
+      slots = await recommendDates(params);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
