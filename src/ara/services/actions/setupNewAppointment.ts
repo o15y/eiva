@@ -45,8 +45,10 @@ export const setupNewAppointment = async (params: ActionParams) => {
   console.log(`Recommending ${slots.length} slots for scheduling`);
 
   // TODO guests are people in "to" who aren't Ara or the owner
-  const guests = params.parsedBody.to?.value.filter((i) =>
-    i.address.endsWith("@mail.araassistant.com")
+  const guests = params.parsedBody.to?.value.filter(
+    (i) =>
+      i.address !== params.assistantEmail &&
+      i.address !== params.parsedBody.from?.value[0].address
   );
 
   throw new Error("I don't know how to set up a new appointment");

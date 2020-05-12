@@ -5,6 +5,7 @@ import { IdRow } from "../_staart/interfaces/general";
 
 export interface ActionParams {
   organization: organizations;
+  assistantEmail: string;
   user: users;
   label: string;
   tokens: string[];

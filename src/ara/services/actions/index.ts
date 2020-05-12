@@ -10,6 +10,7 @@ import { organizations, users } from "@prisma/client";
 
 export const performAction = async (
   organization: organizations,
+  assistantEmail: string,
   user: users,
   objectBody: string,
   parsedBody: ParsedMail,
@@ -23,6 +24,7 @@ export const performAction = async (
   log(`Classified text as "${label}"`);
   return await act({
     organization,
+    assistantEmail,
     user,
     objectBody,
     parsedBody,

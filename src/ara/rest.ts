@@ -74,11 +74,13 @@ const emailSteps = async (
   const parsedBody = await parseEmail(objectBody);
   log("Parsed email attributes");
   let organization: organizations | undefined = undefined;
+  let assistantEmail = "";
   for await (const email of parsedBody.to?.value || []) {
     try {
       if (!organization) {
         log(`Looking for team for email "${email.address}"`);
         organization = await getOrganizationFromEmail(email.address);
+        if (organization) assistantEmail = email.address;
       }
     } catch (error) {}
   }
@@ -129,6 +131,7 @@ const emailSteps = async (
     priority: parsedBody.priority,
     ...((await performAction(
       organization,
+      assistantEmail,
       user,
       objectBody,
       parsedBody,
