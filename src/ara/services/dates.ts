@@ -2,13 +2,35 @@ import { parse } from "chrono-node";
 import { WordTokenizer } from "natural";
 import { getSlots } from "calendar-slots";
 import { ActionParams } from "../interfaces";
-import moment from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
+import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CALENDAR_CLIENT_ID ?? "Client ID",
+  process.env.GOOGLE_CALENDAR_CLIENT_SECRET ?? "Client Secret",
+  process.env.GOOGLE_CALENDAR_REDIRECT_URL ?? "Redirect URL"
+);
+const calendarApi = google.calendar("v3");
 
 const wordTokenizer = new WordTokenizer();
 
-export const recommendDates = async (params: ActionParams) => {
+/**
+ Get a list of recommended slots for an appointment
+ @param params - Global action parameters
+ @param startTime - Starting time (optional)
+ @param endTime - Ending time (optional)
+*/
+export const recommendDates = async (
+  params: ActionParams,
+  startTime?: Moment,
+  endTime?: Moment
+) => {
   if (!(params.user.googleAccessToken && params.user.googleRefreshToken))
     throw new Error("Unable to find Google Calendar connection");
+  oauth2Client.setCredentials({
+    access_token: params.user.googleAccessToken,
+    refresh_token: params.user.googleRefreshToken,
+  });
   const today = moment();
   const nextWeek = moment()
     .add(7, "days")
@@ -16,17 +38,15 @@ export const recommendDates = async (params: ActionParams) => {
   return getSlots({
     slotDuration: 30,
     slots: 3,
-    from: today,
-    to: nextWeek,
+    from: startTime ?? today,
+    to: endTime ?? nextWeek,
     days: params.organization.schedulingDays
       ? JSON.parse(params.organization.schedulingDays)
       : [1, 2, 3, 4, 5],
     log: true,
     logger: params.log,
-    user: {
-      accessToken: params.user.googleAccessToken,
-      refreshToken: params.user.googleRefreshToken,
-    },
+    auth: oauth2Client,
+    calendar: calendarApi,
   });
 };
 

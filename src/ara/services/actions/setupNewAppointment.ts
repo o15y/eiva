@@ -37,16 +37,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
   );
 
   let slots: any = [];
-  if (!possibleDateTimes.length) {
-    try {
-      slots = await recommendDates(params);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  if (!possibleDateTimes.length) slots = await recommendDates(params);
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
-  console.log(`Recommending ${slots.length} slots for scheduling`);
 
   // TODO guests are people in "to" who aren't Ara or the owner
   const guests = params.parsedBody.to?.value.filter(
