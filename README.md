@@ -17,6 +17,19 @@ All API endpoints require an API key or access token; both can be generated usin
 
 ## 👩‍💻 Development
 
+### Known issues
+
+`String` in Prisma schema doesn't allow larger fields, so you have to manually convert the following fields to `TEXT` from `VARCHAR` after generating tables. For details, see [prisma/migrate#116](https://github.com/prisma/migrate/issues/116):
+
+- `"incoming-emails".from`
+- `"incoming-emails".to`
+- `"incoming-emails".cc`
+- `"incoming-emails".logs`
+- `locations.data`
+- `meetings.confirmedTime`
+- `meetings.proposedTimes`
+- `meetings.guests`
+
 ### Differences in `_staart`
 
 - `helpers/mail.ts` supports more parameters
