@@ -4,6 +4,7 @@ import { prisma } from "../../../_staart/helpers/prisma";
 import { mail } from "../../../_staart/helpers/mail";
 import { Slot } from "calendar-slots";
 import moment from "moment-timezone";
+import { capitalizeFirstAndLastLetter } from "@staart/text";
 import {
   findDateTimeinText,
   convertDigitDates,
@@ -49,11 +50,23 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   // TODO guests are people in "to" who aren't Ara or the owner
   const guests =
-    params.parsedBody.to?.value.filter(
-      (i) =>
-        i.address !== params.assistantEmail &&
-        i.address !== params.parsedBody.from?.value[0].address
-    ) ?? [];
+    params.parsedBody.to?.value
+      .filter(
+        (i) =>
+          i.address !== params.assistantEmail &&
+          i.address !== params.parsedBody.from?.value[0].address
+      )
+      .map((guest) => {
+        if (!(guest.name ?? "").trim()) {
+          const potentialName = persons.find((person) =>
+            guest.address.toLowerCase().includes(person.name.toLowerCase())
+          );
+          guest.name = capitalizeFirstAndLastLetter(
+            potentialName?.name ?? guest.address.split("@")[0]
+          );
+        }
+        return guest;
+      }) ?? [];
   if (!guests.length) throw new Error("Couldn't find guests");
 
   await prisma.meetings.update({

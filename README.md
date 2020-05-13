@@ -20,6 +20,7 @@ All API endpoints require an API key or access token; both can be generated usin
 ### Differences in `_staart`
 
 - `helpers/mail.ts` supports more parameters
+- `init-tests.ts` has ===== line
 
 ### Resources
 

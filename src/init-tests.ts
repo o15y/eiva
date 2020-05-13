@@ -116,5 +116,6 @@ runTests()
       ? success("All service tests passed")
       : logError("Service tests", "All service tests passed", 1)
   )
-  .catch((error) => console.log("ERROR", error));
+  .catch((error) => console.log("ERROR", error))
+  .then(() => console.log("\n" + "=".repeat(process.stdout.columns ?? 50) + "\n"));
   
