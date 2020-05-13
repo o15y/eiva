@@ -1,4 +1,5 @@
 const https = require("https");
+const crypto = require("crypto");
 
 exports.handler = (event) =>
   new Promise((resolve) => {
@@ -27,7 +28,12 @@ exports.handler = (event) =>
         path: "/v1/webhooks/inbound/email/" + key,
         method: "GET",
         headers: {
-          Authorization: "Bearer ACCESS_TOKEN",
+          Authorization:
+            "Bearer " +
+            crypto
+              .createHmac("sha256", "WEBHOOK_SECRET")
+              .update(key)
+              .digest("hex"),
         },
       },
       (res) => {

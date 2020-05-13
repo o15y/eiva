@@ -1,4 +1,5 @@
 import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
+import { createHmac } from "crypto";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
 import { organizations } from "@prisma/client";
@@ -24,7 +25,12 @@ export const processIncomingEmail = async (
 ) => {
   // Compare webhook secret
   // TODO use more sophisticated secret (HMAC with SHA256, "secret" as key, "objectId" as message)
-  if (secret !== INCOMING_EMAIL_WEBHOOK_SECRET)
+  if (
+    secret !==
+    createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
+      .update(objectId)
+      .digest("hex")
+  )
     throw new Error(INVALID_API_KEY_SECRET);
 
   // Logging computation steps
