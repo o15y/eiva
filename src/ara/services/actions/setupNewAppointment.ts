@@ -1,17 +1,20 @@
 import { ActionParams } from "../../interfaces";
 import { detectEntities } from "../google-cloud";
 import { prisma } from "../../../_staart/helpers/prisma";
+import { BASE_URL } from "../../../config";
 import { mail } from "../../../_staart/helpers/mail";
 import { render } from "@staart/mustache-markdown";
 import { Slot } from "calendar-slots";
 import moment from "moment-timezone";
-import { capitalizeFirstAndLastLetter } from "@staart/text";
+import { capitalizeFirstAndLastLetter, randomString } from "@staart/text";
 import {
   findDateTimeinText,
   convertDigitDates,
   recommendDates,
 } from "../dates";
 import { getClearbitPersonFromEmail, ClearbitResponse } from "../clearbit";
+import { generateToken } from "../../../_staart/helpers/jwt";
+import { Tokens } from "../../../_staart/interfaces/enum";
 
 export const setupNewAppointment = async (params: ActionParams) => {
   params.tokens = params.tokens.map(convertDigitDates);
@@ -89,6 +92,25 @@ export const setupNewAppointment = async (params: ActionParams) => {
     },
   });
 
+  const outgoingEmailId = randomString({ length: 40 });
+  const { id } = await prisma.incoming_emails.create({
+    data: {
+      objectId: outgoingEmailId,
+      messageId: `${outgoingEmailId}@ara-internal`,
+      from: `meet-${params.organization.username}@mail.araassistant.com`,
+      to: JSON.stringify(
+        guests.map((guest) => `"${guest.name}" <${guest.address}>`)
+      ),
+      cc: "[]",
+      subject: `${params.organization.name} - Appointment`,
+      status: "SUCCESS",
+      emailDate: new Date(),
+      user: { connect: { id: params.user.id } },
+      organization: { connect: { id: params.organization.id } },
+      meeting: { connect: { id: params.incomingEmail.meetingId } },
+    },
+  });
+
   const data = {
     guestName:
       guests
@@ -98,6 +120,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
     duration: String(duration),
     assistantName: params.organization.assistantName,
     assistantSignature: params.organization.assistantSignature,
+    trackingImageUrl: `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
+      await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
+    )}`,
     slotsMarkdown: slots
       .map(
         (slot) =>

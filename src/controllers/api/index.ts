@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Middleware,
   Request,
@@ -8,10 +9,11 @@ import {
 } from "@staart/server";
 import { joiValidate, Joi } from "@staart/validate";
 import { AddressObject } from "mailparser";
-import { authHandler } from "../../_staart/helpers/middleware";
+import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { classifyTokens } from "../../ara/services/classify";
 import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
+import { trackOutgoingEmail } from "../../ara/rest";
 import { performAction } from "../../ara/services/actions";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
 
@@ -54,6 +56,21 @@ export class ApiController {
       },
       { text, organizationId }
     );
-    return performAction(organizationId, req.body, text, () => {});
+    return {};
+    // return performAction(organizationId, req.body, text, () => {});
+  }
+
+  @Get("read-receipt")
+  @Middleware(validator({ token: Joi.string() }, "query"))
+  async readReceiptEmail(req: Request, res: Response) {
+    const token = req.query.token as string;
+    trackOutgoingEmail(token)
+      .then(() => {})
+      .catch(() => {});
+    res.writeHead(200, { "Content-Type": "image/gif" });
+    res.end(
+      Buffer.from("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64"),
+      "binary"
+    );
   }
 }

@@ -1,17 +1,23 @@
 import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
-import { elasticSearch } from "@staart/elasticsearch";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
-import { organizations, users } from "@prisma/client";
+import { organizations } from "@prisma/client";
 import { prisma } from "../_staart/helpers/prisma";
 import { getOrganizationFromEmail } from "./services/crud";
 import { performAction } from "./services/actions";
 import { parseEmail } from "./services/parse";
+import { verifyToken } from "../_staart/helpers/jwt";
+import { Tokens } from "../_staart/interfaces/enum";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
 const INCOMING_EMAILS_S3_BUCKET = process.env.INCOMING_EMAILS_S3_BUCKET || "";
 
+/**
+ * Safely process an incoming email
+ * @param secret - Webhook secret
+ * @param objectId - S3 object ID
+ */
 export const processIncomingEmail = async (
   secret: string,
   objectId: string
@@ -49,6 +55,11 @@ export const processIncomingEmail = async (
   return { queued: true };
 };
 
+/**
+ * Run all steps for an incoming email
+ * @param objectId - S3 object ID
+ * @param log - Logging function
+ */
 const emailSteps = async (objectId: string, log: Logger) => {
   // Get email raw data from AWS S3
   log("Received request", objectId);
@@ -145,6 +156,16 @@ const emailSteps = async (objectId: string, log: Logger) => {
     `Upserted incoming email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
   );
 
+  const response = await performAction(
+    incomingEmail,
+    organization,
+    assistantEmail,
+    user,
+    objectBody,
+    parsedBody,
+    log
+  );
+
   const result = {
     incomingEmail,
     organizationId: organization.id,
@@ -160,16 +181,20 @@ const emailSteps = async (objectId: string, log: Logger) => {
     messageId: parsedBody.messageId,
     inReplyTo: parsedBody.inReplyTo,
     priority: parsedBody.priority,
-    ...((await performAction(
-      incomingEmail,
-      organization,
-      assistantEmail,
-      user,
-      objectBody,
-      parsedBody,
-      log
-    )) || {}),
+    response,
   };
 
   return result;
+};
+
+/**
+ * Track the read status of an outgoing email
+ * @param jwt - JSON web token for email
+ */
+export const trackOutgoingEmail = async (jwt: string) => {
+  const { id } = await verifyToken<{ id: number }>(jwt, Tokens.EMAIL_UPDATE);
+  return prisma.incoming_emails.update({
+    where: { id },
+    data: { status: "SUCCESS" },
+  });
 };
