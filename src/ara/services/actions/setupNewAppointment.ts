@@ -112,6 +112,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   });
 
   const data = {
+    ownerName: params.user.nickname,
     guestName:
       guests
         .map((guest) => guest.name.split(" ")[0])
