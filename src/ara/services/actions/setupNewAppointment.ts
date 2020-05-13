@@ -10,6 +10,7 @@ import {
   convertDigitDates,
   recommendDates,
 } from "../dates";
+import { getClearbitPersonFromEmail, ClearbitResponse } from "../clearbit";
 
 export const setupNewAppointment = async (params: ActionParams) => {
   params.tokens = params.tokens.map(convertDigitDates);
@@ -48,25 +49,35 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
 
-  // TODO guests are people in "to" who aren't Ara or the owner
-  const guests =
-    params.parsedBody.to?.value
-      .filter(
-        (i) =>
-          i.address !== params.assistantEmail &&
-          i.address !== params.parsedBody.from?.value[0].address
-      )
-      .map((guest) => {
-        if (!(guest.name ?? "").trim()) {
-          const potentialName = persons.find((person) =>
-            guest.address.toLowerCase().includes(person.name.toLowerCase())
-          );
-          guest.name = capitalizeFirstAndLastLetter(
-            potentialName?.name ?? guest.address.split("@")[0]
-          );
-        }
-        return guest;
-      }) ?? [];
+  let guests: any[] = [];
+  for await (const guest of params.parsedBody.to?.value ?? []) {
+    if (
+      guest.address !== params.assistantEmail &&
+      guest.address !== params.parsedBody.from?.value[0].address
+    ) {
+      let details: ClearbitResponse | undefined = undefined;
+      try {
+        details = await getClearbitPersonFromEmail(guest.address);
+        params.log(
+          `Found guest details ${details.person?.name?.fullName ?? ""} ${details
+            .company?.name ?? ""}`
+        );
+      } catch (error) {
+        params.log("Unable to find guest details");
+      }
+      if (!(guest.name ?? "").trim()) {
+        const potentialName = persons.find((person) =>
+          guest.address.toLowerCase().includes(person.name.toLowerCase())
+        );
+        guest.name = capitalizeFirstAndLastLetter(
+          details?.person?.name?.fullName ??
+            potentialName?.name ??
+            guest.address.split("@")[0]
+        );
+      }
+      guests.push({ ...guest, ...details });
+    }
+  }
   if (!guests.length) throw new Error("Couldn't find guests");
 
   await prisma.meetings.update({
@@ -80,7 +91,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   const data = {
     guestName:
       guests
-        .map((guest) => guest.name)
+        .map((guest) => guest.name.split(" ")[0])
         .filter((name) => name)
         .join(", ") ?? "guest",
     duration: String(duration),

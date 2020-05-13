@@ -62,6 +62,12 @@ This is used for both transactional emails (like password resets) using `SES_EMA
 - `STRIPE_SECRET_KEY` is the test key for development and live key for production
 - `STRIPE_PRODUCT_ID` is the product ID for Ara (`prod_HAdEYq2FQrjVSd` for testing)
 
+#### Clearbit
+
+Clearbit is used to find information about guests, emails, and more:
+
+- `CLEARBIT_SECRET_KEY` is the secret API key
+
 ## 📄 License
 
 - Code: [Server Side Public License](./LICENSE)
