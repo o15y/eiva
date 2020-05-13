@@ -2,6 +2,7 @@ import { ActionParams } from "../../interfaces";
 import { detectEntities } from "../google-cloud";
 import { prisma } from "../../../_staart/helpers/prisma";
 import { mail } from "../../../_staart/helpers/mail";
+import { render } from "@staart/mustache-markdown";
 import { Slot } from "calendar-slots";
 import moment from "moment-timezone";
 import { capitalizeFirstAndLastLetter } from "@staart/text";
@@ -106,6 +107,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       )
       .join("\n"),
   };
+  data.assistantSignature = render(data.assistantSignature, data)[1];
   await mail({
     template: "meeting-invitation",
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
