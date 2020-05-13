@@ -21,11 +21,12 @@ export interface ClearbitResponse {
 export const getClearbitPersonFromEmail = async (email: string) => {
   return (
     await axios.get(
-      `https://person-stream.clearbit.com/v2/combined/find?email=${email}`,
+      `https://person-stream.clearbit.com/v2/combined/find?email=${encodeURIComponent(
+        email
+      )}`,
       {
-        auth: {
-          username: CLEARBIT_SECRET_KEY,
-          password: "",
+        headers: {
+          Authorization: `Bearer ${CLEARBIT_SECRET_KEY}`,
         },
       }
     )
