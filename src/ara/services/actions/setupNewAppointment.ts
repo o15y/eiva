@@ -95,15 +95,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
   const outgoingEmailId = randomString({ length: 40 });
   const { id } = await prisma.incoming_emails.create({
     data: {
+      emailType: "OUTGOING",
       objectId: outgoingEmailId,
       messageId: `${outgoingEmailId}@ara-internal`,
-      from: `meet-${params.organization.username}@mail.araassistant.com`,
-      to: JSON.stringify(
-        guests.map((guest) => `"${guest.name}" <${guest.address}>`)
-      ),
+      from: `[{"address":"meet-${params.organization.username}@mail.araassistant.com","name":"${params.organization.assistantName}"}]`,
+      to: JSON.stringify(guests),
       cc: "[]",
       subject: `${params.organization.name} - Appointment`,
-      status: "SUCCESS",
+      status: "PENDING",
       emailDate: new Date(),
       user: { connect: { id: params.user.id } },
       organization: { connect: { id: params.organization.id } },
