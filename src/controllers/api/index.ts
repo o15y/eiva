@@ -5,7 +5,6 @@ import {
   Middleware,
   Request,
   Response,
-  ClassMiddleware,
 } from "@staart/server";
 import { joiValidate, Joi } from "@staart/validate";
 import { AddressObject } from "mailparser";
@@ -17,9 +16,9 @@ import { trackOutgoingEmail } from "../../ara/rest";
 import { performAction } from "../../ara/services/actions";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
 
-@ClassMiddleware(authHandler)
 export class ApiController {
   @Post("classify")
+  @Middleware(authHandler)
   async classify(req: Request) {
     const text: string[] = req.body.text;
     joiValidate({ text: Joi.array().required() }, { text });
@@ -27,6 +26,7 @@ export class ApiController {
   }
 
   @Post("parse-email")
+  @Middleware(authHandler)
   async parseEmail(req: Request) {
     const text: string = req.body.text;
     joiValidate({ text: Joi.array().required() }, { text });
@@ -34,6 +34,7 @@ export class ApiController {
   }
 
   @Post("smart-tokenize")
+  @Middleware(authHandler)
   async smartTokenize(req: Request) {
     const text: string = req.body.text;
     const from: AddressObject = req.body.from;
@@ -45,6 +46,7 @@ export class ApiController {
   }
 
   @Post("perform-action")
+  @Middleware(authHandler)
   async performAction(req: Request, res: Response) {
     const token: ApiKeyResponse = res.locals.token;
     const text: string = req.body.text;
