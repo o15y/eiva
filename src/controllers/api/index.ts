@@ -12,8 +12,7 @@ import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { classifyTokens } from "../../ara/services/classify";
 import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
-import { trackOutgoingEmail } from "../../ara/rest";
-import { performAction } from "../../ara/services/actions";
+import { trackOutgoingEmail, getPublicMeetingDetails } from "../../ara/rest";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
 
 export class ApiController {
@@ -73,6 +72,22 @@ export class ApiController {
     res.end(
       Buffer.from("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64"),
       "binary"
+    );
+  }
+
+  @Get("meeting-page/:username/:id")
+  @Middleware(
+    validator(
+      { username: Joi.string().required(), id: Joi.string().required() },
+      "params"
+    )
+  )
+  @Middleware(validator({ jwt: Joi.string().required() }, "query"))
+  async getMeetingDetails(req: Request) {
+    return getPublicMeetingDetails(
+      req.params.username,
+      req.params.id,
+      req.query.jwt
     );
   }
 }

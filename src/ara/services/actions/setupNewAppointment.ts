@@ -129,7 +129,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
         .tz(slot.start, timezone)
         .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
         params.organization.username
-      }/confirm?token=${encodeURIComponent(
+      }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
         await generateToken(
           {
             guests,

@@ -1,4 +1,8 @@
-import { logError, INVALID_API_KEY_SECRET } from "@staart/errors";
+import {
+  logError,
+  INVALID_API_KEY_SECRET,
+  RESOURCE_NOT_FOUND,
+} from "@staart/errors";
 import { createHmac } from "crypto";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
@@ -9,6 +13,7 @@ import { performAction } from "./services/actions";
 import { parseEmail } from "./services/parse";
 import { verifyToken } from "../_staart/helpers/jwt";
 import { Tokens } from "../_staart/interfaces/enum";
+import moment from "moment";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -203,4 +208,28 @@ export const trackOutgoingEmail = async (jwt: string) => {
     where: { id },
     data: { status: "SUCCESS" },
   });
+};
+
+/**
+ * Get the details of a meeting
+ * @param username - Organization username
+ * @param meetingId - Meeting ID
+ * @param jwt - JWT for meeting
+ */
+export const getPublicMeetingDetails = async (
+  username: string,
+  meetingId: string,
+  jwt: string
+) => {
+  await verifyToken(jwt, Tokens.CONFIRM_APPOINTMENT);
+  const details = await prisma.meetings.findMany({
+    first: 1,
+    where: { id: parseInt(meetingId), organization: { username } },
+  });
+  if (!details.length) throw new Error(RESOURCE_NOT_FOUND);
+  const meeting = details[0];
+  if (meeting.confirmedTime && moment(meeting.confirmedTime).isBefore(moment()))
+    throw new Error("400/meeting-in-past");
+  delete meeting.guests;
+  return meeting;
 };
