@@ -1,7 +1,7 @@
 import { ActionParams } from "../../interfaces";
 import { detectEntities } from "../google-cloud";
 import { prisma } from "../../../_staart/helpers/prisma";
-import { BASE_URL } from "../../../config";
+import { BASE_URL, FRONTEND_URL } from "../../../config";
 import { mail } from "../../../_staart/helpers/mail";
 import { render } from "@staart/mustache-markdown";
 import { Slot } from "calendar-slots";
@@ -48,11 +48,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   const duration = params.organization.schedulingDuration;
 
+  // Find slots
   let slots: Slot[] = [];
   if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
+  params.log("Found potential slots", slots.length);
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");
 
+  // Find guests
   let guests: any[] = [];
   for await (const guest of params.parsedBody.to?.value ?? []) {
     if (
@@ -83,7 +86,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
     }
   }
   if (!guests.length) throw new Error("Couldn't find guests");
+  params.log("Found guests for this meeting", guests.length);
 
+  // Update meeting details with guest and proposed times
   await prisma.meetings.update({
     where: { id: params.incomingEmail.meetingId },
     data: {
@@ -91,7 +96,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
       proposedTimes: JSON.stringify(slots),
     },
   });
+  params.log("Updated meeting details with slots and guests");
 
+  // Create outbound email record
   const outgoingEmailId = randomString({ length: 40 });
   const { id } = await prisma.incoming_emails.create({
     data: {
@@ -109,6 +116,33 @@ export const setupNewAppointment = async (params: ActionParams) => {
       meeting: { connect: { id: params.incomingEmail.meetingId } },
     },
   });
+  params.log("Set up tracking for outbound email");
+
+  // TODO support user timezone
+  const timezone = params.user.timezone;
+
+  // Generate markdown list of slots with links
+  let slotsMarkdown: string[] = [];
+  for await (const slot of slots) {
+    slotsMarkdown.push(
+      `- [${moment
+        .tz(slot.start, timezone)
+        .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
+        params.organization.username
+      }/confirm?token=${encodeURIComponent(
+        await generateToken(
+          {
+            guests,
+            timezone,
+            duration,
+            datetime: moment.tz(slot.start, timezone).toISOString(),
+          },
+          "1y",
+          Tokens.CONFIRM_APPOINTMENT
+        )
+      )})`
+    );
+  }
 
   const data = {
     ownerName: params.user.nickname,
@@ -123,14 +157,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
     trackingImageUrl: `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
       await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
     )}`,
-    slotsMarkdown: slots
-      .map(
-        (slot) =>
-          `- [${moment
-            .tz(slot.start, params.user.timezone)
-            .format("dddd, MMMM D, h:mm a z")}](https://example.com)`
-      )
-      .join("\n"),
+    slotsMarkdown: slotsMarkdown.join("\n"),
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
   await mail({

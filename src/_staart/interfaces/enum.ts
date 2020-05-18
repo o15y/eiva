@@ -48,6 +48,7 @@ export enum Tokens {
   APPROVE_LOCATION = "approve-location",
   COUPON = "coupon",
   EMAIL_UPDATE = "email-update",
+  CONFIRM_APPOINTMENT = "appointment",
 }
 
 export enum OrgScopes {
