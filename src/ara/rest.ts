@@ -225,6 +225,7 @@ export const getPublicMeetingDetails = async (
   const details = await prisma.meetings.findMany({
     first: 1,
     where: { id: parseInt(meetingId), organization: { username } },
+    include: { organization: true, user: true, location: true },
   });
   if (!details.length) throw new Error(RESOURCE_NOT_FOUND);
   const meeting = details[0];
