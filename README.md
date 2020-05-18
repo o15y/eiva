@@ -39,7 +39,7 @@ All API endpoints require an API key or access token; both can be generated usin
 
 #### AWS S3 bucket
 
-The `ara-assistant-incoming-emails` bucket is used to store incoming emails to Ara as plain text files that can be fetched and parsed by this API. It's hosted in the eu-central-1 region and has limited, non-public access. An example of such an email is available in [`content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01`](./content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01) and is called using /v1/api/webhooks/inbound/email/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01.
+The `ara-assistant-incoming-emails` bucket is used to store incoming emails to Ara as plain text files that can be fetched and parsed by this API. It's hosted in the eu-central-1 region and has limited, non-public access. An example of such an email is available in [`content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01`](./content/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01) and is called using /v1/api/webhooks/inbound/email/OBJECT_ID?secret=SECRET as explained below.
 
 #### AWS Lambda function
 
@@ -80,6 +80,23 @@ This is used for both transactional emails (like password resets) using `SES_EMA
 Clearbit is used to find information about guests, emails, and more:
 
 - `CLEARBIT_SECRET_KEY` is the secret API key
+
+## Webhook
+
+For incoming emails, the `/v1/webhooks/inbound/email/OBJECT_ID?secret=SECRET` URL is used. The following is a real example for the URL that will work locally:
+
+```
+http://localhost:7001/v1/webhooks/inbound/email/2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01?secret=ebbb11de0c0400bf869bd48537ab56676715ec78173191ed377b0cae9a3eb6d0
+```
+
+To generate the secret, sign the object ID using HMAC with SHA-256 and the secret. The secret is stored as the environment variable `INCOMING_EMAIL_WEBHOOK_SECRET` as defined above. In Node.js, you can generate it using:
+
+```js
+const { createHmac } = require("crypto");
+createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
+  .update(objectId)
+  .digest("hex")
+```
 
 ## 📄 License
 
