@@ -5,7 +5,15 @@ import { verifyToken } from "../../../_staart/helpers/jwt";
 import moment from "moment-timezone";
 import { render } from "@staart/mustache-markdown";
 import { mail } from "../../../_staart/helpers/mail";
+import { confirmIfSlotAvailable } from "../dates";
 
+/**
+ * Confirm a meeting from guest
+ * @param token - JWT for verification
+ * @param organizationId - Organization ID
+ * @param meetingId - Meeting ID
+ * @param data - Body data
+ */
 export const confirmMeetingForGuest = async (
   token: string,
   organizationId: string,
@@ -19,6 +27,8 @@ export const confirmMeetingForGuest = async (
   }
 ) => {
   await verifyToken(token, Tokens.CONFIRM_APPOINTMENT);
+
+  // Find meeting details
   const meeting = (
     await prisma.meetings.findMany({
       where: {
@@ -29,6 +39,18 @@ export const confirmMeetingForGuest = async (
     })
   )[0];
   if (!meeting) throw new Error(RESOURCE_NOT_FOUND);
+
+  // Make sure this slot is available
+  if (
+    !confirmIfSlotAvailable(
+      meeting.user,
+      moment(data.selectedDatetime),
+      moment(data.selectedDatetime).add(data.duration, "minutes")
+    )
+  )
+    throw new Error("429/slot-unavailable");
+
+  // Add new guest data to `meeting.guests`
   meeting.guests = JSON.stringify(
     (JSON.parse(meeting.guests) as any[]).map((guest) => {
       if (guest.address === data.guestEmail) {
@@ -38,6 +60,8 @@ export const confirmMeetingForGuest = async (
       return guest;
     })
   );
+
+  // Update meeting details
   // TODO support multiple guests
   const confirmedMeeting = await prisma.meetings.update({
     where: {
@@ -50,11 +74,14 @@ export const confirmMeetingForGuest = async (
     },
   });
 
-  // TODO send re-confirmations
+  // Get memeeting location details
   if (!meeting.confirmedTime) return;
   const location = await prisma.locations.findOne({
     where: { id: meeting.locationId },
   });
+
+  // Send meeting details
+  // TODO send re-confirmations
 
   const sharedEmailData = {
     duration: String(confirmedMeeting.duration),

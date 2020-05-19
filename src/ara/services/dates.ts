@@ -1,18 +1,45 @@
 import { parse } from "chrono-node";
 import { WordTokenizer } from "natural";
-import { getSlots } from "calendar-slots";
+import { getSlots, getEventsFromSingleCalendar } from "calendar-slots";
 import { ActionParams } from "../interfaces";
 import moment, { Moment } from "moment-timezone";
 import { google } from "googleapis";
-import { OAuth2Client } from "google-auth-library";
+import { users } from "@prisma/client";
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CALENDAR_CLIENT_ID ?? "Client ID",
   process.env.GOOGLE_CALENDAR_CLIENT_SECRET ?? "Client Secret",
   process.env.GOOGLE_CALENDAR_REDIRECT_URL ?? "Redirect URL"
 );
 const calendarApi = google.calendar("v3");
-
 const wordTokenizer = new WordTokenizer();
+
+/**
+ * Confirm if a meeting slot is empty/available
+ * @param user - User details
+ * @param startTime - Start time
+ * @param endTime - End time
+ */
+export const confirmIfSlotAvailable = async (
+  user: users,
+  startTime: Moment,
+  endTime: Moment
+) => {
+  oauth2Client.setCredentials({
+    access_token: user.googleAccessToken,
+    refresh_token: user.googleRefreshToken,
+  });
+  return (
+    (
+      await getEventsFromSingleCalendar({
+        from: startTime,
+        to: endTime,
+        auth: oauth2Client,
+        calendar: calendarApi,
+      })
+    ).length === 0
+  );
+};
 
 /**
  Get a list of recommended slots for an appointment
