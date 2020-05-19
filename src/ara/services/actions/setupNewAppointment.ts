@@ -82,7 +82,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
             guest.address.split("@")[0]
         );
       }
-      guests.push({ ...guest, ...details });
+      let timezone =
+        details?.person?.timeZone ??
+        details?.company?.timeZone ??
+        params.user.timezone;
+      guests.push({ ...guest, ...details, timezone });
     }
   }
   if (!guests.length) throw new Error("Couldn't find guests");
@@ -118,24 +122,24 @@ export const setupNewAppointment = async (params: ActionParams) => {
   });
   params.log("Set up tracking for outbound email");
 
-  // TODO support user timezone
-  const timezone = params.user.timezone;
+  // TODO support multiple guest timezones
+  const guestTimezone = guests[0].timezone ?? params.user.timezone;
 
   // Generate markdown list of slots with links
   let slotsMarkdown: string[] = [];
   for await (const slot of slots) {
     slotsMarkdown.push(
       `- [${moment
-        .tz(slot.start, timezone)
+        .tz(slot.start, guestTimezone)
         .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
         params.organization.username
       }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
         await generateToken(
           {
             guests,
-            timezone,
+            timezone: guestTimezone,
             duration,
-            datetime: moment.tz(slot.start, timezone).toISOString(),
+            datetime: moment.tz(slot.start, guestTimezone).toISOString(),
           },
           "1y",
           Tokens.CONFIRM_APPOINTMENT

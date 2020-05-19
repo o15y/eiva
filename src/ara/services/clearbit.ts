@@ -10,11 +10,13 @@ export interface ClearbitResponse {
       givenName?: string;
       familyName?: string;
     };
+    timeZone?: string;
   };
   company?: {
     id: string;
     name?: string;
     legalName?: string;
+    timeZone?: string;
   };
 }
 
