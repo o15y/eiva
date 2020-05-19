@@ -14,6 +14,7 @@ import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
 import { trackOutgoingEmail, getPublicMeetingDetails } from "../../ara/rest";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
+import { confirmMeetingForGuest } from "../../ara/services/crud/confirm-meeting";
 
 export class ApiController {
   @Post("classify")
@@ -88,6 +89,28 @@ export class ApiController {
       req.params.username,
       req.params.id,
       req.query.jwt
+    );
+  }
+
+  @Get("confirm-meeting/:organizaionId/:meetingId")
+  @Middleware(
+    validator(
+      {
+        token: Joi.string().required(),
+        guestName: Joi.string().required(),
+        guestEmail: Joi.string().required(),
+        guestTimezone: Joi.string().required(),
+        duration: Joi.number().required(),
+        selectedDatetime: Joi.any().required(),
+      },
+      "body"
+    )
+  )
+  async confirmMeeting(req: Request) {
+    return confirmMeetingForGuest(
+      req.params.organizaionId,
+      req.params.meetingId,
+      req.body
     );
   }
 }

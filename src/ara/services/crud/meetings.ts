@@ -7,9 +7,10 @@ import { can } from "../../../_staart/helpers/authorization";
 import { OrgScopes } from "../../../_staart/interfaces/enum";
 import { meetingsUpdateInput } from "@prisma/client";
 import { INSUFFICIENT_PERMISSION } from "@staart/errors";
+import { ApiKeyResponse } from "../../../_staart/helpers/jwt";
 
 export const getAllMeetingsForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   queryParams: any
 ) => {
@@ -28,7 +29,7 @@ export const getAllMeetingsForOrganization = async (
 };
 
 export const getMeetingForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   meetingId: string
 ) => {
@@ -40,7 +41,7 @@ export const getMeetingForOrganization = async (
 };
 
 export const updateMeetingForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   meetingId: string,
   data: meetingsUpdateInput
@@ -53,7 +54,7 @@ export const updateMeetingForOrganization = async (
 };
 
 export const deleteMeetingForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   meetingId: string
 ) => {
@@ -65,7 +66,7 @@ export const deleteMeetingForOrganization = async (
 };
 
 export const getMeetingIncomingEmailsForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   meetingId: string,
   queryParams: any
@@ -88,7 +89,7 @@ export const getMeetingIncomingEmailsForOrganization = async (
 };
 
 export const getMeetingIncomingEmailForOrganization = async (
-  tokenUserId: string,
+  tokenUserId: string | ApiKeyResponse,
   organizationId: string,
   meetingId: string,
   incomingEmailId: string
