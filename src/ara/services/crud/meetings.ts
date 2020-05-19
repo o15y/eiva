@@ -4,11 +4,9 @@ import {
   queryParamsToSelect,
 } from "../../../_staart/helpers/prisma";
 import { can } from "../../../_staart/helpers/authorization";
-import { OrgScopes, Tokens } from "../../../_staart/interfaces/enum";
+import { OrgScopes } from "../../../_staart/interfaces/enum";
 import { meetingsUpdateInput } from "@prisma/client";
-import { INSUFFICIENT_PERMISSION, RESOURCE_NOT_FOUND } from "@staart/errors";
-import { verifyToken } from "../../../_staart/helpers/jwt";
-import moment from "moment";
+import { INSUFFICIENT_PERMISSION } from "@staart/errors";
 
 export const getAllMeetingsForOrganization = async (
   tokenUserId: string,
@@ -106,48 +104,4 @@ export const getMeetingIncomingEmailForOrganization = async (
       },
     });
   throw new Error(INSUFFICIENT_PERMISSION);
-};
-
-export const confirmMeetingForGuest = async (
-  token: string,
-  organizationId: string,
-  meetingId: string,
-  data: {
-    guestName: string;
-    guestEmail: string;
-    guestTimezone: string;
-    duration: number;
-    selectedDatetime: Date;
-  }
-) => {
-  await verifyToken(token, Tokens.CONFIRM_APPOINTMENT);
-  const meeting = (
-    await prisma.meetings.findMany({
-      where: {
-        id: parseInt(meetingId),
-        organizationId: parseInt(organizationId),
-      },
-    })
-  )[0];
-  if (!meeting) throw new Error(RESOURCE_NOT_FOUND);
-  meeting.guests = JSON.stringify(
-    (JSON.parse(meeting.guests) as any[]).map((guest) => {
-      if (guest.address === data.guestEmail) {
-        guest.name = data.guestName;
-        guest.timezone = data.guestTimezone;
-      }
-      return guest;
-    })
-  );
-  // TODO support multiple guests
-  await prisma.meetings.update({
-    where: {
-      id: parseInt(meetingId),
-    },
-    data: {
-      confirmedTime: moment(data.selectedDatetime).toISOString(),
-      guests: meeting.guests,
-      duration: data.duration,
-    },
-  });
 };
