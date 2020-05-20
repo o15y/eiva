@@ -48,7 +48,12 @@ export const createLocationForOrganization = async (
   if (
     await can(tokenUserId, OrgScopes.UPDATE_ORG, "organization", organizationId)
   )
-    return prisma.locations.create({ data });
+    return prisma.locations.create({
+      data: {
+        ...data,
+        organization: { connect: { id: parseInt(organizationId) } },
+      },
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
