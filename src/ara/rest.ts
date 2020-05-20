@@ -14,6 +14,9 @@ import { parseEmail } from "./services/parse";
 import { verifyToken } from "../_staart/helpers/jwt";
 import { Tokens } from "../_staart/interfaces/enum";
 import moment from "moment";
+import { elasticSearchIndex } from "../_staart/helpers/elasticsearch";
+import { Locals } from "../_staart/interfaces/general";
+import { getGeolocationFromIp } from "../_staart/helpers/location";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -233,4 +236,19 @@ export const getPublicMeetingDetails = async (
     throw new Error("400/meeting-in-past");
   delete meeting.guests;
   return meeting;
+};
+
+/**
+ * Tracking for analytics
+ * @param index - Index to save record in
+ * @param body - Data body
+ */
+export const trackAnalyticsEvent = async (
+  locals: Locals,
+  index: string,
+  data: any
+) => {
+  const location = await getGeolocationFromIp(locals.ipAddress);
+  const body = { ...data, ...location, date: new Date() };
+  return elasticSearchIndex({ index, body });
 };

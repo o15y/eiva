@@ -51,7 +51,7 @@ Key-value storage Redis is used for JWT cache invalidation and MySQL query cachi
 
 #### ElasticSearch
 
-A dedicated ElasticSearch instance is used to store server logs, and more importantly track usage events using the `/v1/api/track` API endpoint. This data will be used for analytics about pages, time on site, etc.
+A dedicated ElasticSearch instance is used to store server logs, and more importantly track usage events using the `/v1/api/track/:index` API endpoint. This data will be used for analytics about pages, time on site, etc.
 
 Instance details:
 

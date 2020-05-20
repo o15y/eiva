@@ -12,7 +12,11 @@ import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { classifyTokens } from "../../ara/services/classify";
 import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
-import { trackOutgoingEmail, getPublicMeetingDetails } from "../../ara/rest";
+import {
+  trackOutgoingEmail,
+  getPublicMeetingDetails,
+  trackAnalyticsEvent,
+} from "../../ara/rest";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
 import { confirmMeetingForGuest } from "../../ara/services/crud/confirm-meeting";
 
@@ -112,5 +116,22 @@ export class ApiController {
       req.params.meetingId,
       req.body
     );
+  }
+
+  @Post("track/:index")
+  async track(req: Request, res: Response) {
+    const index = req.params.index;
+    const data = req.body;
+    joiValidate(
+      {
+        index: Joi.string().required(),
+        data: Joi.object().required(),
+      },
+      { index, data }
+    );
+    trackAnalyticsEvent(res.locals, index, data)
+      .then(() => {})
+      .catch(() => {});
+    return { queued: true };
   }
 }
