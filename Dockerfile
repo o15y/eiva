@@ -7,5 +7,6 @@ COPY ./ /usr/src/app
 ENV NODE_ENV production
 ENV PORT 80
 EXPOSE 80
-# RUN ["npm", "run", "build"]
-CMD ["npm", "run", "start"]
+RUN ["npm", "run", "build-babel"]
+RUN ["cp", "package.json", "dist/package.json"]
+CMD ["npm", "run", "launch"]
