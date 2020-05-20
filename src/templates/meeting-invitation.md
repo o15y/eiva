@@ -1,6 +1,6 @@
 Dear {{guestName}},
 
-{{ownerName}} is available for a {{duration}} minute meeting on:
+{{ownerName}} is available for a {{duration}}-minute meeting on:
 
 {{slotsMarkdown}}
 
