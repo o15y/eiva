@@ -49,6 +49,20 @@ This serverless function `EmailForwarder` in invoked from AWS S3, when a new obj
 
 Key-value storage Redis is used for JWT cache invalidation and MySQL query caching. For production, a self-hosted Redis instance is used using Caprover, available only to other Caprover applications. For development, a local redis-server with default configuration will do.
 
+#### ElasticSearch
+
+A dedicated ElasticSearch instance is used to store server logs, and more importantly track usage events using the `/v1/api/track` API endpoint. This data will be used for analytics about pages, time on site, etc.
+
+Instance details:
+
+- Elasticsearch version: 7.4
+- Instance type: r5.large.elasticsearch
+- Number of nodes: 1
+- Data nodes storage type: EBS
+- EBS volume type: General Purpose (SSD)
+- EBS volume size: 10 GiB
+- Billing period: May 21, 2020–_present_
+
 ### Environment variables
 
 These environment variables (with the exception of `DATABASE_URL`) can be set in the `.env` file, or available as environment variables in the process using the Caprover UI or Dockerfile.
@@ -65,10 +79,10 @@ These environment variables (with the exception of `DATABASE_URL`) can be set in
 
 This is used for both transactional emails (like password resets) using `SES_EMAIL` and for sending emails from Ara (like `meet-anand@mail.assistant.com`)
 
-- `SES_EMAIL` = `noreply@mail.araassistant.com`
-- `SES_REGION` = `us-east-1`
-- `SES_ACCESS` = API access key from AWS
-- `SES_SECRET` = API secret key from AWS
+- `SES_EMAIL` is the email to send emails from (`noreply@mail.araassistant.com`)
+- `SES_REGION` is the AWS region (`us-east-1`)
+- `SES_ACCESS` is the AWS access key for SES
+- `SES_SECRET` is the AWS secret key for SES
 
 #### Stripe
 
@@ -80,6 +94,12 @@ This is used for both transactional emails (like password resets) using `SES_EMA
 Clearbit is used to find information about guests, emails, and more:
 
 - `CLEARBIT_SECRET_KEY` is the secret API key
+
+#### ElasticSearch
+
+- `AWS_ELASTIC_ACCESS_KEY` is the AWS access key for ElasticSearch
+- `AWS_ELASTIC_SECRET_KEY` is the AWS secret key for ElasticSearch
+- `AWS_ELASTIC_HOST` is the AWS ElasticSearch endpoint
 
 ## Webhook
 
@@ -95,7 +115,7 @@ To generate the secret, sign the object ID using HMAC with SHA-256 and the secre
 const { createHmac } = require("crypto");
 createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
   .update(objectId)
-  .digest("hex")
+  .digest("hex");
 ```
 
 ## 📄 License
