@@ -9,4 +9,5 @@ ENV PORT 80
 EXPOSE 80
 RUN ["npm", "run", "build-babel"]
 RUN ["cp", "package.json", "dist/package.json"]
+RUN ["npx", "prisma", "generate"]
 CMD ["npm", "run", "launch"]
