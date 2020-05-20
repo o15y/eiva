@@ -1,9 +1,4 @@
-import {
-  RESOURCE_CREATED,
-  RESOURCE_DELETED,
-  RESOURCE_UPDATED,
-  respond,
-} from "@staart/messages";
+import { RESOURCE_DELETED, RESOURCE_UPDATED, respond } from "@staart/messages";
 import {
   ClassMiddleware,
   Controller,
@@ -11,7 +6,6 @@ import {
   Get,
   Middleware,
   Patch,
-  Put,
   Request,
   Response,
 } from "@staart/server";

@@ -70,7 +70,9 @@ export const recommendDates = async (
     from: startTime ?? today,
     to: endTime ?? nextWeek,
     days: params.organization.schedulingDays
-      ? JSON.parse(params.organization.schedulingDays)
+      ? params.organization.schedulingDays
+          .split(",")
+          .map((i: string) => parseInt(i.trim()))
       : [1, 2, 3, 4, 5],
     log: true,
     logger: params.log,
