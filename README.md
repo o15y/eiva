@@ -49,6 +49,19 @@ This serverless function `EmailForwarder` in invoked from AWS S3, when a new obj
 
 Key-value storage Redis is used for JWT cache invalidation and MySQL query caching. For production, a self-hosted Redis instance is used using Caprover, available only to other Caprover applications. For development, a local redis-server with default configuration will do.
 
+#### Server
+
+A dedicated server is used for deploying the EIVA service. This uses AWS Lightsail which provides an easy-to-use interface for AWS EC2.
+
+Instance details:
+
+- Region: Frankfurt (eu-central-1)
+- RAM: 4 GB
+- Processor: 2 vCPUs
+- Storage: 80 GB SSD
+- Public IP address: 18.195.203.61
+- Billing period: May 21, 2020–_present_
+
 #### ElasticSearch
 
 A dedicated ElasticSearch instance is used to store server logs, and more importantly track usage events using the `/v1/api/track/:index` API endpoint. This data will be used for analytics about pages, time on site, etc.
