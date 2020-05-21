@@ -17,6 +17,7 @@ import moment from "moment";
 import { elasticSearchIndex } from "../_staart/helpers/elasticsearch";
 import { Locals } from "../_staart/interfaces/general";
 import { getGeolocationFromIp } from "../_staart/helpers/location";
+import { EmailAddress } from "mailparser";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -89,7 +90,10 @@ const emailSteps = async (objectId: string, log: Logger) => {
   // Find organization
   let organization: organizations | undefined = undefined;
   let assistantEmail = "";
-  for await (const email of parsedBody.from?.value || []) {
+  let allEmails: EmailAddress[] = [];
+  (parsedBody.to?.value ?? []).forEach((email) => allEmails.push(email));
+  (parsedBody.cc?.value ?? []).forEach((email) => allEmails.push(email));
+  for await (const email of allEmails) {
     try {
       if (!organization) {
         log(`Looking for team for email "${email.address}"`);
