@@ -74,6 +74,12 @@ export const createOrganization = async (
 ) => {
   if (!organization.name) throw new Error(INVALID_INPUT);
   organization.name = capitalizeFirstAndLastLetter(organization.name);
+  if (organization.assistantName && !organization.assistantSignature) {
+    organization.assistantSignature = `Best,
+    
+${organization.assistantName}
+Assistant to ${organization.name}`;
+  }
   organization.username = await getBestUsernameForOrganization(
     organization.name
   );
@@ -95,7 +101,23 @@ export const createOrganization = async (
         organization: { connect: { id: result.id } },
       },
     });
-    return result;
+    const primaryLocation = await prisma.locations.create({
+      data: {
+        type: "VIDEO_CALL",
+        value: `https://meet.jit.si/${result.username}`,
+        data: JSON.stringify({
+          name: "Jisti Meet",
+          template: "{{name}}: {{value}}",
+        }),
+        organization: { connect: { id: result.id } },
+      },
+    });
+    return await prisma.organizations.update({
+      data: {
+        schedulingLocation: primaryLocation.id,
+      },
+      where: { id: result.id },
+    });
   } catch (error) {
     console.log(error);
     throw new Error(error);

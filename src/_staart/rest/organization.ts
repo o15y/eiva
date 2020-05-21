@@ -115,12 +115,6 @@ export const newOrganizationForUser = async (
     const user = await getUserById(userId);
     organization.name = user.name;
   }
-  if (organization.assistantName && !organization.assistantSignature) {
-    organization.assistantSignature = `Best,
-    
-${organization.assistantName}
-Assistant to ${organization.name}`;
-  }
   return createOrganization(organization, userId);
 };
 
