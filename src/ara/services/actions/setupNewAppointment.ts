@@ -61,8 +61,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
   let guests: any[] = [];
   for await (const guest of params.parsedBody.to?.value ?? []) {
     if (
-      guest.address !== params.assistantEmail &&
-      guest.address !== params.parsedBody.from?.value[0].address
+      guest.address !== params.assistantEmail
+      // TODO add this condition?
+      // guest.address !== params.parsedBody.from?.value[0].address
     ) {
       let details: ClearbitResponse | undefined = undefined;
       try {
