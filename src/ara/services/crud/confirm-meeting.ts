@@ -121,7 +121,7 @@ export const confirmMeetingForGuest = async (
         .format("h:mm a z"),
     };
     await mail({
-      template: "meeting-confirmation",
+      template: `meeting-confirmation${meeting.language === "nl" ? ".nl" : ""}`,
       from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@mail.araassistant.com>`,
       to: `"${meeting.user.name}" <${userEmail.email}>`,
       subject: `Confirmed: Appointment with ${meetingWithName}`,
@@ -142,7 +142,9 @@ export const confirmMeetingForGuest = async (
           .format("h:mm a z"),
       };
       await mail({
-        template: "meeting-confirmation",
+        template: `meeting-confirmation${
+          meeting.language === "nl" ? ".nl" : ""
+        }`,
         from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@mail.araassistant.com>`,
         to: `"${guest.name}" <${guest.address}>`,
         subject: `Confirmed: Appointment with ${meeting.user.name}`,
