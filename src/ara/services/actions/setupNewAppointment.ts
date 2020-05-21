@@ -178,8 +178,10 @@ export const setupNewAppointment = async (params: ActionParams) => {
   await mail({
     template: `meeting-details${language === "nl" ? ".nl" : ""}`,
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
-    to: `"${params.user.name}" <${await getUserBestEmail(params.user.id)}>`,
-    subject: `${params.organization.name} - Appointment`,
+    to: `"${params.user.name}" <${
+      (await getUserBestEmail(params.user.id)).email
+    }>`,
+    subject: `${data.guestFullName} - Appointment`,
     data,
   });
   params.log("Sent email to guests");
