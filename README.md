@@ -30,6 +30,8 @@ All API endpoints require an API key or access token; both can be generated usin
 
 ### Known issues
 
+_**⚠️ FIX AVAILABLE:** The fix for this is available in Prisma beta 5_
+
 `String` in Prisma schema doesn't allow larger fields, so you have to manually convert the following fields to `TEXT` from `VARCHAR` after generating tables. For details, see [prisma/migrate#116](https://github.com/prisma/migrate/issues/116):
 
 - `"incoming-emails".from`
