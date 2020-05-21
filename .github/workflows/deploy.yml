@@ -1,0 +1,32 @@
+name: Deploy CI
+on:
+  push:
+    branches:
+      - "master"
+  repository_dispatch:
+    types: [update]
+jobs:
+  release:
+    name: Build
+    runs-on: ubuntu-18.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.3.0"
+      - name: Install dependencies
+        run: npm install
+      - name: Build site
+        run: npm run build
+      - name: Copy assets to dist
+        run: cp -r prisma dist/prisma
+        env:
+          NODE_ENV: "production"
+      - uses: maxheld83/ghpages@v0.2.1
+        name: GitHub Pages Deploy
+        env:
+          BUILD_DIR: "dist/"
+          GH_PAT: ${{ secrets.GH_PAT }}
