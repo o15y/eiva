@@ -15,6 +15,7 @@ import {
 import { getClearbitPersonFromEmail, ClearbitResponse } from "../clearbit";
 import { generateToken } from "../../../_staart/helpers/jwt";
 import { Tokens } from "../../../_staart/interfaces/enum";
+import { getUserBestEmail } from "../../../_staart/services/user.service";
 
 export const setupNewAppointment = async (params: ActionParams) => {
   params.tokens = params.tokens.map(convertDigitDates);
@@ -161,6 +162,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
     trackingImageUrl: `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
       await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
     )}`,
+    guestFullName: guests.filter((name) => name).join(", ") ?? "guest",
     slotsMarkdown: slotsMarkdown.join("\n"),
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
@@ -168,6 +170,13 @@ export const setupNewAppointment = async (params: ActionParams) => {
     template: "meeting-invitation",
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
+    subject: `${params.organization.name} - Appointment`,
+    data,
+  });
+  await mail({
+    template: "meeting-details",
+    from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
+    to: `"${params.user.name}" <${await getUserBestEmail(params.user.id)}>`,
     subject: `${params.organization.name} - Appointment`,
     data,
   });
