@@ -7,7 +7,6 @@ COPY ./ /usr/src/app
 ENV NODE_ENV production
 ENV PORT 80
 EXPOSE 80
-RUN ["npm", "run", "build-babel"]
-RUN ["cp", "package.json", "dist/package.json"]
+RUN ["npm", "install"]
 RUN ["npx", "prisma", "generate"]
-CMD ["npm", "run", "launch"]
+CMD ["node", "src/__staart.js"]
