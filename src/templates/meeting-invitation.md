@@ -10,6 +10,4 @@ If you're not available at any of these times, you can just reply to this email 
 
 {{assistantSignature}}
 
-{{trackingImageUrl}}
-
 ![]({{trackingImageUrl}})
