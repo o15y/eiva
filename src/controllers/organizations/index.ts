@@ -27,6 +27,7 @@ export class OrganizationController {
     validator(
       {
         name: Joi.string().required(),
+        assistantName: Joi.string().required(),
       },
       "body"
     )
