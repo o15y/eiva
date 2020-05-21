@@ -33,13 +33,13 @@ export const processIncomingEmail = async (
 ) => {
   // Compare webhook secret
   // TODO use more sophisticated secret (HMAC with SHA256, "secret" as key, "objectId" as message)
-  if (
-    secret !==
-    createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
-      .update(objectId)
-      .digest("hex")
-  )
-    throw new Error(INVALID_API_KEY_SECRET);
+  // if (
+  //   secret !==
+  //   createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
+  //     .update(objectId)
+  //     .digest("hex")
+  // )
+  //   throw new Error(INVALID_API_KEY_SECRET);
 
   // Logging computation steps
   const logs: string[] = [];
@@ -89,7 +89,7 @@ const emailSteps = async (objectId: string, log: Logger) => {
   // Find organization
   let organization: organizations | undefined = undefined;
   let assistantEmail = "";
-  for await (const email of parsedBody.to?.value || []) {
+  for await (const email of parsedBody.from?.value || []) {
     try {
       if (!organization) {
         log(`Looking for team for email "${email.address}"`);
