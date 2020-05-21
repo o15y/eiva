@@ -57,10 +57,11 @@ export const checkOrganizationUsernameAvailability = async (
 const getBestUsernameForOrganization = async (name: string) => {
   let available = false;
   let result = slugify(name.trim());
-  if (result && checkOrganizationUsernameAvailability(result)) available = true;
+  if (result && (await checkOrganizationUsernameAvailability(result)))
+    available = true;
   while (!available) {
     result = createSlug(name.trim());
-    if (checkOrganizationUsernameAvailability(result)) available = true;
+    if (await checkOrganizationUsernameAvailability(result)) available = true;
   }
   return result;
 };
