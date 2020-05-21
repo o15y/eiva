@@ -53,17 +53,11 @@ export const recommendDates = async (
   startTime?: Moment,
   endTime?: Moment
 ) => {
-  if (!(params.user.googleAccessToken && params.user.googleRefreshToken))
-    throw new Error("Unable to find Google Calendar connection");
-  oauth2Client.setCredentials({
-    access_token: params.user.googleAccessToken,
-    refresh_token: params.user.googleRefreshToken,
-  });
   const today = moment();
   const nextWeek = moment()
     .add(7, "days")
     .endOf("day");
-  return getSlots({
+  const slotParams: any = {
     slots: 3,
     slotDuration: duration,
     padding: params.organization.schedulingPadding,
@@ -76,9 +70,18 @@ export const recommendDates = async (
       : [1, 2, 3, 4, 5],
     log: true,
     logger: params.log,
-    auth: oauth2Client,
-    calendar: calendarApi,
-  });
+  };
+  if (!(params.user.googleAccessToken && params.user.googleRefreshToken)) {
+    params.log("Unable to find Google Calendar connection");
+  } else {
+    oauth2Client.setCredentials({
+      access_token: params.user.googleAccessToken,
+      refresh_token: params.user.googleRefreshToken,
+    });
+    slotParams.auth = oauth2Client;
+    slotParams.calendar = calendarApi;
+  }
+  return getSlots(slotParams);
 };
 
 export const findDateTimeinText = (text: string) => {
