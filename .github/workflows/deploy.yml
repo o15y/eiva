@@ -22,7 +22,7 @@ jobs:
       - name: Build site
         run: npm run build
       - name: Copy assets to dist
-        run: cp -r prisma dist/prisma
+        run: cp -r prisma dist/prisma && cp captain-definition dist/captain-definition && cp Dockerfile dist/Dockerfile
         env:
           NODE_ENV: "production"
       - uses: maxheld83/ghpages@v0.2.1
