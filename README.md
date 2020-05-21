@@ -4,6 +4,8 @@ Ara is an AI-powered email communication assistant. This repo contains the backe
 
 [![GitHub Actions](https://github.com/o15y/ara/workflows/Deploy%20CI/badge.svg)](https://github.com/o15y/ara/actions) [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
 
+**Production API base URL: https://eiva-api.o15y.com**
+
 ## APIs
 
 Apart from [Staart API](https://staart.js.org/api) endpoints that let you create and manage accounts and billing, Ara also has some email communication-specific APIs that developers can use:
@@ -12,6 +14,15 @@ Apart from [Staart API](https://staart.js.org/api) endpoints that let you create
 - `POST /v1/api/parse-email` parses a raw email into structured data
 - `POST /v1/api/smart-tokenize` tokenizes text to actionable sentences
 - `POST /v1/api/perform-action` takes an email and processes it
+- `POST /v1/api/read-receipt` saves a read receipt for an email
+- `POST /v1/api/meeting-page/:username/:id` returns public meeting details
+- `POST /v1/api/confirm-meeting/:organizaionId/:meetingId` confirms a meeting
+- `POST /v1/api/track/:index` tracks a usage event
+
+CRUD endpoints:
+
+- `/v1/organizations/:id/location`
+- `/v1/organizations/:id/meetings`
 
 All API endpoints require an API key or access token; both can be generated using APIs or the [webapp](https://araassistant.com). Parameters are available in [`api/index.ts`](/src/controllers/api/index.ts).
 
