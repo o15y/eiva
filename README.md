@@ -2,7 +2,7 @@
 
 Ara is an AI-powered email communication assistant. This repo contains the backend APIs, based on [staart/api](https://github.com/staart/api).
 
-[![GitHub Actions](https://github.com/o15y/ara/workflows/Node%20CI/badge.svg)](https://github.com/o15y/ara/actions) [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
+[![GitHub Actions](https://github.com/o15y/ara/workflows/Deploy%20CI/badge.svg)](https://github.com/o15y/ara/actions) [![Dependencies](https://img.shields.io/david/staart/api.svg)](https://david-dm.org/staart/api) [![Dev dependencies](https://img.shields.io/david/dev/staart/api.svg)](https://david-dm.org/staart/api) ![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/staart/api.svg) ![Type definitions](https://img.shields.io/badge/types-TypeScript-blue.svg)
 
 ## APIs
 
