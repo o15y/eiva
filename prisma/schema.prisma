@@ -133,12 +133,14 @@ model organizations {
 }
 
 model locations {
-  id             Int               @default(autoincrement()) @id
+  id             Int           @default(autoincrement()) @id
   type           MeetingType
   data           String?
   value          String
-  meetings       meetings[]        @relation("meetingLocation")
-  organization   organizations     @relation("organizationLocations", fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  meetings       meetings[]    @relation("meetingLocation")
+  organization   organizations @relation("organizationLocations", fields: [organizationId], references: [id])
   organizationId Int
 }
 
@@ -150,6 +152,8 @@ model meetings {
   meetingType    MeetingType       @default(VIDEO_CALL)
   guests         String            @default("[]")
   language       String            @default("en")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   location       locations         @relation("meetingLocation", fields: [locationId], references: [id])
   locationId     Int
   user           users             @relation("userMeetings", fields: [userId], references: [id])

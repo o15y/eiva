@@ -55,6 +55,11 @@ enum EmailStatus {
   ERROR
 }
 
+enum EmailType {
+  INCOMING
+  OUTGOING
+}
+
 model users {
   checkLocationOnLogin Boolean              @default(false)
   countryCode          String               @default("us")
@@ -115,6 +120,8 @@ model organizations {
   schedulingTimeEnd   String            @default("05:00:00")
   schedulingPadding   Int               @default(15)
   schedulingDuration  Int               @default(30)
+  schedulingType      MeetingType       @default(VIDEO_CALL)
+  schedulingLocation  Int               @default(0)
   calendars           String?
   customEmailEnabled  Boolean           @default(false)
   customEmailAddress  String?
@@ -126,20 +133,27 @@ model organizations {
 }
 
 model locations {
-  id             Int               @default(autoincrement()) @id
+  id             Int           @default(autoincrement()) @id
   type           MeetingType
-  data           Json?
+  data           String?
   value          String
-  meetings       meetings[]        @relation("meetingLocation")
-  organization   organizations     @relation("organizationLocations", fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  meetings       meetings[]    @relation("meetingLocation")
+  organization   organizations @relation("organizationLocations", fields: [organizationId], references: [id])
   organizationId Int
 }
 
 model meetings {
   id             Int               @default(autoincrement()) @id
-  proposedTimes  Json?
-  confirmedTime  Json?
-  meetingType    MeetingType
+  proposedTimes  String?
+  confirmedTime  String?
+  duration       Int
+  meetingType    MeetingType       @default(VIDEO_CALL)
+  guests         String            @default("[]")
+  language       String            @default("en")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   location       locations         @relation("meetingLocation", fields: [locationId], references: [id])
   locationId     Int
   user           users             @relation("userMeetings", fields: [userId], references: [id])
@@ -152,10 +166,11 @@ model meetings {
 model incoming_emails {
   id             Int           @default(autoincrement()) @id
   objectId       String        @unique
-  logs           Json?
-  from           Json
-  to             Json
-  cc             Json
+  logs           String?
+  emailType      EmailType     @default(INCOMING)
+  from           String
+  to             String
+  cc             String
   subject        String
   status         EmailStatus   @default(PENDING)
   emailDate      DateTime
