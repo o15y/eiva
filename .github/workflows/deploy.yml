@@ -18,15 +18,6 @@ jobs:
         with:
           node-version: "14.3.0"
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Build site
         run: npm run build
-      - name: Copy assets to dist
-        run: cp -r prisma dist/prisma && cp captain-definition dist/captain-definition && cp Dockerfile dist/Dockerfile
-        env:
-          NODE_ENV: "production"
-      - uses: maxheld83/ghpages@v0.2.1
-        name: GitHub Pages Deploy
-        env:
-          BUILD_DIR: "dist/"
-          GH_PAT: ${{ secrets.GH_PAT }}
