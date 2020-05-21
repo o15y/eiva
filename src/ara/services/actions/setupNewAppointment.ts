@@ -164,7 +164,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
     trackingImageUrl: `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
       await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
     )}`,
-    guestFullName: guests.filter((name) => name).join(", ") ?? "guest",
+    guestFullName:
+      guests
+        .map((guest) => guest.name)
+        .filter((name) => name)
+        .join(", ") ?? "guest",
     slotsMarkdown: slotsMarkdown.join("\n"),
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
