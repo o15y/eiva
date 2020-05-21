@@ -8,6 +8,7 @@ export default () => {
     "0 * * * *",
     async () => {
       await deleteExpiredSessions();
+      await updatePendingEmails();
     },
     undefined,
     true
@@ -15,11 +16,29 @@ export default () => {
 };
 
 const deleteExpiredSessions = async () => {
-  await prisma.sessions.deleteMany({
-    where: {
-      createdAt: {
-        lte: new Date(new Date().getTime() - ms(TOKEN_EXPIRY_REFRESH)),
+  try {
+    await prisma.sessions.deleteMany({
+      where: {
+        createdAt: {
+          lte: new Date(new Date().getTime() - ms(TOKEN_EXPIRY_REFRESH)),
+        },
       },
-    },
-  });
+    });
+  } catch (error) {}
+};
+
+const updatePendingEmails = async () => {
+  try {
+    await prisma.incoming_emails.updateMany({
+      data: {
+        status: "ERROR",
+      },
+      where: {
+        status: "PENDING",
+        createdAt: {
+          lte: new Date(new Date().getTime() - ms("10m")),
+        },
+      },
+    });
+  } catch (error) {}
 };
