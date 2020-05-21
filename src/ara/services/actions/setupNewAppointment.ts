@@ -167,14 +167,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
   await mail({
-    template: "meeting-invitation",
+    template: `meeting-invitation${language === "nl" ? ".nl" : ""}`,
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
     subject: `${params.organization.name} - Appointment`,
     data,
   });
   await mail({
-    template: "meeting-details",
+    template: `meeting-details${language === "nl" ? ".nl" : ""}`,
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: `"${params.user.name}" <${await getUserBestEmail(params.user.id)}>`,
     subject: `${params.organization.name} - Appointment`,
