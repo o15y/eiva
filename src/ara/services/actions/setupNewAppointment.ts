@@ -115,7 +115,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       messageId: `${outgoingEmailId}@ara-internal`,
       from: `[{"address":"meet-${params.organization.username}@mail.araassistant.com","name":"${params.organization.assistantName}"}]`,
       to: guests,
-      cc: "[]",
+      cc: [],
       subject: `${params.organization.name} - Appointment`,
       status: "PENDING",
       emailDate: new Date(),

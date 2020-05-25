@@ -1,0 +1,52 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "locations",
+      "field": "data",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "meetings",
+      "field": "guests",
+      "type": "Json"
+    },
+    {
+      "tag": "DeleteDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "meetings",
+          "field": "guests"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "logs",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "from",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "to",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "cc",
+      "type": "Json"
+    }
+  ]
+}
