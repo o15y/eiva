@@ -52,15 +52,13 @@ export const confirmMeetingForGuest = async (
 
   const safeConfirmMeeting = async () => {
     // Add new guest data to `meeting.guests`
-    meeting.guests = JSON.stringify(
-      (JSON.parse(meeting.guests) as any[]).map((guest) => {
-        if (guest.address === data.guestEmail) {
-          guest.name = data.guestName;
-          guest.timezone = data.guestTimezone;
-        }
-        return guest;
-      })
-    );
+    meeting.guests = (JSON.parse(meeting.guests) as any[]).map((guest) => {
+      if (guest.address === data.guestEmail) {
+        guest.name = data.guestName;
+        guest.timezone = data.guestTimezone;
+      }
+      return guest;
+    });
 
     // Update meeting details
     // TODO support multiple guests

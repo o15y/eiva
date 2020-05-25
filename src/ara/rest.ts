@@ -57,7 +57,7 @@ export const processIncomingEmail = async (
     .then(() =>
       prisma.incoming_emails.update({
         data: {
-          logs: JSON.stringify(logs),
+          logs: logs,
           status: (logs[logs.length - 1] ?? "").includes("ERROR")
             ? "ERROR"
             : "SUCCESS",
@@ -162,9 +162,9 @@ const emailSteps = async (objectId: string, log: Logger) => {
           },
         },
       },
-      from: JSON.stringify(parsedBody.from.value),
-      to: JSON.stringify(parsedBody.to.value),
-      cc: JSON.stringify(parsedBody.cc?.value ?? []),
+      from: parsedBody.from.value,
+      to: parsedBody.to.value,
+      cc: parsedBody.cc?.value ?? [],
       subject: parsedBody.subject ?? "",
       emailDate: parsedBody.date ?? new Date(),
       messageId: parsedBody.messageId ?? "",

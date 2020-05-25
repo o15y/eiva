@@ -69,8 +69,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
       try {
         details = await getClearbitPersonFromEmail(guest.address);
         params.log(
-          `Found guest details ${details.person?.name?.fullName ?? ""} ${details
-            .company?.name ?? ""}`
+          `Found guest details ${details.person?.name?.fullName ?? ""} ${
+            details.company?.name ?? ""
+          }`
         );
       } catch (error) {
         params.log("Unable to find guest details");
@@ -99,8 +100,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
   await prisma.meetings.update({
     where: { id: params.incomingEmail.meetingId },
     data: {
-      guests: JSON.stringify(guests),
-      proposedTimes: JSON.stringify(slots),
+      guests: guests,
+      proposedTimes: slots,
     },
   });
   params.log("Updated meeting details with slots and guests");
@@ -113,7 +114,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       objectId: outgoingEmailId,
       messageId: `${outgoingEmailId}@ara-internal`,
       from: `[{"address":"meet-${params.organization.username}@mail.araassistant.com","name":"${params.organization.assistantName}"}]`,
-      to: JSON.stringify(guests),
+      to: guests,
       cc: "[]",
       subject: `${params.organization.name} - Appointment`,
       status: "PENDING",
