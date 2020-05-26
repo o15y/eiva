@@ -149,6 +149,7 @@ const emailSteps = async (objectId: string, log: Logger) => {
       meeting: {
         // TODO support if reply to pre-existing email
         create: {
+          guests: [],
           duration: organization.schedulingDuration,
           meetingType: organization.schedulingType,
           location: {
