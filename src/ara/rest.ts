@@ -57,7 +57,7 @@ export const processIncomingEmail = async (
     .then(() =>
       prisma.incoming_emails.update({
         data: {
-          logs: logs,
+          logs: { logs },
           status: (logs[logs.length - 1] ?? "").includes("ERROR")
             ? "ERROR"
             : "SUCCESS",
