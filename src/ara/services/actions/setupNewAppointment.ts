@@ -136,6 +136,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   // Generate markdown list of slots with links
   let slotsMarkdown: string[] = [];
+  let slotsMarkdownOwner: string[] = [];
   for await (const slot of slots) {
     slotsMarkdown.push(
       `- [${moment
@@ -149,6 +150,24 @@ export const setupNewAppointment = async (params: ActionParams) => {
             timezone: guestTimezone,
             duration,
             datetime: moment.tz(slot.start, guestTimezone).toISOString(),
+          },
+          "1y",
+          Tokens.CONFIRM_APPOINTMENT
+        )
+      )})`
+    );
+    slotsMarkdownOwner.push(
+      `- [${moment
+        .tz(slot.start, params.user.timezone)
+        .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
+        params.organization.username
+      }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
+        await generateToken(
+          {
+            guests,
+            timezone: params.user.timezone,
+            duration,
+            datetime: moment.tz(slot.start, params.user.timezone).toISOString(),
           },
           "1y",
           Tokens.CONFIRM_APPOINTMENT
@@ -175,6 +194,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
         .map((guest) => guest.name)
         .filter((name) => name)
         .join(", ") ?? "guest",
+    slotsMarkdownOwner: slotsMarkdownOwner.join("\n"),
     slotsMarkdown: slotsMarkdown.join("\n"),
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
