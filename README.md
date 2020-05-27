@@ -118,9 +118,11 @@ This is used for both transactional emails (like password resets) using `SES_EMA
 
 #### Clearbit
 
-Clearbit is used to find information about guests, emails, and more:
+Clearbit is used to find information about guests, emails, and more. There are multiple API keys that are rotated. The secret API keys are stored in variables like:
 
-- `CLEARBIT_SECRET_KEY` is the secret API key
+- `CLEARBIT_SECRET_KEY_1`
+- `CLEARBIT_SECRET_KEY_2`
+- `CLEARBIT_SECRET_KEY_3`
 
 #### ElasticSearch
 
