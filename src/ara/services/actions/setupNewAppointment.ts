@@ -100,8 +100,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
   await prisma.meetings.update({
     where: { id: params.incomingEmail.meetingId },
     data: {
-      guests: guests,
-      proposedTimes: slots,
+      guests: JSON.stringify(guests),
+      proposedTimes: JSON.stringify(slots),
     },
   });
   params.log("Updated meeting details with slots and guests");
@@ -113,14 +113,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
       emailType: "OUTGOING",
       objectId: outgoingEmailId,
       messageId: `${outgoingEmailId}@ara-internal`,
-      from: [
+      from: JSON.stringify([
         {
           address: "meet-${params.organization.username}@mail.araassistant.com",
           name: "${params.organization.assistantName}",
         },
-      ],
-      to: guests,
-      cc: [],
+      ]),
+      to: JSON.stringify(guests),
+      cc: "[]",
       subject: `${params.organization.name} - Appointment`,
       status: "PENDING",
       emailDate: new Date(),
