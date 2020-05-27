@@ -30,6 +30,8 @@ All API endpoints require an API key or access token; both can be generated usin
 
 ### Known issues
 
+#### JSON
+
 _**⚠️ FIX AVAILABLE:** The fix for this is available in Prisma beta 5_
 
 `String` in Prisma schema doesn't allow larger fields, so you have to manually convert the following fields to `LONGTEXT` from `VARCHAR` after generating tables. For details, see [prisma/migrate#116](https://github.com/prisma/migrate/issues/116)
@@ -43,6 +45,10 @@ _**⚠️ FIX AVAILABLE:** The fix for this is available in Prisma beta 5_
 - `meetings.guests`
 
 You might also have to make some of these changes after running `npx prisma migrate up --experimental` because it would overwrite the database schema.
+
+#### Database hanging
+
+Sometimes, the Prisma database hangs (blocks the main thread) during the initial tests. The trick is to `rm -rf eiva` and re-clone, install, and start the app.
 
 ### Differences in `_staart`
 
