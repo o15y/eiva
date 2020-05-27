@@ -32,16 +32,17 @@ All API endpoints require an API key or access token; both can be generated usin
 
 _**⚠️ FIX AVAILABLE:** The fix for this is available in Prisma beta 5_
 
-`String` in Prisma schema doesn't allow larger fields, so you have to manually convert the following fields to `TEXT` from `VARCHAR` after generating tables. For details, see [prisma/migrate#116](https://github.com/prisma/migrate/issues/116):
+`String` in Prisma schema doesn't allow larger fields, so you have to manually convert the following fields to `LONGTEXT` from `VARCHAR` after generating tables. For details, see [prisma/migrate#116](https://github.com/prisma/migrate/issues/116)
 
 - `"incoming-emails".from`
 - `"incoming-emails".to`
 - `"incoming-emails".cc`
 - `"incoming-emails".logs`
 - `locations.data`
-- `meetings.confirmedTime`
 - `meetings.proposedTimes`
 - `meetings.guests`
+
+You might also have to make some of these changes after running `npx prisma migrate up --experimental` because it would overwrite the database schema.
 
 ### Differences in `_staart`
 
