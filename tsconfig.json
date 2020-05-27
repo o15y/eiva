@@ -14,8 +14,8 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "typeRoots": ["src/@types", ".staart/src/@types", "node_modules/@types"]
+    "typeRoots": [".staart/src/@types", "node_modules/@types"]
   },
-  "include": ["src/**/*.ts", ".staart/**/*.ts"],
+  "include": [".staart/src/**/*.ts"],
   "exclude": ["node_modules"]
 }
