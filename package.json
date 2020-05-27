@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "staart dev",
     "start": "staart start",
-    "build": "staart build",
+    "build": "staart build SKIP-TSC && tsc",
     "eject": "staart eject",
     "build-babel": "staart build-babel",
     "launch": "staart launch",
@@ -74,7 +74,7 @@
     "@staart/mustache-markdown": "^3.0.2",
     "@staart/payments": "^3.3.1",
     "@staart/redis": "^2.2.1",
-    "@staart/scripts": "^1.15.3",
+    "@staart/scripts": "^1.16.1",
     "@staart/server": "^2.7.0",
     "@staart/text": "^2.3.0",
     "@staart/validate": "^3.0.1",
