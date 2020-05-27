@@ -105,6 +105,7 @@ export const confirmMeetingForGuest = async (
     const meetingWithName = JSON.parse(meeting.guests)
       .map((guest: any) => guest.name)
       .join(", ");
+    if (!meeting.user.primaryEmail) throw new Error(RESOURCE_NOT_FOUND);
     const userEmail = await prisma.emails.findOne({
       where: { id: meeting.user.primaryEmail },
     });
