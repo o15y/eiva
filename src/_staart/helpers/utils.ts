@@ -19,7 +19,7 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 /**
  * Delete any sensitive information for a user like passwords and tokens
  */
-export const deleteSensitiveInfoUser = (user: users) => {
+export const deleteSensitiveInfoUser = (user: any) => {
   delete user.password;
   delete user.twoFactorSecret;
   return user;
