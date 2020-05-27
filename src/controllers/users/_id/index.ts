@@ -55,6 +55,7 @@ export class UserController {
           .allow("NO_PREFERENCE", "LIGHT", "DARK")
           .only(),
         profilePicture: Joi.string(),
+        clearbitApiKey: Joi.string(),
         checkLocationOnLogin: Joi.boolean(),
       },
       "body"
