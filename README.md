@@ -122,7 +122,8 @@ Clearbit is used to find information about guests, emails, and more. There are m
 
 - `CLEARBIT_SECRET_KEY_1`
 - `CLEARBIT_SECRET_KEY_2`
-- `CLEARBIT_SECRET_KEY_3`
+- `CLEARBIT_SECRET_KEY_3`...
+- `CLEARBIT_SECRET_KEY_10` (up to 10 API keys are supported)
 
 #### ElasticSearch
 
