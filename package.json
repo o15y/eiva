@@ -43,7 +43,6 @@
     "@types/jest": "^25.2.3",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mailparser": "^2.7.3",
-    "@types/moment-timezone": "^0.5.13",
     "@types/mysql": "^2.15.12",
     "@types/natural": "^0.6.3",
     "@types/node": "^14.0.5",
