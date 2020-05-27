@@ -100,6 +100,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   await prisma.meetings.update({
     where: { id: params.incomingEmail.meetingId },
     data: {
+      language,
       guests: JSON.stringify(guests),
       proposedTimes: JSON.stringify(slots),
     },
