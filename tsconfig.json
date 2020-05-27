@@ -16,6 +16,6 @@
     "outDir": "./dist",
     "typeRoots": ["src/@types", ".staart/src/@types", "node_modules/@types"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", ".staart/**/*.ts"],
   "exclude": ["node_modules"]
 }
