@@ -115,8 +115,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
       messageId: `${outgoingEmailId}@ara-internal`,
       from: JSON.stringify([
         {
-          address: "meet-${params.organization.username}@mail.araassistant.com",
-          name: "${params.organization.assistantName}",
+          address: `meet-${params.organization.username}@mail.araassistant.com`,
+          name: params.organization.assistantName,
         },
       ]),
       to: JSON.stringify(guests),
