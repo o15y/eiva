@@ -31,7 +31,10 @@ export interface ClearbitResponse {
   };
 }
 
-export const getClearbitPersonFromEmail = async (email: string) => {
+export const getClearbitPersonFromEmail = async (
+  email: string,
+  apiKey?: string
+) => {
   return (
     await axios.get(
       `https://person-stream.clearbit.com/v2/combined/find?email=${encodeURIComponent(
@@ -39,7 +42,7 @@ export const getClearbitPersonFromEmail = async (email: string) => {
       )}`,
       {
         headers: {
-          Authorization: `Bearer ${getApiKey()}`,
+          Authorization: `Bearer ${apiKey ?? getApiKey()}`,
         },
       }
     )
