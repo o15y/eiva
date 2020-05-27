@@ -1,0 +1,47 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "locations",
+      "field": "data",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "meetings",
+      "field": "proposedTimes",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "meetings",
+      "field": "guests",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "logs",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "from",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "to",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "incoming_emails",
+      "field": "cc",
+      "type": "String"
+    }
+  ]
+}
