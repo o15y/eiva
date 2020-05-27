@@ -106,10 +106,10 @@ Assistant to ${organization.name}`;
       data: {
         type: "VIDEO_CALL",
         value: `https://meet.jit.si/${result.username}`,
-        data: {
+        data: JSON.stringify({
           name: "Jisti Meet",
           template: "{{name}}: {{value}}",
-        },
+        }),
         organization: { connect: { id: result.id } },
       },
     });
