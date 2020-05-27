@@ -1,6 +1,17 @@
 import axios from "axios";
 
-const CLEARBIT_SECRET_KEY = process.env.CLEARBIT_SECRET_KEY ?? "";
+let keys: string[] = [];
+for (let i = 0; i < 10; i++) {
+  const key = process.env[`CLEARBIT_SECRET_KEY_${i}`];
+  if (key) keys.push(key);
+}
+let lastUsedKey = 0;
+const getApiKey = () => {
+  const result = keys[lastUsedKey];
+  lastUsedKey++;
+  if (lastUsedKey === keys.length) lastUsedKey = 0;
+  return result;
+};
 
 export interface ClearbitResponse {
   person?: {
@@ -28,7 +39,7 @@ export const getClearbitPersonFromEmail = async (email: string) => {
       )}`,
       {
         headers: {
-          Authorization: `Bearer ${CLEARBIT_SECRET_KEY}`,
+          Authorization: `Bearer ${getApiKey()}`,
         },
       }
     )
