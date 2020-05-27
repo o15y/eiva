@@ -48,7 +48,7 @@ You might also have to make some of these changes after running `npx prisma migr
 
 #### Database hanging
 
-Sometimes, the Prisma database hangs (blocks the main thread) during the initial tests. The trick is to `rm -rf eiva` and re-clone, install, and start the app.
+Sometimes, the Prisma database hangs (blocks the main thread) during the initial tests. The trick is to make sure `NODE_ENV = "development"` is in `env`. I think this has something to do with line 7 of `src/_staart/helpers/prisma.ts`.
 
 ### Differences in `_staart`
 
