@@ -1,0 +1,222 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "users",
+      "field": "googleAccessToken"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "users",
+      "field": "googleRefreshToken"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "users",
+      "field": "clearbitApiKey"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "googleAccessToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "googleRefreshToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "clearbitApiKey",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "customCalendarUrl",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "emailLanguage",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "emailLanguage"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "emailLanguage"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "\"detect\""
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "unsubscribeLink",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "unsubscribeLink"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "unsubscribeLink"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "readReceipts",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "readReceipts"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "readReceipts"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "emailConfirmation",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "emailConfirmation"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "emailConfirmation"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "true"
+    },
+    {
+      "tag": "CreateField",
+      "model": "organizations",
+      "field": "showPoweredByAra",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "showPoweredByAra"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "showPoweredByAra"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "true"
+    },
+    {
+      "tag": "UpdateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "organizations",
+          "field": "assistantSignature"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "newValue": "\"Thank you\""
+    }
+  ]
+}
