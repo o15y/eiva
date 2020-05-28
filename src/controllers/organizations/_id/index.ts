@@ -73,8 +73,11 @@ export class OrganizationController {
         customEmailPassword: Joi.string(),
         clearbitApiKey: Joi.string(),
         customCalendarUrl: Joi.string(),
+        emailLanguage: Joi.string(),
         unsubscribeLink: Joi.boolean(),
         readReceipts: Joi.boolean(),
+        emailConfirmation: Joi.boolean(),
+        showPoweredByAra: Joi.boolean(),
       },
       "body"
     )
