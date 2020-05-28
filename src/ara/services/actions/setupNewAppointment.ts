@@ -205,7 +205,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
 
   const sendInLanguage =
     params.organization.emailLanguage === "detect"
-      ? language
+      ? ["en", "nl"].includes(language)
+        ? language
+        : params.organization.emailLanguage
       : params.organization.emailLanguage;
   await mail({
     template: `meeting-invitation.${sendInLanguage}`,

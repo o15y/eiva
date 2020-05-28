@@ -124,7 +124,9 @@ export const confirmMeetingForGuest = async (
 
     const sendInLanguage =
       meeting.organization.emailLanguage === "detect"
-        ? meeting.language
+        ? ["en", "nl"].includes(meeting.language)
+          ? meeting.language
+          : meeting.organization.emailLanguage
         : meeting.organization.emailLanguage;
 
     await mail({
