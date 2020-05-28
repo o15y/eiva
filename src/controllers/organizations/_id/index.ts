@@ -71,6 +71,10 @@ export class OrganizationController {
         customEmailSecure: Joi.boolean(),
         customEmailUsername: Joi.string(),
         customEmailPassword: Joi.string(),
+        clearbitApiKey: Joi.string(),
+        customCalendarUrl: Joi.string(),
+        unsubscribeLink: Joi.boolean(),
+        readReceipts: Joi.boolean(),
       },
       "body"
     )
