@@ -69,7 +69,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       try {
         details = await getClearbitPersonFromEmail(
           guest.address,
-          params.user.clearbitApiKey
+          params.organization.clearbitApiKey
         );
         params.log(
           `Found guest details ${details.person?.name?.fullName ?? ""} ${
@@ -202,21 +202,30 @@ export const setupNewAppointment = async (params: ActionParams) => {
     slotsMarkdown: slotsMarkdown.join("\n"),
   };
   data.assistantSignature = render(data.assistantSignature, data)[1];
+
+  const sendInLanguage =
+    params.organization.emailLanguage === "detect"
+      ? language
+      : params.organization.emailLanguage;
   await mail({
-    template: `meeting-invitation${language === "nl" ? ".nl" : ""}`,
+    template: `meeting-invitation.${sendInLanguage}`,
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
     subject: `${params.organization.name} - Appointment`,
     data,
   });
-  await mail({
-    template: `meeting-details${language === "nl" ? ".nl" : ""}`,
-    from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
-    to: `"${params.user.name}" <${
-      (await getUserBestEmail(params.user.id)).email
-    }>`,
-    subject: `${data.guestFullName} - Appointment`,
-    data,
-  });
   params.log("Sent email to guests");
+
+  if (params.organization.emailConfirmation) {
+    await mail({
+      template: `meeting-details.${sendInLanguage}`,
+      from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
+      to: `"${params.user.name}" <${
+        (await getUserBestEmail(params.user.id)).email
+      }>`,
+      subject: `${data.guestFullName} - Appointment`,
+      data,
+    });
+    params.log("Sent confirmation email to owner");
+  }
 };
