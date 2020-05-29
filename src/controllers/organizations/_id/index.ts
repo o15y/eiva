@@ -71,6 +71,8 @@ export class OrganizationController {
         customEmailSecure: Joi.boolean(),
         customEmailUsername: Joi.string(),
         customEmailPassword: Joi.string(),
+        googleAccessToken: Joi.string(),
+        googleRefreshToken: Joi.string(),
         clearbitApiKey: Joi.string(),
         customCalendarUrl: Joi.string(),
         emailLanguage: Joi.string(),
