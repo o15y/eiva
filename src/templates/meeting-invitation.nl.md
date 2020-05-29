@@ -10,4 +10,4 @@ Als u op een van deze tijden niet beschikbaar bent, kunt u deze e-mail beantwoor
 
 {{assistantSignature}}
 
-![]({{trackingImageUrl}})
+{{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}

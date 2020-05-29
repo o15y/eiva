@@ -200,7 +200,6 @@ export const setupNewAppointment = async (params: ActionParams) => {
     slotsMarkdownOwner: slotsMarkdownOwner.join("\n"),
     slotsMarkdown: slotsMarkdown.join("\n"),
   };
-  data.assistantSignature = render(data.assistantSignature, data)[1];
 
   const sendInLanguage =
     params.organization.emailLanguage === "detect"

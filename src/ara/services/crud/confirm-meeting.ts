@@ -96,10 +96,6 @@ export const confirmMeetingForGuest = async (
       yahooLink: "#",
       icsLink: "#",
     };
-    sharedEmailData.assistantSignature = render(
-      sharedEmailData.assistantSignature,
-      sharedEmailData
-    )[1];
 
     // Send email to owner
     const meetingWithName = JSON.parse(meeting.guests)

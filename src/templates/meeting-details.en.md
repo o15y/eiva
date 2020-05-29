@@ -8,4 +8,4 @@ As soon as {{guestName}} has confirmed a time, I'll send a calendar invitation t
 
 {{assistantSignature}}
 
-![]({{trackingImageUrl}})
+{{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}

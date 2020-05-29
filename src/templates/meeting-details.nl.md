@@ -8,4 +8,4 @@ Zodra {{guestName}} een tijd heeft bevestigd, stuur ik jullie allebei een kalend
 
 {{assistantSignature}}
 
-![]({{trackingImageUrl}})
+{{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}
