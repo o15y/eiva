@@ -100,7 +100,7 @@ export class ApiController {
     );
   }
 
-  @Get("confirm-meeting/:organizaionId/:meetingId")
+  @Post("confirm-meeting/:organizaionId/:meetingId")
   @Middleware(
     validator(
       {
