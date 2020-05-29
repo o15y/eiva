@@ -201,7 +201,7 @@ export const detectEntities = async (
       )
     ) {
       return {
-        language: error?.response?.data?.message
+        language: error?.response?.data?.error?.message
           .split("The language ")[1]
           .split(" ")[0],
         persons: [],
