@@ -36,7 +36,10 @@ export const getMeetingForOrganization = async (
   if (
     await can(tokenUserId, OrgScopes.READ_ORG, "organization", organizationId)
   )
-    return prisma.meetings.findOne({ where: { id: parseInt(meetingId) } });
+    return prisma.meetings.findOne({
+      where: { id: parseInt(meetingId) },
+      include: { emails: true, location: true },
+    });
   throw new Error(INSUFFICIENT_PERMISSION);
 };
 
