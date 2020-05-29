@@ -19,6 +19,9 @@ import {
 } from "../../ara/rest";
 import { ApiKeyResponse } from "../../_staart/helpers/jwt";
 import { confirmMeetingForGuest } from "../../ara/services/crud/confirm-meeting";
+import { safeRedirect } from "../../_staart/helpers/utils";
+import { googleCalendarClient } from "../../ara/services/calendar-connection";
+import { BASE_URL } from "../../config";
 
 export class ApiController {
   @Post("classify")
@@ -133,5 +136,17 @@ export class ApiController {
       .then(() => {})
       .catch(() => {});
     return { queued: true };
+  }
+
+  @Get("calendar-connection/google")
+  async getOAuthUrlGoogleCalendar(req: Request, res: Response) {
+    safeRedirect(req, res, googleCalendarClient.client.code.getUri());
+  }
+
+  @Get("calendar-connection/google/callback")
+  async getOAuthCallbackGoogleCalendar(req: Request, res: Response) {
+    return googleCalendarClient.callback(
+      `${BASE_URL}/auth${req.path}?${stringify(req.query)}`
+    );
   }
 }
