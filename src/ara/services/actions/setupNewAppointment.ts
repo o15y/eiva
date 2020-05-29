@@ -194,6 +194,10 @@ export const setupNewAppointment = async (params: ActionParams) => {
     slotsMarkdownOwner: slotsMarkdownOwner.join("\n"),
     slotsMarkdown: slotsMarkdown.join("\n"),
     ...params.organization,
+    assistantSignature: params.organization.assistantSignature.replace(
+      /\n/g,
+      "<br>"
+    ),
     unsubscribeUrl: `${FRONTEND_URL}/unsubscribe}`,
     baseUrl: BASE_URL,
     frontendUrl: FRONTEND_URL,

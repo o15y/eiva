@@ -10,6 +10,6 @@ Als u op een van deze tijden niet beschikbaar bent, kunt u deze e-mail beantwoor
 
 {{assistantSignature}}
 
-{{#unsubscribeLink}}<small>Wil je deze e-mails niet ontvangen? <a href="{{unsubscribeUrl}}">Afmelden</a></small>{{/unsubscribeLink}}
-{{#showPoweredByAra}}<small>Aangedreven door <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}
+{{#unsubscribeLink}}<small>Wil je deze e-mails niet ontvangen? <a href="{{unsubscribeUrl}}">Afmelden</a></small>{{/unsubscribeLink}}  
+{{#showPoweredByAra}}<small>Aangedreven door <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}  
 {{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}

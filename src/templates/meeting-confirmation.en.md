@@ -13,5 +13,5 @@ You can also add this meeting to your calendar: [Google Calendar]({{googleLink}}
 
 {{assistantSignature}}
 
-{{#unsubscribeLink}}<small>Don't want to receive these emails? <a href="{{unsubscribeUrl}}">Unsubscribe</a></small>{{/unsubscribeLink}}
+{{#unsubscribeLink}}<small>Don't want to receive these emails? <a href="{{unsubscribeUrl}}">Unsubscribe</a></small>{{/unsubscribeLink}}  
 {{#showPoweredByAra}}<small>Powered by <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}
