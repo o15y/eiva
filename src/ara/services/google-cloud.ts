@@ -197,7 +197,7 @@ export const detectEntities = async (
     if (
       error?.response?.data?.error?.message?.startsWith("The language") &&
       error?.response?.data?.error?.message?.endsWith(
-        "not supported for entity analysis"
+        "not supported for entity analysis."
       )
     ) {
       return {
