@@ -25,6 +25,8 @@ export const confirmIfSlotAvailable = async (
   startTime: Moment,
   endTime: Moment
 ) => {
+  if (!(organization.googleAccessToken && organization.googleRefreshToken))
+    return true;
   oauth2Client.setCredentials({
     access_token: organization.googleAccessToken,
     refresh_token: organization.googleRefreshToken,
