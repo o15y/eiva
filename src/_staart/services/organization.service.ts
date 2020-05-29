@@ -105,7 +105,7 @@ Assistant to ${organization.name}`;
     const primaryLocation = await prisma.locations.create({
       data: {
         type: "VIDEO_CALL",
-        value: `https://meet.jit.si/${result.username}`,
+        value: `https://meet.jit.si/meet-${result.username}`,
         data: JSON.stringify({
           name: "Jisti Meet",
           template: "{{name}}: {{value}}",
