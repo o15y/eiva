@@ -43,7 +43,7 @@ export const confirmMeetingForGuest = async (
   // Make sure this slot is available
   if (
     !confirmIfSlotAvailable(
-      meeting.user,
+      meeting.organization,
       moment(data.selectedDatetime),
       moment(data.selectedDatetime).add(data.duration, "minutes")
     )

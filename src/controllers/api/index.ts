@@ -22,6 +22,7 @@ import { confirmMeetingForGuest } from "../../ara/services/crud/confirm-meeting"
 import { safeRedirect } from "../../_staart/helpers/utils";
 import { googleCalendarClient } from "../../ara/services/calendar-connection";
 import { BASE_URL } from "../../config";
+import { stringify } from "querystring";
 
 export class ApiController {
   @Post("classify")

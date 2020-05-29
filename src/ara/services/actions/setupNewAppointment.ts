@@ -69,7 +69,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       try {
         details = await getClearbitPersonFromEmail(
           guest.address,
-          params.organization.clearbitApiKey
+          params.organization.clearbitApiKey || undefined
         );
         params.log(
           `Found guest details ${details.person?.name?.fullName ?? ""} ${

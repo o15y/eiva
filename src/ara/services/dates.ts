@@ -4,7 +4,7 @@ import { getSlots, getEventsFromSingleCalendar } from "calendar-slots";
 import { ActionParams } from "../interfaces";
 import moment, { Moment } from "moment-timezone";
 import { google } from "googleapis";
-import { users } from "@prisma/client";
+import { organizations } from "@prisma/client";
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CALENDAR_CLIENT_ID ?? "Client ID",
@@ -21,13 +21,13 @@ const wordTokenizer = new WordTokenizer();
  * @param endTime - End time
  */
 export const confirmIfSlotAvailable = async (
-  user: users,
+  organization: organizations,
   startTime: Moment,
   endTime: Moment
 ) => {
   oauth2Client.setCredentials({
-    access_token: user.googleAccessToken,
-    refresh_token: user.googleRefreshToken,
+    access_token: organization.googleAccessToken,
+    refresh_token: organization.googleRefreshToken,
   });
   return (
     (
@@ -54,9 +54,7 @@ export const recommendDates = async (
   endTime?: Moment
 ) => {
   const today = moment();
-  const nextWeek = moment()
-    .add(7, "days")
-    .endOf("day");
+  const nextWeek = moment().add(7, "days").endOf("day");
   const slotParams: any = {
     slots: 3,
     slotDuration: duration,
@@ -71,12 +69,17 @@ export const recommendDates = async (
     log: true,
     logger: params.log,
   };
-  if (!(params.user.googleAccessToken && params.user.googleRefreshToken)) {
+  if (
+    !(
+      params.organization.googleAccessToken &&
+      params.organization.googleRefreshToken
+    )
+  ) {
     params.log("Unable to find Google Calendar connection");
   } else {
     oauth2Client.setCredentials({
-      access_token: params.user.googleAccessToken,
-      refresh_token: params.user.googleRefreshToken,
+      access_token: params.organization.googleAccessToken,
+      refresh_token: params.organization.googleRefreshToken,
     });
     slotParams.auth = oauth2Client;
     slotParams.calendar = calendarApi;
