@@ -8,4 +8,6 @@ As soon as {{guestName}} has confirmed a time, I'll send a calendar invitation t
 
 {{assistantSignature}}
 
+{{#showPoweredByAra}}<small>Powered by <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}
+
 {{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}

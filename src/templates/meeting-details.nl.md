@@ -8,4 +8,6 @@ Zodra {{guestName}} een tijd heeft bevestigd, stuur ik jullie allebei een kalend
 
 {{assistantSignature}}
 
+{{#showPoweredByAra}}<small>Powered by <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}
+
 {{#trackingImageUrl}}![]({{trackingImageUrl}}){{/trackingImageUrl}}

@@ -12,3 +12,6 @@ Als u wijzigingen in deze vergadering wilt aanbrengen, kunt u deze hier bewerken
 Je kunt deze vergadering ook toevoegen aan je agenda: [Google Kalender]({{googleLink}}) · [Microsoft Outlook]({{outlookLink}}) · [Yahoo! Kalender]({{yahooLink}}) · [Apple Agenda]({{icsLink}})
 
 {{assistantSignature}}
+
+{{#unsubscribeLink}}<small>Wil je deze e-mails niet ontvangen? <a href="{{unsubscribeUrl}}">Afmelden</a></small>{{/unsubscribeLink}}
+{{#showPoweredByAra}}<small>Aangedreven door <a href="{{frontendUrl}}">EIVA</a></small>{{/showPoweredByAra}}

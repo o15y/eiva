@@ -3,7 +3,6 @@ import { detectEntities } from "../google-cloud";
 import { prisma } from "../../../_staart/helpers/prisma";
 import { BASE_URL, FRONTEND_URL } from "../../../config";
 import { mail } from "../../../_staart/helpers/mail";
-import { render } from "@staart/mustache-markdown";
 import { Slot } from "calendar-slots";
 import moment from "moment-timezone";
 import { capitalizeFirstAndLastLetter, randomString } from "@staart/text";
@@ -187,11 +186,6 @@ export const setupNewAppointment = async (params: ActionParams) => {
         .filter((name) => name)
         .join(", ") ?? "guest",
     duration: String(duration),
-    assistantName: params.organization.assistantName,
-    assistantSignature: params.organization.assistantSignature,
-    trackingImageUrl: `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
-      await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
-    )}`,
     guestFullName:
       guests
         .map((guest) => guest.name)
@@ -199,6 +193,10 @@ export const setupNewAppointment = async (params: ActionParams) => {
         .join(", ") ?? "guest",
     slotsMarkdownOwner: slotsMarkdownOwner.join("\n"),
     slotsMarkdown: slotsMarkdown.join("\n"),
+    ...params.organization,
+    unsubscribeUrl: `${FRONTEND_URL}/unsubscribe}`,
+    baseUrl: BASE_URL,
+    frontendUrl: FRONTEND_URL,
   };
 
   const sendInLanguage =
@@ -212,7 +210,14 @@ export const setupNewAppointment = async (params: ActionParams) => {
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@mail.araassistant.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
     subject: `${params.organization.name} - Appointment`,
-    data,
+    data: {
+      ...data,
+      trackingImageUrl: params.organization.readReceipts
+        ? `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
+            await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
+          )}`
+        : undefined,
+    },
   });
   params.log("Sent email to guests");
 
