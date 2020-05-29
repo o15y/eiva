@@ -12,6 +12,7 @@ import { authHandler, validator } from "../../_staart/helpers/middleware";
 import { classifyTokens } from "../../ara/services/classify";
 import { smartTokensFromText } from "../../ara/services/tokenize";
 import { parseEmail } from "../../ara/services/parse";
+import { organizationUsernameToId } from "../../_staart/helpers/utils";
 import {
   trackOutgoingEmail,
   getPublicMeetingDetails,
@@ -115,11 +116,8 @@ export class ApiController {
     )
   )
   async confirmMeeting(req: Request) {
-    return confirmMeetingForGuest(
-      req.params.organizaionId,
-      req.params.meetingId,
-      req.body
-    );
+    const id = await organizationUsernameToId(req.params.id);
+    return confirmMeetingForGuest(id, req.params.meetingId, req.body);
   }
 
   @Post("track/:index")
