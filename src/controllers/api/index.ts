@@ -116,7 +116,7 @@ export class ApiController {
     )
   )
   async confirmMeeting(req: Request) {
-    const id = await organizationUsernameToId(req.params.id);
+    const id = await organizationUsernameToId(req.params.organizaionId);
     return confirmMeetingForGuest(id, req.params.meetingId, req.body);
   }
 
