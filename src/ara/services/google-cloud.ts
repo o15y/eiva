@@ -145,9 +145,7 @@ export const detectEntities = async (
   dates: EntityDate[];
   prices: EntityPrice[];
 }> => {
-  const KEY = `googlecloud${createHash("md5")
-    .update(text)
-    .digest("hex")}.json`;
+  const KEY = `googlecloud${createHash("md5").update(text).digest("hex")}.json`;
   if (process.env.NODE_ENV === "development") {
     try {
       const file = await readJson(join(".", ".cache", KEY));
@@ -196,6 +194,26 @@ export const detectEntities = async (
     }
     return result;
   } catch (error) {
+    if (
+      error?.response?.data?.error?.message?.startsWith("The language") &&
+      error?.response?.data?.error?.message?.endsWith(
+        "not supported for entity analysis"
+      )
+    ) {
+      return {
+        language: error?.response?.data?.message
+          .split("The language ")[1]
+          .split(" ")[0],
+        persons: [],
+        locations: [],
+        organizations: [],
+        events: [],
+        consumerGoods: [],
+        phoneNumbers: [],
+        addresses: [],
+        dates: [],
+      } as any;
+    }
     throw new Error("Unable to detect entities in text");
   }
 };
