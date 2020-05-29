@@ -200,7 +200,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
     ...params.organization,
     assistantSignature: params.organization.assistantSignature.replace(
       /\n/g,
-      "\n  "
+      "  \n"
     ),
     unsubscribeUrl: `${FRONTEND_URL}/unsubscribe}`,
     baseUrl: BASE_URL,
