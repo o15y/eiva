@@ -65,15 +65,19 @@ export const setupNewAppointment = async (params: ActionParams) => {
     ) {
       let details: ClearbitResponse | undefined = undefined;
       try {
-        details = await getClearbitPersonFromEmail(
-          guest.address,
-          params.organization.clearbitApiKey || undefined
-        );
-        params.log(
-          `Found guest details ${details.person?.name?.fullName ?? ""} ${
-            details.company?.name ?? ""
-          }`
-        );
+        if (params.organization.useClearbit) {
+          details = await getClearbitPersonFromEmail(
+            guest.address,
+            params.organization.clearbitApiKey || undefined
+          );
+          params.log(
+            `Found guest details ${details.person?.name?.fullName ?? ""} ${
+              details.company?.name ?? ""
+            }`
+          );
+        } else {
+          params.log("Skipping finding guest details");
+        }
       } catch (error) {
         params.log("Unable to find guest details");
       }

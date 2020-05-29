@@ -78,6 +78,7 @@ export class OrganizationController {
         readReceipts: Joi.boolean(),
         emailConfirmation: Joi.boolean(),
         showPoweredByAra: Joi.boolean(),
+        useClearbit: Joi.boolean(),
       },
       "body"
     )
