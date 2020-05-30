@@ -1,6 +1,11 @@
 import { success } from "@staart/errors";
 import { Controller, Get, Server } from "@staart/server";
 import { setupMiddleware } from "@staart/server";
+import { init } from "@sentry/node";
+init({
+  dsn:
+    "https://43c314c96f6f40f6a8412cc5857a4bb6@o400462.ingest.sentry.io/5258926",
+});
 
 import {
   errorHandler,
