@@ -2,7 +2,7 @@ Beste {{guestName}},
 
 {{ownerName}} is beschikbaar voor een vergadering van {{duration}}-minuten op:
 
-{{slotsMarkdown}}
+{{slotsMarkdown_nl}}
 
 Werkt een van deze tijden voor jou? Je kunt op bovenstaande tijden klikken en ik stuur je een kalenderuitnodiging.
 

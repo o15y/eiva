@@ -2,7 +2,7 @@ Dear {{guestName}},
 
 {{ownerName}} is available for a {{duration}}-minute meeting on:
 
-{{slotsMarkdown}}
+{{slotsMarkdown_en}}
 
 Do you any of these times work for you? You can click on the times above and I'll send you a calendar invitation.
 
