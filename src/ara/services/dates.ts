@@ -144,8 +144,8 @@ export const findStartEndTime = (
   text: string,
   timezone: string
 ): { startDate: Moment; endDate: Moment } => {
-  const startDate = moment.tz(timezone);
-  const endDate = moment.tz(timezone);
+  const startDate = moment.tz(timezone).second(0).millisecond(0);
+  const endDate = moment.tz(timezone).second(0).millisecond(0);
   const times = findDateTimeinText(text) || [];
   times[0] = times[0] || {};
   times[0].start = times[0].start || { knownValues: {} };
@@ -171,14 +171,12 @@ export const findStartEndTime = (
     startDate.month(startDate.get("month") + 1);
 
   if (times[0].start.knownValues.hour)
-    // If an hour is specified, use that; otherwise 00
+    // If an hour is specified, use that; otherwise now
     startDate.hour(parseInt(times[0].start.knownValues.hour));
-  else startDate.hour(0);
 
-  // If an minute is specified, use that; otherwise 00
+  // If an minute is specified, use that; otherwise now
   if (times[0].start.knownValues.minute)
     startDate.minute(parseInt(times[0].start.knownValues.minute));
-  else startDate.minute(0);
 
   // If a year is specified, use that; otherwise current month
   if (times[0].end.knownValues.year)
@@ -196,7 +194,7 @@ export const findStartEndTime = (
   if (times[0].end.knownValues.hour)
     // If an hour is specified, use that; otherwise 23
     endDate.hour(parseInt(times[0].end.knownValues.hour));
-  else endDate.hour(29);
+  else endDate.hour(23);
 
   // If an minute is specified, use that; otherwise 59
   if (times[0].end.knownValues.minute)

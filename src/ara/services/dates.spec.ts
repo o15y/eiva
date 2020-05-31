@@ -1,6 +1,8 @@
 import { findStartEndTime } from "./dates";
 import moment, { Moment } from "moment";
 
+const TZ = "Asia/Kolkata";
+
 export const momentCompare = (
   dates: {
     startDate: Moment;
@@ -13,20 +15,26 @@ export const momentCompare = (
 ) => {
   console.log(dates, result);
   return (
-    moment(dates.startDate).format("YYYY-MM-DD") ===
-      moment(result.startDate).format("YYYY-MM-DD") &&
-    moment(dates.endDate).format("YYYY-MM-DD") ===
-      moment(result.endDate).format("YYYY-MM-DD")
+    moment(dates.startDate).format("YYYY-MM-DD HH:mm:ss") ===
+      moment(result.startDate).format("YYYY-MM-DD HH:mm:ss") &&
+    moment(dates.endDate).format("YYYY-MM-DD HH:mm:ss") ===
+      moment(result.endDate).format("YYYY-MM-DD HH:mm:ss")
   );
 };
 
-it("recommend now until next week", () => {
-  const now = moment();
-  const nextWeek = moment().add(7, "days");
+it("no info -> now until next week", () => {
+  const startDate = moment.tz(TZ).second(0).millisecond(0);
+  const endDate = moment
+    .tz(TZ)
+    .add(7, "days")
+    .hour(23)
+    .minute(59)
+    .second(0)
+    .millisecond(0);
   expect(
-    momentCompare(findStartEndTime("set up an appointment", "Asia/Kolkata"), {
-      startDate: now,
-      endDate: nextWeek,
+    momentCompare(findStartEndTime("set up an appointment", TZ), {
+      startDate,
+      endDate,
     })
   ).toBeTruthy();
 });
