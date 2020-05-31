@@ -141,13 +141,17 @@ export const setupNewAppointment = async (params: ActionParams) => {
   const guestTimezone = guests[0].timezone ?? params.user.timezone;
 
   // Generate markdown list of slots with links
-  let slotsMarkdown: string[] = [];
-  let slotsMarkdownOwner: string[] = [];
+  let slotsMarkdown_en: string[] = [];
+  let slotsMarkdownOwner_en: string[] = [];
+  let slotsMarkdown_nl: string[] = [];
+  let slotsMarkdownOwner_nl: string[] = [];
   for await (const slot of slots) {
-    slotsMarkdown.push(
+    slotsMarkdown_en.push(
       `- [${moment
         .tz(slot.start, guestTimezone)
-        .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
+        .format(
+          "dddd, MMMM D, h:mm a z"
+        )} - **Select this time**](${FRONTEND_URL}/meet/${
         params.organization.username
       }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
         await generateToken(
@@ -162,7 +166,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
         )
       )})`
     );
-    slotsMarkdownOwner.push(
+    slotsMarkdownOwner_en.push(
       `- [${moment
         .tz(slot.start, params.user.timezone)
         .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
@@ -180,6 +184,46 @@ export const setupNewAppointment = async (params: ActionParams) => {
         )
       )})`
     );
+    moment.locale("nl");
+    slotsMarkdown_nl.push(
+      `- [${moment
+        .tz(slot.start, guestTimezone)
+        .format(
+          "dddd, MMMM D, h:mm a z"
+        )} - **Selecteer deze tijd**](${FRONTEND_URL}/meet/${
+        params.organization.username
+      }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
+        await generateToken(
+          {
+            guests,
+            timezone: guestTimezone,
+            duration,
+            datetime: moment.tz(slot.start, guestTimezone).toISOString(),
+          },
+          "1y",
+          Tokens.CONFIRM_APPOINTMENT
+        )
+      )})`
+    );
+    slotsMarkdownOwner_nl.push(
+      `- [${moment
+        .tz(slot.start, params.user.timezone)
+        .format("dddd, MMMM D, h:mm a z")}](${FRONTEND_URL}/meet/${
+        params.organization.username
+      }/${params.incomingEmail.meetingId}/confirm?token=${encodeURIComponent(
+        await generateToken(
+          {
+            guests,
+            timezone: params.user.timezone,
+            duration,
+            datetime: moment.tz(slot.start, params.user.timezone).toISOString(),
+          },
+          "1y",
+          Tokens.CONFIRM_APPOINTMENT
+        )
+      )})`
+    );
+    moment.locale("en");
   }
 
   const data = {
@@ -195,8 +239,10 @@ export const setupNewAppointment = async (params: ActionParams) => {
         .map((guest) => guest.name)
         .filter((name) => name)
         .join(", ") ?? "guest",
-    slotsMarkdownOwner: slotsMarkdownOwner.join("\n"),
-    slotsMarkdown: slotsMarkdown.join("\n"),
+    slotsMarkdownOwner_en: slotsMarkdownOwner_en.join("\n"),
+    slotsMarkdown_en: slotsMarkdown_en.join("\n"),
+    slotsMarkdownOwner_nl: slotsMarkdownOwner_nl.join("\n"),
+    slotsMarkdown_nl: slotsMarkdown_nl.join("\n"),
     ...params.organization,
     assistantSignature: params.organization.assistantSignature.replace(
       /\n/g,
