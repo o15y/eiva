@@ -139,3 +139,68 @@ export const convertDigitDates = (text: string) => {
   });
   return words.join(" ");
 };
+
+export const findStartEndTime = (
+  text: string,
+  timezone: string
+): { startDate: Moment; endDate: Moment } => {
+  const startDate = moment.tz(timezone);
+  const endDate = moment.tz(timezone);
+  const times = findDateTimeinText(text) || [];
+  times[0] = times[0] || {};
+  times[0].start = times[0].start || { knownValues: {} };
+  times[0].start.knownValues = times[0].start.knownValues || {};
+  times[0].end = times[0].end || { knownValues: {} };
+  times[0].end.knownValues = times[0].end.knownValues || {};
+
+  // If a year is specified, use that; otherwise current year
+  if (times[0].start.knownValues.year)
+    startDate.year(parseInt(times[0].start.knownValues.year));
+
+  // If a month is specified, use that; otherwise current month
+  if (times[0].start.knownValues.month)
+    startDate.month(parseInt(times[0].start.knownValues.month));
+
+  // If a date is specified, use that; otherwise today
+  if (times[0].start.knownValues.day)
+    startDate.date(parseInt(times[0].start.knownValues.day));
+
+  // If the month + day combination is in the past, use next month
+  // e.g., "Meet on 3rd" if today is 29th, means 3rd of next month
+  if (moment().diff(moment(startDate), "day"))
+    startDate.month(startDate.get("month") + 1);
+
+  if (times[0].start.knownValues.hour)
+    // If an hour is specified, use that; otherwise 00
+    startDate.hour(parseInt(times[0].start.knownValues.hour));
+  else startDate.hour(0);
+
+  // If an minute is specified, use that; otherwise 00
+  if (times[0].start.knownValues.minute)
+    startDate.minute(parseInt(times[0].start.knownValues.minute));
+  else startDate.minute(0);
+
+  // If a year is specified, use that; otherwise current month
+  if (times[0].end.knownValues.year)
+    endDate.year(parseInt(times[0].end.knownValues.year));
+
+  // If a month is specified, use that; otherwise current month
+  if (times[0].end.knownValues.month)
+    endDate.month(parseInt(times[0].end.knownValues.month));
+
+  // If a date is specified, use that; otherwise 7 days from now
+  if (times[0].end.knownValues.day)
+    endDate.date(parseInt(times[0].end.knownValues.day));
+  else endDate.add(7, "days");
+
+  if (times[0].end.knownValues.hour)
+    // If an hour is specified, use that; otherwise 23
+    endDate.hour(parseInt(times[0].end.knownValues.hour));
+  else endDate.hour(29);
+
+  // If an minute is specified, use that; otherwise 59
+  if (times[0].end.knownValues.minute)
+    endDate.minute(parseInt(times[0].end.knownValues.minute));
+  else endDate.minute(59);
+  return { startDate, endDate };
+};
