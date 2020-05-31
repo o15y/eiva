@@ -35,6 +35,7 @@ const updatePendingEmails = async () => {
       },
       where: {
         status: "PENDING",
+        emailType: "INCOMING",
         createdAt: {
           lte: new Date(new Date().getTime() - ms("10m")),
         },
