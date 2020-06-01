@@ -77,7 +77,7 @@ export const createOrganization = async (
   organization.name = capitalizeFirstAndLastLetter(organization.name);
   if (organization.assistantName && !organization.assistantSignature) {
     organization.assistantSignature = `Best,
-    
+
 ${organization.assistantName}
 Assistant to ${organization.name}`;
   }
