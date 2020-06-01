@@ -6,7 +6,10 @@ import {
 import { can } from "../../../_staart/helpers/authorization";
 import { OrgScopes } from "../../../_staart/interfaces/enum";
 import { locationsUpdateInput, locationsCreateInput } from "@prisma/client";
-import { INSUFFICIENT_PERMISSION } from "@staart/errors";
+import {
+  INSUFFICIENT_PERMISSION,
+  CANNOT_DELETE_SOLE_MEMBER,
+} from "@staart/errors";
 import { ApiKeyResponse } from "../../../_staart/helpers/jwt";
 
 export const getAllLocationsForOrganization = async (
@@ -80,7 +83,12 @@ export const deleteLocationForOrganization = async (
 ) => {
   if (
     await can(tokenUserId, OrgScopes.UPDATE_ORG, "organization", organizationId)
-  )
+  ) {
+    const locations = await prisma.locations.findMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    if (locations.length === 1) throw new Error(CANNOT_DELETE_SOLE_MEMBER);
     return prisma.locations.delete({ where: { id: parseInt(meetingId) } });
+  }
   throw new Error(INSUFFICIENT_PERMISSION);
 };
