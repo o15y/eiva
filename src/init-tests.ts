@@ -33,7 +33,7 @@ class RedisQueue implements Test {
 class Database implements Test {
   name = "Database connection";
   async test() {
-    await prisma.users.findMany({ first: 1 });
+    await prisma.users.findMany({ take: 1 });
   }
 }
 
@@ -117,5 +117,6 @@ runTests()
       : logError("Service tests", "All service tests passed", 1)
   )
   .catch((error) => console.log("ERROR", error))
-  .then(() => console.log("\n" + "=".repeat(process.stdout.columns ?? 50) + "\n"));
-  
+  .then(() =>
+    console.log("\n" + "=".repeat(process.stdout.columns ?? 50) + "\n")
+  );

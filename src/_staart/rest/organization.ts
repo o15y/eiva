@@ -729,7 +729,7 @@ export const inviteMemberToOrganization = async (
 
     const checkUser = await prisma.users.findMany({
       where: { emails: { some: { email: newMemberEmail } } },
-      first: 1,
+      take: 1,
     });
     if (checkUser.length) {
       newUser = checkUser[0];

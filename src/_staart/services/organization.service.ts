@@ -228,7 +228,7 @@ export const updateApiKey = async (
 export const getDomainByDomainName = async (domain: string) => {
   const domainDetails = await prisma.domains.findMany({
     where: { domain, isVerified: true },
-    first: 1,
+    take: 1,
   });
   if (domainDetails.length) return domainDetails[0];
   throw new Error(RESOURCE_NOT_FOUND);

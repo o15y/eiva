@@ -57,6 +57,32 @@ export const queryParamsToSelect = (queryParams: any) => {
     });
   }
 
+  /**
+   * Temporary fixes for @prisma/* beta 7
+   * New pagination removes `first`, `last`, `before`, `after`
+   * in favor of `cursor` and `take`
+   * @source https://github.com/prisma/prisma/releases/tag/2.0.0-beta.7
+   */
+  if (typeof data.first !== "undefined") {
+    data.take = data.first;
+    delete data.first;
+  }
+  if (typeof data.last !== "undefined") {
+    data.take = data.last;
+    delete data.last;
+  }
+  if (typeof data.before !== "undefined") {
+    data.cursor = data.before;
+    delete data.before;
+  }
+  if (typeof data.after !== "undefined") {
+    data.cursor = data.after;
+    delete data.after;
+  }
+  if (typeof data.skip === "undefined") {
+    data.skip = 1;
+  }
+
   return data;
 };
 

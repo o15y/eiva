@@ -307,7 +307,7 @@ export const getUserBestEmail = async (userId: string | number) => {
   const emails = await prisma.emails.findMany({
     where: { userId: parseInt(userId) },
     orderBy: { isVerified: "desc" },
-    first: 1,
+    take: 1,
   });
   if (!emails.length) throw new Error(RESOURCE_NOT_FOUND);
   return emails[0];
