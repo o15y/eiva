@@ -114,7 +114,7 @@ const emailSteps = async (objectId: string, log: Logger) => {
   // TODO handle if other people email the assistant
   const user = (
     await prisma.users.findMany({
-      first: 1,
+      take: 1,
       where: {
         emails: {
           some: {
@@ -231,7 +231,7 @@ export const getPublicMeetingDetails = async (
 ) => {
   await verifyToken(jwt, Tokens.CONFIRM_APPOINTMENT);
   const details = await prisma.meetings.findMany({
-    first: 1,
+    take: 1,
     where: { id: parseInt(meetingId), organization: { username } },
     include: { organization: true, user: true, location: true },
   });
