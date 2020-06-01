@@ -3,7 +3,10 @@ import { prisma } from "../../../_staart/helpers/prisma";
 import { ORGANIZATION_NOT_FOUND } from "@staart/errors";
 
 export const getOrganizationFromEmail = async (email: string) => {
-  if (isMatch(email, "*@mail.araassistant.com")) {
+  if (
+    isMatch(email, "*@mail.araassistant.com") ||
+    isMatch(email, "*@myeiva.com")
+  ) {
     let username = email.split("@")[0];
     if (username.startsWith("meet-"))
       username = username.substring("meet-".length);

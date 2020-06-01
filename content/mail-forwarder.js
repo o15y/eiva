@@ -23,7 +23,7 @@ exports.handler = (event) =>
     );
     const req = https.request(
       {
-        hostname: "api.araassistant.com",
+        hostname: "api.myeiva.com",
         port: 443,
         path: "/v1/webhooks/inbound/email/" + key,
         method: "GET",

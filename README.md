@@ -24,7 +24,7 @@ CRUD endpoints:
 - `/v1/organizations/:id/location`
 - `/v1/organizations/:id/meetings`
 
-All API endpoints require an API key or access token; both can be generated using APIs or the [webapp](https://araassistant.com). Parameters are available in [`api/index.ts`](/src/controllers/api/index.ts).
+All API endpoints require an API key or access token; both can be generated using APIs or the [webapp](https://myeiva.com). Parameters are available in [`api/index.ts`](/src/controllers/api/index.ts).
 
 ## 👩‍💻 Development
 
@@ -103,8 +103,8 @@ These environment variables (with the exception of `DATABASE_URL`) can be set in
 #### General @staart/api
 
 - `PORT` is `7007` in development and `80` on production
-- `BASE_URL` = https://api.araassistant.com
-- `FRONTEND_URL` = https://araassistant.com
+- `BASE_URL` = https://api.myeiva.com
+- `FRONTEND_URL` = https://myeiva.com
 - `REDIS_URL` is `redis://:KvEqnrLZJhGGEuNHNMcgG3sH@srv-captain--redis:6379` in production and not required for development if you have a local Redis instance running using `redis-server`
 - `DATABASE_URL` = `mysql://USER:PASSWORD@HOST:PORT/DATABASE` is set in `.env` in the `./prisma` dir
 
@@ -112,7 +112,7 @@ These environment variables (with the exception of `DATABASE_URL`) can be set in
 
 This is used for both transactional emails (like password resets) using `SES_EMAIL` and for sending emails from Ara (like `meet-anand@mail.assistant.com`)
 
-- `SES_EMAIL` is the email to send emails from (`noreply@mail.araassistant.com`)
+- `SES_EMAIL` is the email to send emails from (`noreply@mail.myeiva.com`)
 - `SES_REGION` is the AWS region (`us-east-1`)
 - `SES_ACCESS` is the AWS access key for SES
 - `SES_SECRET` is the AWS secret key for SES

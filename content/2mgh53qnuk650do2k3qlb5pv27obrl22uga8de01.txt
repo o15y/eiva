@@ -1,7 +1,7 @@
 Return-Path: <anandchowdhary@gmail.com>
 Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
  by inbound-smtp.us-east-1.amazonaws.com with SMTP id 2mgh53qnuk650do2k3qlb5pv27obrl22uga8de01
- for anand@mail.araassistant.com;
+ for anand@myeiva.com;
  Tue, 05 May 2020 19:43:49 +0000 (UTC)
 X-SES-Spam-Verdict: PASS
 X-SES-Virus-Verdict: PASS
@@ -12,7 +12,7 @@ Authentication-Results: amazonses.com;
 X-SES-RECEIPT: AEFBQUFBQUFBQUFIRmFLalpBKzZBNm9zR0ZqaGFvUWQwcDNMT2FJTTJIeEl5Z3o3QU5lcmt0TjlmakJKRSs1QXVCYVk1TDJSRXAyV1dNWTlpWGZlTTl5aGZnbFlMLzMxaEZtYXd0Y0JuMVlTWkhFQ1pFMWhkcVNuTkZ1YWxkdjZER3lDdUdmcVZ6emh6YktzRStOV2tvK0lFakk0ai9hMGJ3Q1hRNkovNWJXNXpZTlUxNytjTHRZM3ZGTm5uZklHWCtiSXA1N0ZrUGNKUzdUaWR4aVFJMDB0aFlnaGdpelErY1lCSDdSdUFFUkhwenlvNDVPcnk4V1ZkbjlrdUt6ejYxYlNGUmJCOWExY21OMk42UlZHU3FaMzVSVWdIdnIzUDR4RVVLa3hSTis0djNoL3ZjL2k2S1E9PQ==
 X-SES-DKIM-SIGNATURE: a=rsa-sha256; q=dns/txt; b=jwqxnV+BRcIeF18vnKrXJZExh3SxJ72wfVbZQc9gPDA53JXGoUI3WQNS4eblm1s+eD2lz7kXwLvlQ0OKb3npjDHLYibBc2Q9E+Rs/hyIIwVKNpxwNUg6fI4YNFOD/Qv5nZYeONSY6DgiBEOQSqtpnrPoyGuc91YGi7EpolQ3niI=; c=relaxed/simple; s=224i4yxa5dv7c2xz3womw6peuasteono; d=amazonses.com; t=1588707829; v=1; bh=oB9E8Fen7UB8/cGUV9mw83fSVNO3fl0pIiVSlSp2Y8c=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;
 Received: by mail-pj1-f51.google.com with SMTP id q24so43853pjd.1
-        for <anand@mail.araassistant.com>; Tue, 05 May 2020 12:43:49 -0700 (PDT)
+        for <anand@myeiva.com>; Tue, 05 May 2020 12:43:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:message-id:references:subject
@@ -36,7 +36,7 @@ Received: from [192.168.1.5] ([182.69.229.61])
         Tue, 05 May 2020 12:43:47 -0700 (PDT)
 Date: Wed, 6 May 2020 01:13:36 +0530
 From: Anand Chowdhary <mail@anandchowdhary.com>
-To: anand@mail.araassistant.com, anandchowdhary+john@gmail.com
+To: anand@myeiva.com, anandchowdhary+john@gmail.com
 Message-ID: <55095ed5-7ee3-4aba-83b7-1008e6f67386@Spark>
 References: <010aa8b2-909b-40cb-88aa-712a181727f9@Spark>
 Subject: Coffee with John
