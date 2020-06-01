@@ -130,6 +130,53 @@ const emailSteps = async (objectId: string, log: Logger) => {
   log(`Found "${user.name}" user as sender`);
 
   // Create email object
+  console.log(
+    JSON.stringify(
+      {
+        where: {
+          objectId,
+        },
+        update: {
+          status: "PENDING",
+        },
+        create: {
+          objectId,
+          status: "PENDING",
+          organization: {
+            connect: { id: organization.id },
+          },
+          user: {
+            connect: { id: user.id },
+          },
+          meeting: {
+            // TODO support if reply to pre-existing email
+            create: {
+              guests: "[]",
+              duration: organization.schedulingDuration,
+              meetingType: organization.schedulingType,
+              location: {
+                connect: { id: organization.schedulingLocation },
+              },
+              organization: {
+                connect: { id: organization.id },
+              },
+              user: {
+                connect: { id: user.id },
+              },
+            },
+          },
+          from: JSON.stringify(parsedBody.from.value),
+          to: JSON.stringify(parsedBody.to.value),
+          cc: JSON.stringify(parsedBody.cc?.value ?? []),
+          subject: parsedBody.subject ?? "",
+          emailDate: parsedBody.date ?? new Date(),
+          messageId: parsedBody.messageId ?? "",
+        },
+      },
+      null,
+      2
+    )
+  );
   const incomingEmail = await prisma.incoming_emails.upsert({
     where: {
       objectId,

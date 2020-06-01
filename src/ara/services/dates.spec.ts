@@ -38,3 +38,26 @@ it("no info -> now until next week", () => {
     })
   ).toBeTruthy();
 });
+
+it("tomorrow -> tomorrow full day", () => {
+  const startDate = moment
+    .tz(TZ)
+    .add(1, "days")
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+  const endDate = moment
+    .tz(TZ)
+    .add(1, "days")
+    .hour(23)
+    .minute(59)
+    .second(0)
+    .millisecond(0);
+  expect(
+    momentCompare(findStartEndTime("set up an appointment for tomorrow", TZ), {
+      startDate,
+      endDate,
+    })
+  ).toBeTruthy();
+});
