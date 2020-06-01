@@ -88,7 +88,7 @@ export const confirmMeetingForGuest = async (
       duration: String(confirmedMeeting.duration),
       assistantName: meeting.organization.assistantName,
       assistantSignature: meeting.organization.assistantSignature,
-      meetingType: meeting.meetingType,
+      meetingType: location?.type,
       meetingLocation: location?.value,
       editLink: "#",
       googleLink: "#",

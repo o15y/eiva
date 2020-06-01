@@ -58,7 +58,6 @@ export class OrganizationMeetingsController {
         proposedTimes: Joi.string(),
         confirmedTime: Joi.string(),
         duration: Joi.number(),
-        meetingType: Joi.string(),
         guests: Joi.string(),
         location: Joi.object(),
       },

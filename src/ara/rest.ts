@@ -151,7 +151,6 @@ const emailSteps = async (objectId: string, log: Logger) => {
         create: {
           guests: "[]",
           duration: organization.schedulingDuration,
-          meetingType: organization.schedulingType,
           location: {
             connect: { id: organization.schedulingLocation },
           },
