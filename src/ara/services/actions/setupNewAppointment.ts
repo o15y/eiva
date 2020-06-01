@@ -15,6 +15,7 @@ import { getClearbitPersonFromEmail, ClearbitResponse } from "../clearbit";
 import { generateToken } from "../../../_staart/helpers/jwt";
 import { Tokens } from "../../../_staart/interfaces/enum";
 import { getUserBestEmail } from "../../../_staart/services/user.service";
+import { findLocationFromText } from "../parse";
 
 export const setupNewAppointment = async (params: ActionParams) => {
   params.tokens = params.tokens.map(convertDigitDates);
@@ -107,6 +108,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
     data: {
       language,
       guests: JSON.stringify(guests),
+      location: {
+        connect: { id: await findLocationFromText(paragraph) },
+      },
       proposedTimes: JSON.stringify(slots),
     },
   });
