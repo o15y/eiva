@@ -80,7 +80,7 @@ export const queryParamsToSelect = (queryParams: any) => {
     delete data.after;
   }
   if (typeof data.skip === "undefined") {
-    data.skip = 1;
+    // data.skip = 1;
   }
 
   return data;
