@@ -24,5 +24,8 @@ export const classifyTokens = (lines: string[], log: Logger) => {
     });
   });
   log("Classifications", scores);
-  return Object.entries(scores).reduce((a, b) => (a[1] > b[1] ? a : b))[0];
+  // TODO use max probability
+  // return Object.entries(scores).reduce((a, b) => (a[1] > b[1] ? a : b))[0];
+  // For now, we hardcode to newappointment
+  return "setupNewAppointment";
 };
