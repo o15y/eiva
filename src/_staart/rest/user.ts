@@ -77,7 +77,7 @@ export const getUserFromIdForUser = async (
 ) => {
   if (await can(tokenUserId, UserScopes.READ_USER, "user", userId)) {
     const user = await prisma.users.findOne({
-      ...queryParamsToSelect(queryParams),
+      ...queryParamsToSelect(queryParams, true),
       where: { id: parseInt(userId) },
     });
     if (user) return user;

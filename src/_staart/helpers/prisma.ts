@@ -12,7 +12,7 @@ cleanup(() => {
   prisma.disconnect().then(() => success("Disconnected database connection"));
 });
 
-export const queryParamsToSelect = (queryParams: any) => {
+export const queryParamsToSelect = (queryParams: any, findingOne = false) => {
   const data: any = {};
 
   ["first", "last", "skip"].forEach((i: string) => {
@@ -79,8 +79,8 @@ export const queryParamsToSelect = (queryParams: any) => {
     data.cursor = data.after;
     delete data.after;
   }
-  if (typeof data.skip === "undefined") {
-    // data.skip = 1;
+  if (typeof data.skip === "undefined" && !findingOne) {
+    data.skip = 1;
   }
 
   return data;
