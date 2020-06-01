@@ -6,7 +6,7 @@ import {
 import { createHmac } from "crypto";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
-import { organizations } from "@prisma/client";
+import { organizations, incoming_emails } from "@prisma/client";
 import { prisma } from "../_staart/helpers/prisma";
 import { getOrganizationFromEmail } from "./services/crud";
 import { performAction } from "./services/actions";
@@ -130,97 +130,62 @@ const emailSteps = async (objectId: string, log: Logger) => {
   log(`Found "${user.name}" user as sender`);
 
   // Create email object
-  console.log(
-    JSON.stringify(
-      {
-        where: {
-          objectId,
+  let exists = false;
+  try {
+    exists = !!(await prisma.incoming_emails.findOne({ where: { objectId } }));
+  } catch (error) {}
+
+  let incomingEmail: incoming_emails;
+  if (exists) {
+    incomingEmail = await prisma.incoming_emails.update({
+      where: { objectId },
+      data: {
+        status: "PENDING",
+      },
+    });
+    log(
+      `Found pre-existing email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
+    );
+  } else {
+    incomingEmail = await prisma.incoming_emails.create({
+      data: {
+        objectId,
+        status: "PENDING",
+        organization: {
+          connect: { id: organization.id },
         },
-        update: {
-          status: "PENDING",
+        user: {
+          connect: { id: user.id },
         },
-        create: {
-          objectId,
-          status: "PENDING",
-          organization: {
-            connect: { id: organization.id },
-          },
-          user: {
-            connect: { id: user.id },
-          },
-          meeting: {
-            // TODO support if reply to pre-existing email
-            create: {
-              guests: "[]",
-              duration: organization.schedulingDuration,
-              meetingType: organization.schedulingType,
-              location: {
-                connect: { id: organization.schedulingLocation },
-              },
-              organization: {
-                connect: { id: organization.id },
-              },
-              user: {
-                connect: { id: user.id },
-              },
+        meeting: {
+          // TODO support if reply to pre-existing email
+          create: {
+            guests: "[]",
+            duration: organization.schedulingDuration,
+            meetingType: organization.schedulingType,
+            location: {
+              connect: { id: organization.schedulingLocation },
+            },
+            organization: {
+              connect: { id: organization.id },
+            },
+            user: {
+              connect: { id: user.id },
             },
           },
-          from: JSON.stringify(parsedBody.from.value),
-          to: JSON.stringify(parsedBody.to.value),
-          cc: JSON.stringify(parsedBody.cc?.value ?? []),
-          subject: parsedBody.subject ?? "",
-          emailDate: parsedBody.date ?? new Date(),
-          messageId: parsedBody.messageId ?? "",
         },
+        from: JSON.stringify(parsedBody.from.value),
+        to: JSON.stringify(parsedBody.to.value),
+        cc: JSON.stringify(parsedBody.cc?.value ?? []),
+        subject: parsedBody.subject ?? "",
+        emailDate: parsedBody.date ?? new Date(),
+        messageId: parsedBody.messageId ?? "",
       },
-      null,
-      2
-    )
-  );
-  const incomingEmail = await prisma.incoming_emails.upsert({
-    where: {
-      objectId,
-    },
-    update: {
-      status: "PENDING",
-    },
-    create: {
-      objectId,
-      status: "PENDING",
-      organization: {
-        connect: { id: organization.id },
-      },
-      user: {
-        connect: { id: user.id },
-      },
-      meeting: {
-        // TODO support if reply to pre-existing email
-        create: {
-          guests: "[]",
-          duration: organization.schedulingDuration,
-          meetingType: organization.schedulingType,
-          location: {
-            connect: { id: organization.schedulingLocation },
-          },
-          organization: {
-            connect: { id: organization.id },
-          },
-          user: {
-            connect: { id: user.id },
-          },
-        },
-      },
-      from: JSON.stringify(parsedBody.from.value),
-      to: JSON.stringify(parsedBody.to.value),
-      cc: JSON.stringify(parsedBody.cc?.value ?? []),
-      subject: parsedBody.subject ?? "",
-      emailDate: parsedBody.date ?? new Date(),
-      messageId: parsedBody.messageId ?? "",
-    },
-  });
-  log(
-    `Upserted incoming email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
-  );
+    });
+    log(
+      `Inserted incoming email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
+    );
+  }
 
   const response = await performAction(
     incomingEmail,
