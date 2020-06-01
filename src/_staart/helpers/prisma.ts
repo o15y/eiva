@@ -79,7 +79,7 @@ export const queryParamsToSelect = (queryParams: any, findingOne = false) => {
     data.cursor = data.after;
     delete data.after;
   }
-  if (typeof data.skip === "undefined" && !findingOne) {
+  if (typeof data.skip === "undefined" && !findingOne && data.cursor) {
     data.skip = 1;
   }
 
