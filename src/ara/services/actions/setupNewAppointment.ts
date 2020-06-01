@@ -109,7 +109,9 @@ export const setupNewAppointment = async (params: ActionParams) => {
       language,
       guests: JSON.stringify(guests),
       location: {
-        connect: { id: await findLocationFromText(paragraph) },
+        connect: {
+          id: await findLocationFromText(params),
+        },
       },
       proposedTimes: JSON.stringify(slots),
     },
