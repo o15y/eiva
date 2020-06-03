@@ -105,7 +105,10 @@ export const deleteLocationForOrganization = async (
     });
 
     /** If this is the primary location, set another one */
-    if (primaryLocationId.schedulingLocation === locationDetails.id) {
+    if (
+      primaryLocationId &&
+      primaryLocationId.schedulingLocation === locationDetails.id
+    ) {
       const anotherLocation = await prisma.locations.findMany({
         take: 1,
         where: {
