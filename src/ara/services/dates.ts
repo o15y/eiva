@@ -69,7 +69,7 @@ export const recommendDates = async (
           .map((i) => parseInt(i)),
       ],
       to: [
-        ...params.organization.schedulingTimeStart
+        ...params.organization.schedulingTimeEnd
           .split(":")
           .map((i) => parseInt(i)),
       ],
