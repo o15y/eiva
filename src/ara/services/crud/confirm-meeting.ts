@@ -194,8 +194,6 @@ export const confirmMeetingForGuest = async (
         subject: `Confirmed: Appointment with ${meeting.user.name}`,
         data: guestEmailData,
         icalEvent: {
-          filename: "invitation.ics",
-          method: "PUBLISH",
           content: ics(event),
         },
       });
