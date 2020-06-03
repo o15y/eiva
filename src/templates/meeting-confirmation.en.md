@@ -7,7 +7,7 @@ Your {{duration}}-minute meeting with {{meetingWithName}} is confirmed for:
 - **Meeting type:** {{meetingType}}
 - **Location:** {{meetingLocation}}
 
-If you want to make any changes to this meeting, you can edit it here: [Reschedule or cancel appointment]({{editLink}}).
+{{#editLink}}If you want to make any changes to this meeting, you can edit it here: [Reschedule or cancel appointment]({{editLink}}).{{/editLink}}
 
 You can also add this meeting to your calendar: [Google Calendar]({{googleLink}}) · [Microsoft Outlook]({{outlookLink}}) · [Yahoo! Calendar]({{yahooLink}})
 

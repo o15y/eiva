@@ -139,7 +139,6 @@ export const confirmMeetingForGuest = async (
       assistantSignature: meeting.organization.assistantSignature,
       meetingType: location?.type,
       meetingLocation: locationValue,
-      editLink: `${FRONTEND_URL}/teams/${meeting.organization.username}/meetings/${meeting.id}`,
       googleLink: google(event),
       outlookLink: outlook(event),
       yahooLink: yahoo(event),
@@ -157,6 +156,7 @@ export const confirmMeetingForGuest = async (
       meetingTime: moment
         .tz(meeting.confirmedTime, meeting.user.timezone)
         .format("h:mm a z"),
+      editLink: `${FRONTEND_URL}/teams/${meeting.organization.username}/meetings/${meeting.id}`,
     };
 
     const sendInLanguage =
@@ -172,6 +172,9 @@ export const confirmMeetingForGuest = async (
       to: `"${meeting.user.name}" <${userEmail.email}>`,
       subject: `Confirmed: Appointment with ${meetingWithName}`,
       data: ownerEmailData,
+      icalEvent: {
+        content: ics(event),
+      },
     });
 
     // Send email to guests
