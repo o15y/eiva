@@ -90,7 +90,7 @@ export const confirmMeetingForGuest = async (
     // TODO send re-confirmations
 
     const userEmail = await prisma.emails.findOne({
-      where: { id: meeting.user.primaryEmail },
+      where: { id: meeting.user.primaryEmail ?? 0 },
     });
     if (!userEmail) throw new Error(RESOURCE_NOT_FOUND);
 
@@ -111,7 +111,7 @@ export const confirmMeetingForGuest = async (
         result = result.replace(`{{${key}}}`, locationData[key]);
       });
       Object.keys(location).forEach((key: any) => {
-        result = result.replace(`{{${key}}}`, location[key]);
+        result = result.replace(`{{${key}}}`, (location as any)[key]);
       });
       if (result) locationValue = result;
     }
