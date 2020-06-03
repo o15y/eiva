@@ -10,6 +10,7 @@ import {
   findDateTimeinText,
   convertDigitDates,
   recommendDates,
+  findStartEndTime,
 } from "../dates";
 import { getClearbitPersonFromEmail, ClearbitResponse } from "../clearbit";
 import { generateToken } from "../../../_staart/helpers/jwt";
@@ -52,7 +53,12 @@ export const setupNewAppointment = async (params: ActionParams) => {
   // Find slots
   let slots: Slot[] = [];
   // if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
-  slots = await recommendDates(params, duration);
+  const { startDate, endDate } = findStartEndTime(
+    paragraph,
+    params.user.timezone,
+    params
+  );
+  slots = await recommendDates(params, duration, startDate, endDate);
   params.log("Found potential slots", slots.length);
 
   if (!slots) throw new Error("Couldn't find a date for the appointment");

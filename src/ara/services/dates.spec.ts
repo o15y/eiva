@@ -39,7 +39,7 @@ it("no info -> now until next week", () => {
   ).toBeTruthy();
 });
 
-it("tomorrow -> tomorrow full day", () => {
+it("tomorrow", () => {
   const startDate = moment
     .tz(TZ)
     .add(1, "days")
@@ -56,6 +56,31 @@ it("tomorrow -> tomorrow full day", () => {
     .millisecond(0);
   expect(
     momentCompare(findStartEndTime("set up an appointment for tomorrow", TZ), {
+      startDate,
+      endDate,
+    })
+  ).toBeTruthy();
+});
+
+it("next week", () => {
+  const startDate = moment
+    .tz(TZ)
+    .add(7, "days")
+    .startOf("week")
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+  const endDate = moment
+    .tz(TZ)
+    .add(7, "days")
+    .endOf("week")
+    .hour(23)
+    .minute(59)
+    .second(0)
+    .millisecond(0);
+  expect(
+    momentCompare(findStartEndTime("any time next week", TZ), {
       startDate,
       endDate,
     })

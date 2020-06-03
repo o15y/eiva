@@ -56,7 +56,7 @@ export const recommendDates = async (
   endTime?: Moment
 ) => {
   const today = moment();
-  const nextWeek = moment().add(7, "days").endOf("day");
+  const nextWeek = moment().add(1, "week").endOf("day");
   const slotParams: any = {
     slots: 3,
     slotDuration: duration,
@@ -142,14 +142,16 @@ export const convertDigitDates = (text: string) => {
 
 export const findStartEndTime = (
   text: string,
-  timezone: string
+  timezone: string,
+  params?: ActionParams
 ): { startDate: Moment; endDate: Moment } => {
-  const startDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
-  console.log(moment(startDate).toLocaleString());
-  const endDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
+  let startDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
+  let endDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
   const times = findDateTimeinText(text) || [];
   times[0] = times[0] || {};
   times[0].text = times[0].text || "";
+  if (times[0].text && params)
+    params.log(`Found datetime text "${times[0].text}"`);
   times[0].start = times[0].start || { knownValues: {} };
   times[0].start.knownValues = times[0].start.knownValues || {};
   times[0].end = times[0].end || { knownValues: {} };
@@ -169,6 +171,14 @@ export const findStartEndTime = (
   if (times[0].start.knownValues.day)
     startDate.date(parseInt(times[0].start.knownValues.day));
 
+  // If you say something like "next week"
+  if (times[0].text.includes("week")) {
+    startDate = startDate.startOf("week");
+    // If the beginning of the week is in the past, next week
+    if (moment().diff(moment(startDate), "day") > 0)
+      startDate = startDate.add(1, "week");
+  }
+
   // If the month + day combination is in the past, use next month
   // e.g., "Meet on 3rd" if today is 29th, means 3rd of next month
   if (moment().diff(moment(startDate), "day") > 0)
@@ -184,15 +194,30 @@ export const findStartEndTime = (
     startDate.minute(parseInt(times[0].start.knownValues.minute));
   else startDate.minute(0);
 
-  if (times[0].text.includes("tomorrow")) {
+  endDate.hour(23);
+  endDate.minute(59);
+  endDate.second(0);
+
+  // If it's a single day, like "Monday" or "day after tomorrow"
+  if (times[0].text.includes("tomorrow") || times[0].text.includes("day")) {
     endDate.year(startDate.get("year"));
     endDate.month(startDate.get("month"));
-    endDate.day(startDate.get("day"));
+    endDate.date(startDate.get("date"));
+
     endDate.hour(23);
     endDate.minute(59);
+    endDate.second(0);
+  } else if (times[0].text.includes("week")) {
+    endDate.year(startDate.get("year"));
+    endDate.month(startDate.get("month"));
+    endDate.date(startDate.get("date"));
+    endDate = endDate.endOf("week");
+
+    endDate.hour(23);
+    endDate.minute(59);
+    endDate.second(0);
   } else {
     // If a year is specified, use that; otherwise
-
     if (times[0].end.knownValues.year)
       endDate.year(parseInt(times[0].end.knownValues.year));
 
@@ -200,10 +225,10 @@ export const findStartEndTime = (
     if (times[0].end.knownValues.month)
       endDate.month(parseInt(times[0].end.knownValues.month) - 1);
 
-    // If a date is specified, use that; otherwise 7 days from now
+    // If a date is specified, use that; otherwise a week from now
     if (times[0].end.knownValues.day)
       endDate.date(parseInt(times[0].end.knownValues.day));
-    else endDate.add(7, "days");
+    else endDate = endDate.add(1, "week");
 
     if (times[0].end.knownValues.hour)
       // If an hour is specified, use that; otherwise 23
@@ -215,6 +240,8 @@ export const findStartEndTime = (
       endDate.minute(parseInt(times[0].end.knownValues.minute));
     else endDate.minute(59);
   }
+
+  if (endDate.isBefore(startDate)) endDate = endDate.add(1, "week");
 
   return { startDate, endDate };
 };
