@@ -23,7 +23,7 @@ export const momentCompare = (
 };
 
 it("no info -> now until next week", () => {
-  const startDate = moment.tz(TZ).second(0).millisecond(0);
+  const startDate = moment.tz(TZ).hour(0).minute(0).second(0).millisecond(0);
   const endDate = moment
     .tz(TZ)
     .add(7, "days")

@@ -144,14 +144,18 @@ export const findStartEndTime = (
   text: string,
   timezone: string
 ): { startDate: Moment; endDate: Moment } => {
-  const startDate = moment.tz(timezone).second(0).millisecond(0);
-  const endDate = moment.tz(timezone).second(0).millisecond(0);
+  const startDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
+  console.log(moment(startDate).toLocaleString());
+  const endDate = moment.tz(timezone).minute(0).second(0).millisecond(0);
   const times = findDateTimeinText(text) || [];
   times[0] = times[0] || {};
+  times[0].text = times[0].text || "";
   times[0].start = times[0].start || { knownValues: {} };
   times[0].start.knownValues = times[0].start.knownValues || {};
   times[0].end = times[0].end || { knownValues: {} };
   times[0].end.knownValues = times[0].end.knownValues || {};
+
+  console.log(JSON.stringify(times[0]));
 
   // If a year is specified, use that; otherwise current year
   if (times[0].start.knownValues.year)
@@ -159,7 +163,7 @@ export const findStartEndTime = (
 
   // If a month is specified, use that; otherwise current month
   if (times[0].start.knownValues.month)
-    startDate.month(parseInt(times[0].start.knownValues.month));
+    startDate.month(parseInt(times[0].start.knownValues.month) - 1);
 
   // If a date is specified, use that; otherwise today
   if (times[0].start.knownValues.day)
@@ -167,38 +171,50 @@ export const findStartEndTime = (
 
   // If the month + day combination is in the past, use next month
   // e.g., "Meet on 3rd" if today is 29th, means 3rd of next month
-  if (moment().diff(moment(startDate), "day"))
+  if (moment().diff(moment(startDate), "day") > 0)
     startDate.month(startDate.get("month") + 1);
 
   if (times[0].start.knownValues.hour)
-    // If an hour is specified, use that; otherwise now
+    // If an hour is specified, use that; otherwise 0
     startDate.hour(parseInt(times[0].start.knownValues.hour));
+  else startDate.hour(0);
 
-  // If an minute is specified, use that; otherwise now
+  // If an minute is specified, use that; otherwise 0
   if (times[0].start.knownValues.minute)
     startDate.minute(parseInt(times[0].start.knownValues.minute));
+  else startDate.minute(0);
 
-  // If a year is specified, use that; otherwise current month
-  if (times[0].end.knownValues.year)
-    endDate.year(parseInt(times[0].end.knownValues.year));
+  if (times[0].text.includes("tomorrow")) {
+    endDate.year(startDate.get("year"));
+    endDate.month(startDate.get("month"));
+    endDate.day(startDate.get("day"));
+    endDate.hour(23);
+    endDate.minute(59);
+  } else {
+    // If a year is specified, use that; otherwise
 
-  // If a month is specified, use that; otherwise current month
-  if (times[0].end.knownValues.month)
-    endDate.month(parseInt(times[0].end.knownValues.month));
+    if (times[0].end.knownValues.year)
+      endDate.year(parseInt(times[0].end.knownValues.year));
 
-  // If a date is specified, use that; otherwise 7 days from now
-  if (times[0].end.knownValues.day)
-    endDate.date(parseInt(times[0].end.knownValues.day));
-  else endDate.add(7, "days");
+    // If a month is specified, use that; otherwise current month
+    if (times[0].end.knownValues.month)
+      endDate.month(parseInt(times[0].end.knownValues.month) - 1);
 
-  if (times[0].end.knownValues.hour)
-    // If an hour is specified, use that; otherwise 23
-    endDate.hour(parseInt(times[0].end.knownValues.hour));
-  else endDate.hour(23);
+    // If a date is specified, use that; otherwise 7 days from now
+    if (times[0].end.knownValues.day)
+      endDate.date(parseInt(times[0].end.knownValues.day));
+    else endDate.add(7, "days");
 
-  // If an minute is specified, use that; otherwise 59
-  if (times[0].end.knownValues.minute)
-    endDate.minute(parseInt(times[0].end.knownValues.minute));
-  else endDate.minute(59);
+    if (times[0].end.knownValues.hour)
+      // If an hour is specified, use that; otherwise 23
+      endDate.hour(parseInt(times[0].end.knownValues.hour));
+    else endDate.hour(23);
+
+    // If an minute is specified, use that; otherwise 59
+    if (times[0].end.knownValues.minute)
+      endDate.minute(parseInt(times[0].end.knownValues.minute));
+    else endDate.minute(59);
+  }
+
   return { startDate, endDate };
 };
