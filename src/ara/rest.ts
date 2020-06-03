@@ -6,6 +6,7 @@ import {
 import { createHmac } from "crypto";
 import { getS3Item } from "./services/s3";
 import { Logger } from "./interfaces";
+import { mail } from "../_staart/helpers/mail";
 import { organizations } from "@prisma/client";
 import { prisma } from "../_staart/helpers/prisma";
 import { getOrganizationFromEmail } from "./services/crud";
@@ -18,6 +19,8 @@ import { elasticSearchIndex } from "../_staart/helpers/elasticsearch";
 import { Locals } from "../_staart/interfaces/general";
 import { getGeolocationFromIp } from "../_staart/helpers/location";
 import { EmailAddress } from "mailparser";
+import { getUserBestEmail } from "../_staart/services/user.service";
+import { FRONTEND_URL, BASE_URL } from "../config";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -174,15 +177,41 @@ const emailSteps = async (objectId: string, log: Logger) => {
     `Upserted incoming email ${incomingEmail.id}, meeting ${incomingEmail.meetingId}`
   );
 
-  const response = await performAction(
-    incomingEmail,
-    organization,
-    assistantEmail,
-    user,
-    objectBody,
-    parsedBody,
-    log
-  );
+  let response: any = {};
+
+  try {
+    response = await performAction(
+      incomingEmail,
+      organization,
+      assistantEmail,
+      user,
+      objectBody,
+      parsedBody,
+      log
+    );
+  } catch (error) {
+    if (organization.sendErrorInfo) {
+      await mail({
+        template: "meeting-error.en",
+        from: `"${organization.assistantName}" <meet-${organization.username}@eiva.o15y.com>`,
+        to: `"${user.name}" <${(await getUserBestEmail(user.id)).email}>`,
+        subject: "Error setting up appointment",
+        data: {
+          ownerName: user.nickname,
+          schedulingError: String(error),
+          errorDetailsLink: `${FRONTEND_URL}/teams/${organization.username}/meetings/${incomingEmail.meetingId}`,
+          assistantSignature: organization.assistantSignature.replace(
+            /\n/g,
+            "  \n"
+          ),
+          ...organization,
+          baseUrl: BASE_URL,
+          frontendUrl: FRONTEND_URL,
+        },
+      });
+    }
+    throw new Error(error);
+  }
 
   const result = {
     incomingEmail,

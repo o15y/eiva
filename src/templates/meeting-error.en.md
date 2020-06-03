@@ -1,8 +1,8 @@
 Dear {{ownerName}},
 
-I tried to schedule your {{duration}}-minuten meeting with {{guestFullName}}, but failed because of this error: **{{schedulingError}}**
+I tried to schedule your meeting, but failed because of this error: **{{schedulingError}}**
 
-You can manually set your appointment with {{guestName}}.
+You can manually set your appointment instead.
 
 More information about the error is available on: {{errorDetailsLink}}
 
