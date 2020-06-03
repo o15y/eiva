@@ -166,6 +166,21 @@ export const confirmMeetingForGuest = async (
           : meeting.organization.emailLanguage
         : meeting.organization.emailLanguage;
 
+    const icsAttachment = ics(event)
+      .replace("data:text/calendar;charset=utf8,", "")
+      .replace(/%0A/g, "\n")
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => {
+        if (line.includes(":")) {
+          line = `${line.split(":")[0]}:${decodeURIComponent(
+            line.split(":")[1]
+          )}`;
+        }
+        return line;
+      })
+      .join("\n");
+
     await mail({
       template: `meeting-confirmation.${sendInLanguage}`,
       from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@eiva.o15y.com>`,
@@ -173,7 +188,7 @@ export const confirmMeetingForGuest = async (
       subject: `Confirmed: Appointment with ${meetingWithName}`,
       data: ownerEmailData,
       icalEvent: {
-        content: ics(event),
+        content: icsAttachment,
       },
     });
 
@@ -197,7 +212,7 @@ export const confirmMeetingForGuest = async (
         subject: `Confirmed: Appointment with ${meeting.user.name}`,
         data: guestEmailData,
         icalEvent: {
-          content: ics(event),
+          content: icsAttachment,
         },
       });
     }
