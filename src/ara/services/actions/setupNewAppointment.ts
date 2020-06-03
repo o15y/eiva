@@ -66,7 +66,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
   slots = await recommendDates(params, duration, startDate, endDate);
   params.log("Found potential slots", slots.length);
 
-  if (!slots) throw new Error("Couldn't find a date for the appointment");
+  if (!slots.length)
+    throw new Error("Couldn't find a date for the appointment");
 
   // Find guests
   let guests: any[] = [];

@@ -61,6 +61,19 @@ export const recommendDates = async (
     slots: 3,
     slotDuration: duration,
     padding: params.organization.schedulingPadding,
+    daily: {
+      timezone: params.user.timezone,
+      from: [
+        ...params.organization.schedulingTimeStart
+          .split(":")
+          .map((i) => parseInt(i)),
+      ],
+      to: [
+        ...params.organization.schedulingTimeStart
+          .split(":")
+          .map((i) => parseInt(i)),
+      ],
+    },
     from: startTime ?? today,
     to: endTime ?? nextWeek,
     days: params.organization.schedulingDays
@@ -75,10 +88,15 @@ export const recommendDates = async (
     !(
       params.organization.googleAccessToken &&
       params.organization.googleRefreshToken
-    )
+    ) &&
+    !params.organization.customCalendarUrl
   ) {
-    params.log("Unable to find Google Calendar connection");
+    params.log("Unable to find calendar URL or connection");
+  } else if (params.organization.customCalendarUrl) {
+    params.log("Using custom calendar URL");
+    slotParams.url = params.organization.customCalendarUrl;
   } else {
+    params.log("Using Google Calendar credentials");
     oauth2Client.setCredentials({
       access_token: params.organization.googleAccessToken,
       refresh_token: params.organization.googleRefreshToken,
