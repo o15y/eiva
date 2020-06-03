@@ -4,8 +4,11 @@ import { RESOURCE_NOT_FOUND } from "@staart/errors";
 import { verifyToken } from "../../../_staart/helpers/jwt";
 import moment from "moment-timezone";
 import { render } from "@staart/mustache-markdown";
+import { capitalizeFirstLetter } from "@staart/text";
 import { mail } from "../../../_staart/helpers/mail";
 import { confirmIfSlotAvailable } from "../dates";
+import { google, CalendarEvent, yahoo, outlook, ics } from "calendar-link";
+import { BASE_URL, FRONTEND_URL } from "../../../config";
 
 /**
  * Confirm a meeting from guest
@@ -84,28 +87,66 @@ export const confirmMeetingForGuest = async (
     // Send meeting details
     // TODO send re-confirmations
 
+    const userEmail = await prisma.emails.findOne({
+      where: { id: meeting.user.primaryEmail },
+    });
+    if (!userEmail) throw new Error(RESOURCE_NOT_FOUND);
+
+    const meetingWithName = JSON.parse(meeting.guests)
+      .map((guest: any) => guest.name)
+      .join(", ");
+
+    let locationValue = location.value ?? "";
+    let locationData: any = {};
+    if (location.data) {
+      try {
+        locationData = JSON.parse(location.data);
+      } catch (error) {}
+    }
+    if (locationData.template) {
+      let result: string = locationData.template ?? "";
+      Object.keys(locationData).forEach((key: any) => {
+        result = result.replace(`{{${key}}}`, locationData[key]);
+      });
+      Object.keys(location).forEach((key: any) => {
+        result = result.replace(`{{${key}}}`, location[key]);
+      });
+      if (result) locationValue = result;
+    }
+
+    const event: CalendarEvent = {
+      title: `${
+        meeting.user.name
+      } <> ${meetingWithName} | ${capitalizeFirstLetter(
+        location.type.replace("_", " ")
+      )}`,
+      start: moment(data.selectedDatetime).toDate(),
+      duration: [meeting.duration, "minute"],
+      // description: "This meeting was scheduled by EIVA",
+      location: locationValue,
+      busy: true,
+      guests: [
+        `"${meeting.user.name}" <${userEmail.email}>`,
+        ...JSON.parse(meeting.guests).map(
+          (guest: any) => `"${guest.name}" <${guest.address}>`
+        ),
+      ],
+    };
+
     const sharedEmailData = {
       duration: String(confirmedMeeting.duration),
       assistantName: meeting.organization.assistantName,
       assistantSignature: meeting.organization.assistantSignature,
       meetingType: location?.type,
-      meetingLocation: location?.value,
-      editLink: "#",
-      googleLink: "#",
-      outlookLink: "#",
-      yahooLink: "#",
-      icsLink: "#",
+      meetingLocation: locationValue,
+      editLink: `${FRONTEND_URL}/teams/${meeting.organization.username}/meetings/${meeting.id}`,
+      googleLink: google(event),
+      outlookLink: outlook(event),
+      yahooLink: yahoo(event),
     };
 
     // Send email to owner
-    const meetingWithName = JSON.parse(meeting.guests)
-      .map((guest: any) => guest.name)
-      .join(", ");
     if (!meeting.user.primaryEmail) throw new Error(RESOURCE_NOT_FOUND);
-    const userEmail = await prisma.emails.findOne({
-      where: { id: meeting.user.primaryEmail },
-    });
-    if (!userEmail) throw new Error(RESOURCE_NOT_FOUND);
     const ownerEmailData = {
       ...sharedEmailData,
       emailToName: meeting.user.nickname,
@@ -152,6 +193,11 @@ export const confirmMeetingForGuest = async (
         to: `"${guest.name}" <${guest.address}>`,
         subject: `Confirmed: Appointment with ${meeting.user.name}`,
         data: guestEmailData,
+        icalEvent: {
+          filename: "invitation.ics",
+          method: "PUBLISH",
+          content: ics(event),
+        },
       });
     }
   };
