@@ -200,11 +200,11 @@ const emailSteps = async (objectId: string, log: Logger) => {
           ownerName: user.nickname,
           schedulingError: String(error),
           errorDetailsLink: `${FRONTEND_URL}/teams/${organization.username}/meetings/${incomingEmail.meetingId}`,
+          ...organization,
           assistantSignature: organization.assistantSignature.replace(
             /\n/g,
             "  \n"
           ),
-          ...organization,
           baseUrl: BASE_URL,
           frontendUrl: FRONTEND_URL,
         },
