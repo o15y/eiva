@@ -58,6 +58,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
     params.user.timezone,
     params
   );
+  params.log(
+    "Using start and end dates",
+    startDate.toLocaleString(),
+    endDate.toLocaleString()
+  );
   slots = await recommendDates(params, duration, startDate, endDate);
   params.log("Found potential slots", slots.length);
 
