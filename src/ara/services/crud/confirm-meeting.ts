@@ -75,7 +75,7 @@ export const confirmMeetingForGuest = async (
       data: {
         confirmedTime: moment(data.selectedDatetime).toISOString(),
         guests: meeting.guests,
-        duration: data.duration,
+        duration: Number(data.duration),
       },
     });
 
