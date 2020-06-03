@@ -52,6 +52,7 @@ export const confirmMeetingForGuest = async (
     )
   )
     throw new Error("429/slot-unavailable");
+  if (!meeting.user.primaryEmail) throw new Error(RESOURCE_NOT_FOUND);
 
   const safeConfirmMeeting = async () => {
     // Add new guest data to `meeting.guests`
@@ -78,11 +79,12 @@ export const confirmMeetingForGuest = async (
       },
     });
 
-    // Get memeeting location details
+    // Get meeting location details
     if (!meeting.confirmedTime) return;
     const location = await prisma.locations.findOne({
       where: { id: meeting.locationId },
     });
+    if (!location) return;
 
     // Send meeting details
     // TODO send re-confirmations
@@ -145,7 +147,6 @@ export const confirmMeetingForGuest = async (
     };
 
     // Send email to owner
-    if (!meeting.user.primaryEmail) throw new Error(RESOURCE_NOT_FOUND);
     const ownerEmailData = {
       ...sharedEmailData,
       emailToName: meeting.user.nickname,
