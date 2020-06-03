@@ -1,4 +1,4 @@
-import { parse } from "chrono-node";
+const { parse } = require("chrono-node");
 import { WordTokenizer } from "natural";
 import { getSlots, getEventsFromSingleCalendar } from "calendar-slots";
 import { ActionParams } from "../interfaces";
