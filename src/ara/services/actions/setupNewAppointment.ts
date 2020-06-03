@@ -45,7 +45,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   const possibleDateTimes = findDateTimeinText(paragraph);
   params.log(
     "Possible intial date times",
-    possibleDateTimes.map((i) => i.text)
+    possibleDateTimes.map((i: any) => i.text)
   );
 
   const duration = params.organization.schedulingDuration;

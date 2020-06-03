@@ -89,20 +89,20 @@ export const recommendDates = async (
   return getSlots(slotParams);
 };
 
-export const findDateTimeinText = (text: string) => {
+export const findDateTimeinText = (text: string): any => {
   let result = parse(text);
 
   // Handle case "I can do 4 pm on Tuesday or Wednesday"
   let numberOfTimes = 0;
   let numberOfDates = 0;
-  result.forEach((item) => {
+  result.forEach((item: any) => {
     if (item.start.knownValues.day || item.start.knownValues.weekday)
       numberOfDates++;
     if (item.start.knownValues.hour) numberOfTimes++;
   });
   if (numberOfTimes === 1 && numberOfDates > 1)
-    result = result.map((i) => {
-      const knownTime = result.find((i) => i.start.knownValues.hour)?.start
+    result = result.map((i: any) => {
+      const knownTime = result.find((i: any) => i.start.knownValues.hour)?.start
         .knownValues;
       if (!knownTime) return i;
       i.start.knownValues.hour = knownTime.hour;
