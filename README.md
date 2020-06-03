@@ -154,6 +154,18 @@ createHmac("sha256", INCOMING_EMAIL_WEBHOOK_SECRET)
   .digest("hex");
 ```
 
+## Deployment
+
+The environment variable `PORT` is used to run the app on a specific port. In production, this is `3000`.
+
+The following command is used to redirect port `80` to `3000` ([source](https://stackoverflow.com/a/16573737/1656944)):
+
+```bash
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
+```
+
+PM2 is used to run the app, and updating it is done using [`./update.sh`](./update.sh).
+
 ## 📄 License
 
 - Code: [Server Side Public License](./LICENSE)
