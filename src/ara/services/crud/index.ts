@@ -5,6 +5,7 @@ import { ORGANIZATION_NOT_FOUND } from "@staart/errors";
 export const getOrganizationFromEmail = async (email: string) => {
   if (
     isMatch(email, "*@mail.araassistant.com") ||
+    isMatch(email, "*@eiva.o15y.com") ||
     isMatch(email, "*@myeiva.com")
   ) {
     let username = email.split("@")[0];

@@ -127,7 +127,7 @@ export const confirmMeetingForGuest = async (
 
     await mail({
       template: `meeting-confirmation.${sendInLanguage}`,
-      from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@myeiva.com>`,
+      from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@eiva.o15y.com>`,
       to: `"${meeting.user.name}" <${userEmail.email}>`,
       subject: `Confirmed: Appointment with ${meetingWithName}`,
       data: ownerEmailData,
@@ -148,7 +148,7 @@ export const confirmMeetingForGuest = async (
       };
       await mail({
         template: `meeting-confirmation.${sendInLanguage}`,
-        from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@myeiva.com>`,
+        from: `"${meeting.organization.assistantName}" <meet-${meeting.organization.username}@eiva.o15y.com>`,
         to: `"${guest.name}" <${guest.address}>`,
         subject: `Confirmed: Appointment with ${meeting.user.name}`,
         data: guestEmailData,

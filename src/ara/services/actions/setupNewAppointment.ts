@@ -133,7 +133,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       messageId: `${outgoingEmailId}@ara-internal`,
       from: JSON.stringify([
         {
-          address: `meet-${params.organization.username}@myeiva.com`,
+          address: `meet-${params.organization.username}@eiva.o15y.com`,
           name: params.organization.assistantName,
         },
       ]),
@@ -273,7 +273,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       : params.organization.emailLanguage;
   await mail({
     template: `meeting-invitation.${sendInLanguage}`,
-    from: `"${params.organization.assistantName}" <meet-${params.organization.username}@myeiva.com>`,
+    from: `"${params.organization.assistantName}" <meet-${params.organization.username}@eiva.o15y.com>`,
     to: guests.map((guest) => `"${guest.name}" <${guest.address}>`),
     subject: `${params.organization.name} - Appointment`,
     data: {
@@ -290,7 +290,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   if (params.organization.emailConfirmation) {
     await mail({
       template: `meeting-details.${sendInLanguage}`,
-      from: `"${params.organization.assistantName}" <meet-${params.organization.username}@myeiva.com>`,
+      from: `"${params.organization.assistantName}" <meet-${params.organization.username}@eiva.o15y.com>`,
       to: `"${params.user.name}" <${
         (await getUserBestEmail(params.user.id)).email
       }>`,
