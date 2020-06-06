@@ -151,6 +151,29 @@ export const deleteOrganizationForUser = async (
     );
     if (organizationDetails.stripeCustomerId)
       await deleteCustomer(organizationDetails.stripeCustomerId);
+    // Delete organization dependencies
+    await prisma.incoming_emails.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.webhooks.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.meetings.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.locations.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.memberships.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.domains.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    await prisma.api_keys.deleteMany({
+      where: { organizationId: parseInt(organizationId) },
+    });
+    // Delete organization
     await prisma.organizations.delete({
       where: {
         id: parseInt(organizationId),
