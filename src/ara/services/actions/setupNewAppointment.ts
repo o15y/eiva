@@ -42,33 +42,6 @@ export const setupNewAppointment = async (params: ActionParams) => {
   if (addresses.length) params.log("Detected addresses", addresses);
   if (dates.length) params.log("Detected dates", dates);
 
-  const possibleDateTimes = findDateTimeinText(paragraph);
-  params.log(
-    "Possible intial date times",
-    possibleDateTimes.map((i: any) => i.text)
-  );
-
-  const duration = params.organization.schedulingDuration;
-
-  // Find slots
-  let slots: Slot[] = [];
-  // if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
-  const { startDate, endDate } = findStartEndTime(
-    paragraph,
-    params.user.timezone,
-    params
-  );
-  params.log(
-    "Using start and end dates",
-    startDate.toLocaleString(),
-    endDate.toLocaleString()
-  );
-  slots = await recommendDates(params, duration, startDate, endDate);
-  params.log("Found potential slots", slots.length);
-
-  if (!slots.length)
-    throw new Error("Couldn't find a date for the appointment");
-
   // Find guests
   let guests: any[] = [];
   for await (const guest of params.parsedBody.to?.value ?? []) {
@@ -113,6 +86,32 @@ export const setupNewAppointment = async (params: ActionParams) => {
   }
   if (!guests.length) throw new Error("Couldn't find guests");
   params.log("Found guests for this meeting", guests.length);
+
+  const possibleDateTimes = findDateTimeinText(paragraph);
+  params.log(
+    "Possible intial date times",
+    possibleDateTimes.map((i: any) => i.text)
+  );
+
+  const duration = params.organization.schedulingDuration;
+  // Find slots
+  let slots: Slot[] = [];
+  // if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
+  const { startDate, endDate } = findStartEndTime(
+    paragraph,
+    params.user.timezone,
+    params
+  );
+  params.log(
+    "Using start and end dates",
+    startDate.toLocaleString(),
+    endDate.toLocaleString()
+  );
+  slots = await recommendDates(params, duration, startDate, endDate);
+  params.log("Found potential slots", slots.length);
+
+  if (!slots.length)
+    throw new Error("Couldn't find a date for the appointment");
 
   // Update meeting details with guest and proposed times
   await prisma.meetings.update({
