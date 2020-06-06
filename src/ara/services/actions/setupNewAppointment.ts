@@ -111,7 +111,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
   params.log("Found potential slots", slots.length);
 
   if (!slots.length)
-    throw new Error("Couldn't find a date for the appointment");
+    throw new Error("Couldn't find a date and time for the appointment");
 
   // Update meeting details with guest and proposed times
   await prisma.meetings.update({
@@ -152,7 +152,11 @@ export const setupNewAppointment = async (params: ActionParams) => {
       meeting: { connect: { id: params.incomingEmail.meetingId } },
     },
   });
-  params.log("Set up tracking for outbound email");
+  if (params.organization.readReceipts) {
+    params.log("Set up outbound email with tracking");
+  } else {
+    params.log("Set up outbound email without tracking");
+  }
 
   // TODO support multiple guest timezones
   const guestTimezone = guests[0].timezone ?? params.user.timezone;
@@ -265,7 +269,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       /\n/g,
       "  \n"
     ),
-    unsubscribeUrl: `${FRONTEND_URL}/unsubscribe}`,
+    unsubscribeUrl: `${FRONTEND_URL}/unsubscribe`,
     baseUrl: BASE_URL,
     frontendUrl: FRONTEND_URL,
   };
@@ -276,6 +280,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
         ? language
         : params.organization.emailLanguage
       : params.organization.emailLanguage;
+  params.log(`Sending email in language: ${sendInLanguage}`);
+
   await mail({
     template: `meeting-invitation.${sendInLanguage}`,
     from: `"${params.organization.assistantName}" <meet-${params.organization.username}@eiva.o15y.com>`,
