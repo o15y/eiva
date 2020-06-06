@@ -14,7 +14,7 @@ export const smartTokensFromText = async (
     text,
     {
       email: from.value[0].address,
-      displayName: from.value[0].name
+      displayName: from.value[0].name,
     },
     true
   );
@@ -22,24 +22,24 @@ export const smartTokensFromText = async (
   // Divide paragraph into lines and remove empty lines
   const paragraphs = (parseReply(bodyNoSig || text).getVisibleText() || text)
     .split("\n")
-    .filter(i => i.trim())
-    .map(i => i.toLowerCase());
+    .filter((i: string) => i.trim())
+    .map((i: string) => i.toLowerCase());
 
   // Tokenize each line to a sentence
   const tokens: string[] = [];
-  paragraphs.forEach(paragraph => {
+  paragraphs.forEach((paragraph: string) => {
     if (paragraph) {
       let line = [paragraph];
       try {
         line = tokenizer.tokenize(paragraph);
       } catch (error) {}
       const result = line
-        .filter(i => (i.match(/ /g) || []).length > 2)
-        .map(i => {
-          commonWords.forEach(word => (i = i.replace(word, "")));
-          return i.replace(/[.,!?:;]/g, "").trim();
+        .filter((i) => (i.match(/ /g) || []).length > 2)
+        .map((i) => {
+          commonWords.forEach((word) => (i = i.replace(word, "")));
+          return i.replace(/[.,!?;]/g, "").trim();
         })
-        .filter(i => i.trim());
+        .filter((i) => i.trim());
       tokens.push(...result);
     }
   });
