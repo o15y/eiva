@@ -86,3 +86,28 @@ it("next week", () => {
     })
   ).toBeTruthy();
 });
+
+it("next Thursday", () => {
+  const startDate = moment
+    .tz(TZ)
+    .day(4)
+    .add(1, "week")
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+  const endDate = moment
+    .tz(TZ)
+    .day(4)
+    .add(1, "week")
+    .hour(23)
+    .minute(59)
+    .second(0)
+    .millisecond(0);
+  expect(
+    momentCompare(findStartEndTime("next Thursday", TZ), {
+      startDate,
+      endDate,
+    })
+  ).toBeTruthy();
+});

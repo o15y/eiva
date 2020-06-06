@@ -197,6 +197,14 @@ export const findStartEndTime = (
       startDate = startDate.add(1, "week");
   }
 
+  // If you say something like "Thursday", use next week
+  if (
+    times[0].text.includes("day") &&
+    moment().diff(moment(startDate), "day") > 0
+  ) {
+    startDate = startDate.add(1, "week");
+  }
+
   // If the month + day combination is in the past, use next month
   // e.g., "Meet on 3rd" if today is 29th, means 3rd of next month
   if (moment().diff(moment(startDate), "day") > 0)
