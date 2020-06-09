@@ -189,6 +189,10 @@ export const findStartEndTime = (
   if (times[0].start.knownValues.day)
     startDate.date(parseInt(times[0].start.knownValues.day));
 
+  // If a date is specified, use that; otherwise today
+  if (times[0].start.knownValues.weekday)
+    startDate.day(parseInt(times[0].start.knownValues.weekday));
+
   // If you say something like "next week"
   if (times[0].text.includes("week")) {
     startDate = startDate.startOf("week");
@@ -254,6 +258,8 @@ export const findStartEndTime = (
     // If a date is specified, use that; otherwise a week from now
     if (times[0].end.knownValues.day)
       endDate.date(parseInt(times[0].end.knownValues.day));
+    else if (times[0].end.knownValues.weekday)
+      endDate.day(parseInt(times[0].end.knownValues.weekday));
     else endDate = endDate.add(1, "week");
 
     if (times[0].end.knownValues.hour)
