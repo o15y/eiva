@@ -21,6 +21,7 @@ import { getGeolocationFromIp } from "../_staart/helpers/location";
 import { EmailAddress } from "mailparser";
 import { getUserBestEmail } from "../_staart/services/user.service";
 import { FRONTEND_URL, BASE_URL } from "../config";
+import { getFullToken } from "./services/short-token";
 
 const INCOMING_EMAIL_WEBHOOK_SECRET =
   process.env.INCOMING_EMAIL_WEBHOOK_SECRET || "";
@@ -238,7 +239,8 @@ const emailSteps = async (objectId: string, log: Logger) => {
  * Track the read status of an outgoing email
  * @param jwt - JSON web token for email
  */
-export const trackOutgoingEmail = async (jwt: string) => {
+export const trackOutgoingEmail = async (shortToken: string) => {
+  const jwt = await getFullToken(shortToken);
   const { id } = await verifyToken<{ id: number }>(jwt, Tokens.EMAIL_UPDATE);
   return prisma.incoming_emails.update({
     where: { id },
@@ -257,7 +259,7 @@ export const getPublicMeetingDetails = async (
   meetingId: string,
   jwt: string
 ) => {
-  await verifyToken(jwt, Tokens.CONFIRM_APPOINTMENT);
+  await verifyToken(await getFullToken(jwt), Tokens.CONFIRM_APPOINTMENT);
   const details = await prisma.meetings.findMany({
     take: 1,
     where: { id: parseInt(meetingId), organization: { username } },

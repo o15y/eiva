@@ -96,7 +96,6 @@ export const setupNewAppointment = async (params: ActionParams) => {
   const duration = params.organization.schedulingDuration;
   // Find slots
   let slots: Slot[] = [];
-  // if (!possibleDateTimes.length) slots = await recommendDates(params, duration);
   const { startDate, endDate } = findStartEndTime(
     paragraph,
     params.user.timezone,
@@ -183,7 +182,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
             datetime: moment.tz(slot.start, guestTimezone).toISOString(),
           },
           "1y",
-          Tokens.CONFIRM_APPOINTMENT
+          Tokens.CONFIRM_APPOINTMENT,
+          true
         )
       )})`
     );
@@ -201,7 +201,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
             datetime: moment.tz(slot.start, params.user.timezone).toISOString(),
           },
           "1y",
-          Tokens.CONFIRM_APPOINTMENT
+          Tokens.CONFIRM_APPOINTMENT,
+          true
         )
       )})`
     );
@@ -222,7 +223,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
             datetime: moment.tz(slot.start, guestTimezone).toISOString(),
           },
           "1y",
-          Tokens.CONFIRM_APPOINTMENT
+          Tokens.CONFIRM_APPOINTMENT,
+          true
         )
       )})`
     );
@@ -240,7 +242,8 @@ export const setupNewAppointment = async (params: ActionParams) => {
             datetime: moment.tz(slot.start, params.user.timezone).toISOString(),
           },
           "1y",
-          Tokens.CONFIRM_APPOINTMENT
+          Tokens.CONFIRM_APPOINTMENT,
+          true
         )
       )})`
     );
@@ -291,7 +294,7 @@ export const setupNewAppointment = async (params: ActionParams) => {
       ...data,
       trackingImageUrl: params.organization.readReceipts
         ? `${BASE_URL}/v1/api/read-receipt?token=${encodeURIComponent(
-            await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE)
+            await generateToken({ id }, "1y", Tokens.EMAIL_UPDATE, true)
           )}`
         : undefined,
     },

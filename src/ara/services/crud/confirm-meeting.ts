@@ -9,6 +9,7 @@ import { mail } from "../../../_staart/helpers/mail";
 import { confirmIfSlotAvailable } from "../dates";
 import { google, CalendarEvent, yahoo, outlook, ics } from "calendar-link";
 import { BASE_URL, FRONTEND_URL } from "../../../config";
+import { getFullToken } from "../short-token";
 
 /**
  * Confirm a meeting from guest
@@ -29,7 +30,7 @@ export const confirmMeetingForGuest = async (
     selectedDatetime: Date;
   }
 ) => {
-  await verifyToken(data.token, Tokens.CONFIRM_APPOINTMENT);
+  await verifyToken(await getFullToken(data.token), Tokens.CONFIRM_APPOINTMENT);
 
   // Find meeting details
   const meeting = (

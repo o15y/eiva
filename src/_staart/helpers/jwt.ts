@@ -48,7 +48,8 @@ import {
 export const generateToken = (
   payload: string | object | Buffer,
   expiresIn: string | number,
-  subject: Tokens
+  subject: Tokens,
+  minify = false
 ): Promise<string> =>
   new Promise((resolve, reject) => {
     sign(
