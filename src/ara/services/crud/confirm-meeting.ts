@@ -81,7 +81,6 @@ export const confirmMeetingForGuest = async (
     });
 
     // Get meeting location details
-    if (!meeting.confirmedTime) return;
     const location = await prisma.locations.findOne({
       where: { id: meeting.locationId },
     });
@@ -153,10 +152,10 @@ export const confirmMeetingForGuest = async (
       emailToName: meeting.user.nickname,
       meetingWithName,
       meetingDate: moment
-        .tz(meeting.confirmedTime, meeting.user.timezone)
+        .tz(data.selectedDatetime, meeting.user.timezone)
         .format("dddd, MMMM D, YYYY"),
       meetingTime: moment
-        .tz(meeting.confirmedTime, meeting.user.timezone)
+        .tz(data.selectedDatetime, meeting.user.timezone)
         .format("h:mm a z"),
       editLink: `${FRONTEND_URL}/teams/${meeting.organization.username}/meetings/${meeting.id}`,
     };
@@ -201,10 +200,10 @@ export const confirmMeetingForGuest = async (
         emailToName: guest.name.split(" ")[0],
         meetingWithName: meeting.user.name,
         meetingDate: moment
-          .tz(meeting.confirmedTime, guest.timezone)
+          .tz(data.selectedDatetime, guest.timezone)
           .format("dddd, MMMM D, YYYY"),
         meetingTime: moment
-          .tz(meeting.confirmedTime, guest.timezone)
+          .tz(data.selectedDatetime, guest.timezone)
           .format("h:mm a z"),
       };
       await mail({
