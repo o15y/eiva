@@ -24,6 +24,7 @@ import { safeRedirect } from "../../_staart/helpers/utils";
 import { googleCalendarClient } from "../../ara/services/calendar-connection";
 import { BASE_URL } from "../../config";
 import { stringify } from "querystring";
+import { getFullToken } from "../../ara/services/short-token";
 
 export class ApiController {
   @Post("classify")
@@ -147,5 +148,10 @@ export class ApiController {
     return googleCalendarClient.callback(
       `${BASE_URL}/auth${req.path}?${stringify(req.query)}`
     );
+  }
+
+  @Get("full-token/:token")
+  async getFullToken(req: Request, res: Response) {
+    return getFullToken(req.params.token ?? "");
   }
 }
