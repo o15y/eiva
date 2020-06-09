@@ -7,7 +7,7 @@ import {
   USER_NOT_FOUND,
 } from "@staart/errors";
 import redis from "@staart/redis";
-import { ipRangeCheck, randomString } from "@staart/text";
+import { ipRangeCheck, randomString, ms } from "@staart/text";
 import { decode, sign, verify } from "jsonwebtoken";
 import {
   JWT_ISSUER,
@@ -28,6 +28,7 @@ import {
   includesDomainInCommaList,
   removeFalsyValues,
 } from "./utils";
+import moment from "moment";
 import {
   access_tokensCreateInput,
   access_tokensUpdateInput,
@@ -41,6 +42,7 @@ import {
   checkApprovedLocation,
   getUserPrimaryEmail,
 } from "../services/user.service";
+import { setItemInCache } from "./cache";
 
 /**
  * Generate a new JWT
@@ -64,7 +66,14 @@ export const generateToken = (
       },
       (error, token) => {
         if (error) return reject(error);
-        resolve(token);
+        if (minify) {
+          const shortToken = `short-token-${randomString({ length: 10 })}`;
+          setItemInCache(shortToken, token, moment().add(1, "month").toDate())
+            .then(() => resolve(shortToken))
+            .catch(() => resolve(token));
+        } else {
+          resolve(token);
+        }
       }
     );
   });
