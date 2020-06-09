@@ -111,3 +111,26 @@ it("next Thursday", () => {
     })
   ).toBeTruthy();
 });
+
+it("Friday", () => {
+  const startDate = moment
+    .tz(TZ)
+    .day(5)
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+  const endDate = moment
+    .tz(TZ)
+    .day(5)
+    .hour(23)
+    .minute(59)
+    .second(0)
+    .millisecond(0);
+  expect(
+    momentCompare(findStartEndTime("Friday", TZ), {
+      startDate,
+      endDate,
+    })
+  ).toBeTruthy();
+});
